@@ -42,7 +42,7 @@ void SheetCanvas::docChanged() {
 }
 
 void SheetCanvas::fitView() {
-    if (!doc_ || !doc_->isLoaded() || width() < 50) return;
+    if (!doc_ || !doc_->isLoaded() || !doc_->poseConfirmed() || width() < 50) return;  // 확정 전에는 도판이 없다
     const QRectF E = Plate::extentMm(*doc_, opts_.slot);
     const double mx = 64, my = 40;
     ppm_ = std::max(0.2, std::min((width() - 2 * mx) / E.width(), (height() - 2 * my) / E.height()));
@@ -75,6 +75,13 @@ void SheetCanvas::paintEvent(QPaintEvent*) {
         p.setPen(theme::Muted);
         p.setFont(theme::uiFont(13));
         p.drawText(rect(), Qt::AlignCenter, QStringLiteral("유물을 열면 실측 도판이 여기에 그려집니다  ·  Ctrl+O"));
+        return;
+    }
+    if (!doc_->poseConfirmed()) {  // ① 바닥 정하기 — 확정 전에는 단면·치수를 계산하지 않는다
+        p.setPen(theme::Muted);
+        p.setFont(theme::uiFont(13));
+        p.drawText(rect(), Qt::AlignCenter,
+                   QStringLiteral("바닥을 정하기 전입니다 — 「이 자세로 확정」(Enter)을 누르면 실측 도판이 그려집니다"));
         return;
     }
     if (shadeDirty_ && opts_.shade) {
@@ -238,7 +245,10 @@ void SheetPane::refresh(const ArtifactDoc& doc, int slot) {
         title_->setText(QStringLiteral("실측 도판"));
         sub_->clear();
     }
-    if (doc.aligned()) {
+    if (doc.isLoaded() && !doc.poseConfirmed()) {
+        badge_->setObjectName("BadgeWarn");
+        badge_->setText(QStringLiteral("▲ 바닥 미정"));
+    } else if (doc.aligned()) {
         badge_->setObjectName("BadgeOk");
         badge_->setText(QStringLiteral("✓ 기준: %1").arg(doc.alignNote()));
     } else {

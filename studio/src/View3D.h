@@ -50,6 +50,7 @@ signals:
 
 private:
     View3DCanvas* canvas_;
+    QLabel* title_;
     QLabel* info_;
     QLabel* info2_;
 };

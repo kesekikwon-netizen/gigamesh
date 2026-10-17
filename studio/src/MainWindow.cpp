@@ -58,8 +58,8 @@ MainWindow::MainWindow() {
     pages_->addWidget(start_);
     connect(start_, &StartPage::openFileRequested, this, &MainWindow::openFileDialog);
     connect(start_, &StartPage::openPathRequested, this, [this](const QString& p) { openPath(p); });
-    connect(start_, &StartPage::sampleRequested, this, &MainWindow::openSample);
-    connect(start_, &StartPage::artecBlindSampleRequested, this, &MainWindow::openArtecBlindSample);
+    connect(start_, &StartPage::sampleRequested, this, [this] { openSample(); });
+    connect(start_, &StartPage::artecBlindSampleRequested, this, [this] { openArtecBlindSample(); });
     connect(start_, &StartPage::watchFolderRequested, this, &MainWindow::toggleWatchFolder);
 
     watcher_ = new QFileSystemWatcher(this);
@@ -101,7 +101,7 @@ MainWindow::MainWindow() {
     connect(view3d_, &View3DPane::collapseRequested, this, &MainWindow::toggleMaximize);
     connect(view3d_->canvas(), &View3DCanvas::cutAngleDragged, this, [this](double d) { setFrontAngle(doc_.frontAngle() + d); });
     connect(sheet_->canvas(), &SheetCanvas::cursorMm, this, [this](double r, double h, double wall, bool inside) {
-        if (!inside) {
+        if (!inside || !doc_.poseConfirmed()) {  // 확정 전에는 도판 좌표가 없다
             stCursor_->clear();
             return;
         }
@@ -162,8 +162,8 @@ void MainWindow::buildRibbon() {
         g->tile("dxf", QStringLiteral("DXF"), "dxf", QStringLiteral("CAD DXF R12"));
     };
     const int pFile = ribbon_->addPage(QStringLiteral("파일"));
-    const int pHome = ribbon_->addPage(QStringLiteral("홈"));
-    const int pAlign = ribbon_->addPage(QStringLiteral("정위치·중심축"));
+    pHome_ = ribbon_->addPage(QStringLiteral("홈"));
+    pBase_ = ribbon_->addPage(QStringLiteral("① 바닥 정하기"));
     const int pMeasure = ribbon_->addPage(QStringLiteral("측정·탁본"));
     const int pExport = ribbon_->addPage(QStringLiteral("내보내기"));
     {
@@ -176,30 +176,55 @@ void MainWindow::buildRibbon() {
                 QStringLiteral("좁은 아가리 토기 내벽 미스캔 파선 자동보정 예제"));
         g->tile("home", QStringLiteral("시작 화면"), "doc");
     }
-    fileGroup(pHome);
-    alignGroup(pHome);
-    lineGroup(pHome);
-    simplifyGroup(pHome);
-    showGroup(pHome);
-    exportGroup(pHome);
-    alignGroup(pAlign);
-    lineGroup(pAlign);
+    fileGroup(pHome_);
+    alignGroup(pHome_);
+    lineGroup(pHome_);
+    simplifyGroup(pHome_);
+    showGroup(pHome_);
+    exportGroup(pHome_);
+    // ① 바닥 정하기: 파일 · 바닥판에 올려놓기 · 확정 (디자인 v2, 손 실측: 실측판 위에 올려놓기)
+    fileGroup(pBase_);
+    {
+        auto* g = ribbon_->addGroup(pBase_, QStringLiteral("바닥판에 올려놓기"));
+        g->tile("poseAuto", QStringLiteral("자동 세우기"), "axis",
+                QStringLiteral("자동 세우기 — 구연부를 찾아 회전 중심축을 수직으로 세우고 바닥판에 놓습니다 (입이 대략 위로 오게 돌린 뒤 누르세요)"));
+        g->column({{"poseX", {QStringLiteral("X 90°"), ""}},
+                   {"poseY", {QStringLiteral("Y 90°"), ""}},
+                   {"poseZ", {QStringLiteral("Z 90°"), ""}}});
+        g->column({{"poseFlip", {QStringLiteral("뒤집기"), ""}},
+                   {"poseReset", {QStringLiteral("처음 자세로"), ""}},
+                   {"poseDrop", {QStringLiteral("바닥에 내려놓기"), ""}}});
+    }
+    {
+        auto* g = ribbon_->addGroup(pBase_, QStringLiteral("확정"));
+        g->tile("poseConfirm", QStringLiteral("이 자세로 확정"), "check", QStringLiteral("이 자세로 확정 (Enter)"));
+    }
+    const QList<QPair<QString, QString>> poseTips = {
+        {"poseX", QStringLiteral("X 축(바닥판 가로, 왼→오른쪽)을 축으로 +90° 돌립니다 (오른손 법칙) · Shift 를 누른 채 누르면 −90°")},
+        {"poseY", QStringLiteral("Y 축(바닥판 세로, 앞→뒤)을 축으로 +90° 돌립니다 (오른손 법칙) · Shift 를 누른 채 누르면 −90°")},
+        {"poseZ", QStringLiteral("Z 축(바닥판에 수직, 아래→위)을 축으로 +90° 돌립니다 (위에서 보면 반시계) · Shift 를 누른 채 누르면 −90°")},
+        {"poseFlip", QStringLiteral("위아래 뒤집기 — X 축으로 180° (정면에서 보면 좌우는 그대로)")},
+        {"poseReset", QStringLiteral("처음 자세로 — 스캔이 들어온 자세 그대로 되돌립니다")},
+        {"poseDrop", QStringLiteral("바닥에 내려놓기 — 가장 낮은 점이 바닥판(Z 0 mm)에 닿게 내립니다")}};
+    for (const auto& [id, tip] : poseTips)
+        for (auto* b : ribbon_->findChildren<QPushButton*>(id)) b->setToolTip(tip);
     simplifyGroup(pMeasure);
     showGroup(pMeasure);
     exportGroup(pExport);
-    ribbon_->setCurrentPage(pHome);
+    ribbon_->setCurrentPage(pHome_);
 
     for (const char* id : {"export"}) ribbon_->setState(id, ToolState::Primary);  // R3: 화면당 하나
+    ribbon_->setState("poseConfirm", ToolState::Primary);  // R3: ① 바닥 정하기 페이지의 주 단추 (확정 뒤 Idle)
     for (const char* id : {"shade", "lines", "grid", "combined", "refBase"}) ribbon_->setState(id, ToolState::On);
     connect(ribbon_, &Ribbon::triggered, this, &MainWindow::onAction);
     connect(ribbon_, &Ribbon::chipChosen, this, &MainWindow::onChip);
     connect(ribbon_, &Ribbon::undoRequested, this, [this] {
-        if (undo_.isEmpty()) return;
+        if (!requirePose() || undo_.isEmpty()) return;
         redo_.push_back({doc_.frontAngle(), doc_.heightRef(), doc_.simplifyTol(), doc_.smooth()});
         restore(undo_.takeLast());
     });
     connect(ribbon_, &Ribbon::redoRequested, this, [this] {
-        if (redo_.isEmpty()) return;
+        if (!requirePose() || redo_.isEmpty()) return;
         undo_.push_back({doc_.frontAngle(), doc_.heightRef(), doc_.simplifyTol(), doc_.smooth()});
         restore(redo_.takeLast());
     });
@@ -222,16 +247,18 @@ QWidget* MainWindow::buildCtxBar() {
     h->addWidget(ctxBadge_);
     h->addWidget(ctxHint_);
     h->addWidget(vsep(w));
-    h->addWidget(kbdLabel("[ ]", w));
-    h->addWidget(new QLabel(QStringLiteral("절단면 1° 이동"), w));
-    h->addWidget(kbdLabel("W", w));
-    h->addWidget(new QLabel(QStringLiteral("미스캔 내벽 파선보정"), w));
-    h->addWidget(kbdLabel("- +", w));
-    h->addWidget(new QLabel(QStringLiteral("추정 두께 ±0.5mm"), w));
-    h->addWidget(kbdLabel("1~5", w));
-    h->addWidget(new QLabel(QStringLiteral("슬롯 저장"), w));
-    h->addWidget(kbdLabel("Esc", w));
-    h->addWidget(new QLabel(QStringLiteral("내려놓기"), w));
+    ctxCutKeys_ = {kbdLabel("[ ]", w), new QLabel(QStringLiteral("절단면 1° 이동"), w),
+                   kbdLabel("W", w),   new QLabel(QStringLiteral("미스캔 내벽 파선보정"), w),
+                   kbdLabel("- +", w), new QLabel(QStringLiteral("추정 두께 ±0.5mm"), w),
+                   kbdLabel("1~5", w), new QLabel(QStringLiteral("슬롯 저장"), w),
+                   kbdLabel("Esc", w), new QLabel(QStringLiteral("내려놓기"), w)};
+    ctxBaseKeys_ = {kbdLabel("Enter", w), new QLabel(QStringLiteral("확정"), w),  // R8: ① 바닥 정하기
+                    kbdLabel("Shift", w), new QLabel(QStringLiteral("−90°"), w)};
+    for (auto* x : ctxCutKeys_) h->addWidget(x);
+    for (auto* x : ctxBaseKeys_) {
+        h->addWidget(x);
+        x->hide();
+    }
     h->addStretch();
     h->addWidget(ctxRight_);
     w->hide();  // R1: 도구를 손에 들었을 때만
@@ -384,7 +411,7 @@ void MainWindow::checkWatchFolder() {
     pendingWatchFile_.clear();
     pendingWatchSize_ = -1;
     if (openPath(target)) {
-        setHint(QStringLiteral("✓ Artec Studio 연동: <b>%1</b> 자동 로드 및 1:1 실측 도판 갱신 완료")
+        setHint(QStringLiteral("✓ Artec Studio 연동: <b>%1</b> 자동 로드 — ① 바닥 정하기에서 자세를 확정하세요")
                     .arg(QFileInfo(target).fileName()));
     }
 }
@@ -392,57 +419,63 @@ void MainWindow::checkWatchFolder() {
 bool MainWindow::openPath(const QString& path) {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QString err;
-    const bool ok = doc_.loadFile(path, &err);
-    if (ok) {
-        doc_.autoAlign();  // 임시(JOB-003 커밋 A): 화면 단계가 들어오기 전까지 예전처럼 바로 세워 확정
-        doc_.confirmPose();
-    }
+    const bool ok = doc_.loadFile(path, &err);  // 들어온 자세 그대로 (확정 전)
     QApplication::restoreOverrideCursor();
     if (!ok) {
         QMessageBox::warning(this, QStringLiteral("유물을 열 수 없습니다"), err);
         return false;
     }
-    const auto& d = doc_.dims();
-    const QString kind = QStringLiteral("%1 · %2")
-                             .arg(doc_.aligned() ? QStringLiteral("✓ 중심축 완료") : QStringLiteral("정위치 필요"),
-                                  doc_.scannerProfile());
-    pushRecent({path, doc_.name(), kind,
-                QStringLiteral("기고 %1 · 구경 %2 mm").arg(d.height, 0, 'f', 1).arg(d.rim, 0, 'f', 1),
-                QDateTime::currentDateTime().toString("MM-dd HH:mm"), int(doc_.slotList().size())});
+    recordRecent();
     setWindowTitle(QStringLiteral("%1 — 동국유물실측 (DongArch3D) 1.0").arg(QFileInfo(path).fileName()));
     undo_.clear();
     redo_.clear();
     slot_ = 0;
     pages_->setCurrentIndex(1);
+    ribbon_->setCurrentPage(pBase_);  // ① 바닥 정하기
     sheet_->canvas()->setDoc(&doc_);
     refreshAll(true);
     return true;
 }
 
-void MainWindow::openSample() {
+void MainWindow::recordRecent() {
+    if (doc_.path().isEmpty()) return;
+    const bool done = doc_.poseConfirmed();
+    const auto& d = doc_.dims();
+    const QString state = !done ? QStringLiteral("바닥 미정")
+                                : (doc_.aligned() ? QStringLiteral("✓ 중심축 완료") : QStringLiteral("정위치 필요"));
+    pushRecent({doc_.path(), doc_.name(), QStringLiteral("%1 · %2").arg(state, doc_.scannerProfile()),
+                done ? QStringLiteral("기고 %1 · 구경 %2 mm").arg(d.height, 0, 'f', 1).arg(d.rim, 0, 'f', 1)
+                     : QStringLiteral("치수 — (바닥 확정 전)"),
+                QDateTime::currentDateTime().toString("MM-dd HH:mm"), int(doc_.slotList().size())});
+}
+
+void MainWindow::openSample(bool poseStage) {
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    doc_.loadSample();
+    doc_.loadSample(!poseStage);
     QApplication::restoreOverrideCursor();
     setWindowTitle(QStringLiteral("%1 — 동국유물실측 (DongArch3D) 1.0").arg(doc_.name()));
     undo_.clear();
     redo_.clear();
     slot_ = 0;
     pages_->setCurrentIndex(1);
+    ribbon_->setCurrentPage(poseStage ? pBase_ : pHome_);
     sheet_->canvas()->setDoc(&doc_);
     refreshAll(true);
 }
 
-void MainWindow::openArtecBlindSample() {
+void MainWindow::openArtecBlindSample(bool poseStage) {
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    doc_.loadArtecBlindSample();
+    doc_.loadArtecBlindSample(!poseStage);
     QApplication::restoreOverrideCursor();
     setWindowTitle(QStringLiteral("%1 — 동국유물실측 (DongArch3D) 1.0").arg(doc_.name()));
     undo_.clear();
     redo_.clear();
     slot_ = 0;
     pages_->setCurrentIndex(1);
+    ribbon_->setCurrentPage(poseStage ? pBase_ : pHome_);
     sheet_->canvas()->setDoc(&doc_);
     refreshAll(true);
+    if (poseStage) return;
     setHint(QStringLiteral("Artec 내벽 미스캔 자동 보정: 구연부 실측 두께(%1 mm)를 기준으로 미스캔 동체부·저부 내벽을 빨강 파선으로 복원했습니다 (W: 켜기/끄기, -/+: 두께 조절).")
                 .arg(doc_.estimatedWallMm(), 0, 'f', 1));
 }
@@ -462,6 +495,25 @@ void MainWindow::refreshAll(bool geometryChanged) {
     if (geometryChanged) sheet_->canvas()->docChanged();
     ribbon_->setState("refBase", doc_.heightRef() == HeightRef::Base ? ToolState::On : ToolState::Idle);
     ribbon_->setState("refRim", doc_.heightRef() == HeightRef::Rim ? ToolState::On : ToolState::Idle);
+    const bool base = doc_.isLoaded() && !doc_.poseConfirmed();
+    ribbon_->setState("poseConfirm", base ? ToolState::Primary : ToolState::Idle);  // R3: 확정 전 주 단추 = poseConfirm
+    for (auto* w : ctxCutKeys_) w->setVisible(!base);
+    for (auto* w : ctxBaseKeys_) w->setVisible(base);
+    if (base) {
+        // ① 바닥 정하기 = 「▣ 바닥 정하기」를 손에 든 상태 (R1: ctx 줄 보임)
+        if (!hand_.isEmpty()) setHandTool(QString());
+        const bool grounded = doc_.isGrounded();
+        stRef_->setText(grounded ? QStringLiteral("단위 mm · 놓음 (확정 전)") : QStringLiteral("단위 mm · 바닥 미정"));
+        stDirty_->clear();
+        setHint(grounded ? QStringLiteral("④ 수평·기준선 — 3D 바닥판에서 자세를 보고 「이 자세로 확정」 (Enter)")
+                         : QStringLiteral("③ 바닥 놓기 — 입이 위로 오게 X·Y·Z 90°·뒤집기로 돌리거나 「자동 세우기」를 누르세요"));
+        ctxBadge_->setText(QStringLiteral("▣ 바닥 정하기"));
+        ctxHint_->setText(QStringLiteral("스캔은 위아래 없이 들어옵니다 · X·Y·Z 90° 단추나 「자동 세우기」로 세우세요 · Enter 확정"));
+        ctxRight_->setText(doc_.groundNote());
+        ctx_->show();
+        return;
+    }
+    if (hand_.isEmpty()) ctx_->hide();  // 확정하면 바닥 정하기 ctx 를 내려놓는다
     stRef_->setText(QStringLiteral("단위 mm · 정위치 %1").arg(doc_.aligned() ? (doc_.heightRef() == HeightRef::Base ? QStringLiteral("바닥수평·중심축")
                                                                                                              : QStringLiteral("구연부 0 mm·중심축"))
                                                                          : QStringLiteral("미정렬")));
@@ -537,6 +589,29 @@ void MainWindow::applyOptions() {
 
 void MainWindow::setHint(const QString& s) { stHint_->setText(s); }
 
+bool MainWindow::requirePose() {
+    if (!doc_.isLoaded() || doc_.poseConfirmed()) return true;
+    setHint(QStringLiteral("먼저 ① 바닥 정하기에서 「이 자세로 확정」 (Enter)"));
+    ribbon_->setCurrentPage(pBase_);
+    return false;
+}
+
+void MainWindow::confirmPose() {
+    if (!doc_.isLoaded()) return;
+    if (doc_.poseConfirmed()) {
+        setHint(QStringLiteral("이미 확정했습니다 — 자세를 바꾸면 다시 확정하세요."));
+        return;
+    }
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    doc_.confirmPose();
+    QApplication::restoreOverrideCursor();
+    slot_ = 0;
+    ribbon_->setCurrentPage(pHome_);
+    refreshAll(true);
+    sheet_->canvas()->fitView();
+    recordRecent();
+}
+
 // ---- 도구·동작 ----------------------------------------------------------------
 void MainWindow::setHandTool(const QString& id) {
     for (const char* t : {"cut", "outline"}) ribbon_->setState(t, ToolState::Idle);
@@ -573,7 +648,7 @@ void MainWindow::restore(const ViewState& s) {
 }
 
 void MainWindow::setFrontAngle(double deg) {
-    if (!doc_.isLoaded()) return;
+    if (!doc_.isLoaded() || !doc_.poseConfirmed()) return;
     doc_.setFrontAngle(deg);
     refreshAll(true);
 }
@@ -619,8 +694,8 @@ void MainWindow::onAction(const QString& id) {
         QMenu m(this);
         for (const auto& r : loadRecent()) m.addAction(r.name, this, [this, p = r.path] { openPath(p); });
         m.addSeparator();
-        m.addAction(QStringLiteral("내장 예제 1: 합성 토기 (Artec 컬러)"), this, &MainWindow::openSample);
-        m.addAction(QStringLiteral("내장 예제 2: Artec 내벽 미스캔 단경호 (파선 보정)"), this, &MainWindow::openArtecBlindSample);
+        m.addAction(QStringLiteral("내장 예제 1: 합성 토기 (Artec 컬러)"), this, [this] { openSample(); });
+        m.addAction(QStringLiteral("내장 예제 2: Artec 내벽 미스캔 단경호 (파선 보정)"), this, [this] { openArtecBlindSample(); });
         m.addSeparator();
         m.addAction(watchDir_.isEmpty() ? QStringLiteral("Artec Studio 연동 감시 폴더 지정…")
                                         : QStringLiteral("● Artec 감시 중 (%1)…").arg(QFileInfo(watchDir_).fileName()),
@@ -629,7 +704,31 @@ void MainWindow::onAction(const QString& id) {
         return;
     }
     if (!doc_.isLoaded()) return;
-    if (id == "axis") {
+    // 확정 전에는 단면·치수·내보내기 동작을 하지 않는다 (표시 토글 shade·lines·grid·shadeMode 는 허용)
+    static const QStringList needPose = {"cut", "outline", "cutMove", "addSlot", "rotate",
+                                         "refBase", "refRim", "export", "svg", "dxf"};
+    if (needPose.contains(id) && !requirePose()) return;
+    if (id == "poseX" || id == "poseY" || id == "poseZ") {
+        // 고정 월드축 +90° (오른손 법칙), Shift 를 누른 채면 −90°. 자세 조작은 되돌리기에 쌓지 않는다.
+        const bool neg = QGuiApplication::keyboardModifiers().testFlag(Qt::ShiftModifier);
+        doc_.rotatePose(id == "poseX" ? PoseAxis::X : id == "poseY" ? PoseAxis::Y : PoseAxis::Z, neg ? -90.0 : 90.0);
+        slot_ = 0;
+        refreshAll(true);
+    } else if (id == "poseFlip" || id == "poseReset" || id == "poseDrop") {
+        if (id == "poseFlip") doc_.flipPose();
+        else if (id == "poseReset") doc_.resetPose();
+        else doc_.dropToFloor();
+        slot_ = 0;
+        refreshAll(true);
+    } else if (id == "poseAuto") {
+        QApplication::setOverrideCursor(Qt::WaitCursor);
+        doc_.autoAlign();  // 자동 세우기 — 확정은 사람이 (Enter)
+        QApplication::restoreOverrideCursor();
+        slot_ = 0;
+        refreshAll(true);
+    } else if (id == "poseConfirm") {
+        confirmPose();
+    } else if (id == "axis") {
         QApplication::setOverrideCursor(Qt::WaitCursor);
         pushUndo();
         doc_.autoAlign();  // 중심축 맞춤 = 자동 세우기 → 확정 (한 번 누르기)
@@ -721,6 +820,20 @@ void MainWindow::keyPressEvent(QKeyEvent* e) {
         }
     }
     if (pages_->currentIndex() != 1 || !doc_.isLoaded()) return QMainWindow::keyPressEvent(e);
+    if (!doc_.poseConfirmed()) {  // ① 바닥 정하기
+        switch (e->key()) {
+            case Qt::Key_Return:
+            case Qt::Key_Enter: return confirmPose();
+            case Qt::Key_Escape: return;  // 바닥 정하기 ctx 유지
+            case Qt::Key_S: case Qt::Key_O: case Qt::Key_B: case Qt::Key_T: case Qt::Key_N: case Qt::Key_R:
+            case Qt::Key_Comma: case Qt::Key_Period: case Qt::Key_BracketLeft: case Qt::Key_BracketRight:
+            case Qt::Key_1: case Qt::Key_2: case Qt::Key_3: case Qt::Key_4: case Qt::Key_5:
+            case Qt::Key_W: case Qt::Key_Minus: case Qt::Key_Underscore: case Qt::Key_Equal: case Qt::Key_Plus:
+                requirePose();
+                return;
+            default: break;  // I · L · V 표시 토글 등은 그대로
+        }
+    }
     switch (e->key()) {
         case Qt::Key_Escape: setHandTool(QString()); break;
         case Qt::Key_S: onAction("cut"); break;
