@@ -2,12 +2,12 @@
   "id": "JOB-003",
   "title": "① 바닥 정하기 — 스캔을 들어온 자세 그대로 열고 X·Y·Z 회전·뒤집기·처음 자세로·자동 세우기로 바닥판에 올려 확정",
   "request": "사용자 2026-10-17 09:39 \"승인개발진행\"(코디네이터 릴레이) + 08:03 핵심 요구: 바닥 정하기(X·Y·Z 이동·회전으로 바닥판에 올려 확정) → 얇은 막 절단 실시간 단면 → 도면 편집. 07:46 손 실측 순서 그대로 원칙. 디자인 v2 주 화면 ① 단계. 코디네이터 기본값: Studio 에서 실제로 돌아가는 가장 작은 조각.",
-  "status": "review",
+  "status": "approved",
   "branch": "factory/JOB-003",
   "worktree": ".worktrees/JOB-003",
   "base_sha": "58a33aea2a7aa11146b1df437aad24c157f78f35",
   "created": "2026-10-17T18:43:58+09:00",
-  "updated": "2026-10-17T20:10:37+09:00",
+  "updated": "2026-10-17T23:05:39+09:00",
   "history": [
     {
       "at": "2026-10-17T18:43:58+09:00",
@@ -64,6 +64,13 @@
       "to": "review",
       "by": "factory",
       "note": "수정된 명세 기준 verify PASS → 검토 4종 순차 시작"
+    },
+    {
+      "at": "2026-10-17T23:05:39+09:00",
+      "from": "review",
+      "to": "approved",
+      "by": "user",
+      "note": "\"/goal 전부 승인한다\" (프로젝트 채팅 14:04 UTC)"
     }
   ],
   "reviews": {
@@ -72,7 +79,13 @@
     "security": "pass",
     "ui": "pass"
   },
-  "approvals": [],
+  "approvals": [
+    {
+      "by": "user",
+      "at": "2026-10-17T23:04:03+09:00",
+      "note": "프로젝트 채팅 \"/goal 전부 승인한다\" (권, 2026-10-17 14:04:03 UTC, cmsg_01UctbLfpCdxpYUV6qkSEBApFtttKQap4XFBAwyvwA5tdi) — 그때 승인 대기였던 JOB-003·JOB-004·JOB-005 전부. 직전 스레드 답글이 세 작업과 순서(JOB-003 → JOB-004 → JOB-005)를 적었고, JOB-005 정면각 방향(\"위에서 보아 반시계\") 변경을 포함한다(코디네이터 확인 14:04:29)."
+    }
+  ],
   "human_review_required": [
     "좌표계·수직 기준(바닥판 Z=0, +Z 위)",
     "회전 합성 순서·축 규약",
