@@ -10,7 +10,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(STUDIO_ENABLE_LTO "Enable Link-Time Optimization (IPO/LTCG) in Release builds" ON)
 option(STUDIO_ENABLE_AVX2 "Enable AVX2 SIMD vectorization on x86_64" ON)
 option(STUDIO_ENABLE_PCH "Enable Precompiled Headers for faster builds" ON)
-option(STUDIO_BUILD_KARCH_TESTS "Build and register 10 standalone K-Arch geometry unit tests" ON)
+option(STUDIO_BUILD_KARCH_TESTS "Build and register 11 standalone K-Arch geometry unit tests" ON)
 
 if(MSVC)
   add_compile_options(/utf-8 /W4 /permissive- /EHsc /Zc:__cplusplus)
@@ -99,6 +99,7 @@ if(STUDIO_BUILD_KARCH_TESTS)
     test_silhouette
     test_dimensions
     test_dxf
+    test_dxf_units
     test_mesh_loader
     test_synthetic)
   foreach(t IN LISTS KARCH_TESTS)
