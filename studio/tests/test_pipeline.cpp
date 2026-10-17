@@ -136,6 +136,8 @@ int main(int argc, char** argv) {
         s.close();
         ArtifactDoc d2;
         CHECK(d2.loadFile(out + "/studio_rt.stl", &err), "stl load %s", err.toUtf8().constData());
+        d2.autoAlign();  // 파일은 들어온 자세 그대로 열린다 → 자동 세우기 → 확정
+        d2.confirmPose();
         std::printf("STL(m->mm): verts=%zu H=%.2f rim=%.2f noiseRemoved=%d unit=%s\n",
                     d2.mesh().vertices.size(), d2.dims().height, d2.dims().rim, d2.removedNoiseFaces(),
                     d2.unitNote().toUtf8().constData());

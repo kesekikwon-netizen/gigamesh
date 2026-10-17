@@ -393,6 +393,10 @@ bool MainWindow::openPath(const QString& path) {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QString err;
     const bool ok = doc_.loadFile(path, &err);
+    if (ok) {
+        doc_.autoAlign();  // 임시(JOB-003 커밋 A): 화면 단계가 들어오기 전까지 예전처럼 바로 세워 확정
+        doc_.confirmPose();
+    }
     QApplication::restoreOverrideCursor();
     if (!ok) {
         QMessageBox::warning(this, QStringLiteral("유물을 열 수 없습니다"), err);
@@ -628,7 +632,8 @@ void MainWindow::onAction(const QString& id) {
     if (id == "axis") {
         QApplication::setOverrideCursor(Qt::WaitCursor);
         pushUndo();
-        doc_.autoAlign();
+        doc_.autoAlign();  // 중심축 맞춤 = 자동 세우기 → 확정 (한 번 누르기)
+        doc_.confirmPose();
         QApplication::restoreOverrideCursor();
         slot_ = 0;
         refreshAll(true);

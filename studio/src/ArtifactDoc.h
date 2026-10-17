@@ -1,5 +1,6 @@
 // DongArch3D Studio — 유물 문서: 메시 로드(Artec PLY/OBJ+텍스처/WRL/STL) → 부유
-// 노이즈 제거·단위 환산 → 정위치(중심축) → 단면·외곽·5대 치수. 계산은 전부
+// 노이즈 제거·단위 환산 → ① 바닥 정하기(들어온 자세 그대로 → 사람이 돌려 놓고
+// 확정, 좌표: mm · +Z 위 · 바닥판 Z = 0) → 단면·외곽·5대 치수. 계산은 전부
 // K-Arch 엔진(GigaMesh/gui/src/dongarch/karch)에 맡기고, 여기서는 순서와 Artec
 // 특화 보정 상태만 관리한다.
 #pragma once
@@ -34,16 +35,44 @@ struct Dims5 {
   bool ok = false;
 };
 
+// ① 바닥 정하기: 바닥판(Z = 0 평면)의 고정 월드축
+enum class PoseAxis { X, Y, Z };
+
 class ArtifactDoc {
 public:
-  bool loadFile(const QString &path, QString *err);
-  void loadSample(); // 합성 토기(항아리) — Artec 컬러·타날문 포함 기본 예제
-  void loadArtecBlindSample(); // 좁은 아가리 토기(내벽 미스캔·Artec 홀필 마개
-                               // 보정 예제)
+  // 들어온 자세 그대로 보관한다(확정 전 — 단면·치수·도판을 계산하지 않음).
+  // 경로·스캐너 프로파일·단위 메모는 바꾸지 않는다(loadFile/loadSample 몫).
+  void loadMesh(KA::MeshData m, std::vector<QRgb> colors, const QString &name);
+  bool loadFile(const QString &path,
+                QString *err); // 들어온 자세 그대로 (자동 세우기 안 함)
+  // 합성 토기(항아리) — Artec 컬러·타날문 포함 기본 예제.
+  // confirm=true: 자동 세우기 → 확정 (예전과 같은 결과), false: 들어온 자세
+  void loadSample(bool confirm = true);
+  // 좁은 아가리 토기(내벽 미스캔·Artec 홀필 마개 보정 예제), confirm 은 위와 같음
+  void loadArtecBlindSample(bool confirm = true);
   bool isLoaded() const { return !mesh_.vertices.empty(); }
 
-  // 정위치: 구연부 PCA → 회전 중심축(ODR) 정밀화 → 축을 R 0, 바닥을 H 0 으로.
+  // ---- ① 바닥 정하기 (자세 단계) ----
+  // 현재 자세의 바운딩 박스 중심을 지나는 고정 월드축 기준 오른손 법칙 회전,
+  // 뒤에 바닥에 내려놓기. 90° 정수배는 정수 행렬(누적 오차 없음).
+  void rotatePose(PoseAxis a, double deg);
+  void flipPose();    // 뒤집기 = X 축 180°
+  void resetPose();   // 처음 자세로: 읽은 정점 좌표 그대로 (접지 안 함)
+  void dropToFloor(); // 바닥에 내려놓기: z 만 평행이동해 bboxMin.z = 0
+  // 자동 세우기: 구연부 PCA → 회전 중심축(ODR) 정밀화 → 축을 R 0, 바닥을 H 0
+  // 으로. 확정은 하지 않는다.
   void autoAlign();
+  // 이 자세로 확정: (자동 세우기 직후가 아니면) 중심선을 원점으로, 접지,
+  // 단면·외곽·치수·슬롯 계산
+  void confirmPose();
+  bool poseConfirmed() const { return poseConfirmed_; }
+  double heightAboveFloor() const { return mesh_.bboxMin.z; } // mm
+  bool isGrounded() const; // |bboxMin.z| ≤ 0.3 mm (디자인 v2 접지 판정 권고값)
+  // 직전 자세 조작이 자동 세우기이고 회전 중심축을 찾았는지
+  bool autoCentered() const { return centered_ && pendingAligned_; }
+  // 접지 상태 문구 (ctx 줄·3D 정보 줄 공용): "바닥판에서 45.0 mm 위" 등
+  QString groundNote() const;
+
   void setFrontAngle(double deg); // 정면 회전 (, .)
   void setHeightRef(HeightRef r) { heightRef_ = r; }
   void setSimplifyTol(double mm) { simplifyTol_ = mm; }
@@ -111,6 +140,11 @@ public:
 private:
   void resetSlots();
   void recompute();
+  void unconfirm(); // 자세가 바뀜 → 확정 풀기·슬롯 비우기·계산 비우기
+  // 회전 p' = c + R(p − c) 를 원본·LOD 에 함께 적용
+  void rotateAbout(const double (&R)[3][3], const KA::Point3 &c);
+  // 원본·LOD 를 같은 거리만큼 평행이동 (바운딩 박스 갱신)
+  void shiftBoth(double dx, double dy, double dz);
   double measureWallBySlice(double z) const;
   void buildSectionLoops();
 
@@ -149,6 +183,17 @@ private:
   bool inferInnerWall_ = true;   // Artec 미스캔 내벽/홀필 마개 자동 보정
   double estimatedWallMm_ = 6.8; // 추정 기벽 두께 (mm)
   std::vector<SectionSlot> slotList_;
+
+  // ① 바닥 정하기
+  std::vector<KA::Point3> rawVertices_; // 들어온 자세의 정점 (면은 공유)
+  KA::MeshData rawLod_;                 // 들어온 자세의 LOD
+  std::vector<QRgb> rawLodColors_;
+  bool poseConfirmed_ = false;
+  bool centered_ = false; // 직전 자세 조작이 자동 세우기(중심 맞춤 끝남)
+  // 자동 세우기 결과 — 확정 때 aligned_/alignNote_/axisRmse_ 로 옮긴다
+  bool pendingAligned_ = false;
+  QString pendingNote_;
+  double pendingRmse_ = 0.0;
 };
 
 // 선 다듬기 유틸 (Douglas–Peucker, Catmull–Rom)
