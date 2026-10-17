@@ -273,6 +273,7 @@ void View3DPane::refresh(const ArtifactDoc& doc, int slot) {
     const bool base = doc.isLoaded() && !doc.poseConfirmed();
     title_->setText(base       ? QStringLiteral("<b>3D — 바닥판(실측판)에 올려놓기</b>")
                     : cutPage_ ? QStringLiteral("<b>%1</b>").arg(cutpage::k3dTitle)
+                    : editPage_ ? QStringLiteral("<b>%1</b>").arg(cutpage::k3dEditTitle)
                                : QStringLiteral("<b>3D 유물</b> <span style='color:%1'>막 · 중심축</span>").arg(mu));
     info_->setText(QStringLiteral("<span style='color:%1; font-family:Malgun Gothic'>메시</span> <b>%2</b><span style='color:%1; font-family:Malgun Gothic'>면</span>")
                        .arg(mu, QLocale(QLocale::English).toString(qlonglong(doc.mesh().faces.size()))));

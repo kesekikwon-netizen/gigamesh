@@ -47,12 +47,13 @@ public:
     View3DCanvas* canvas() const { return canvas_; }
     void refresh(const ArtifactDoc& doc, int slot);
     void setCutPage(bool on);  // ② 막으로 자르기: 머리 제목·3D 끌기 툴팁
+    void setEditPage(bool on) { editPage_ = on; }  // ③ 도면 편집: 머리 제목 「3D — 고정된 막」
 
 signals:
     void collapseRequested();
 
 private:
-    bool cutPage_ = false;
+    bool cutPage_ = false, editPage_ = false;
     View3DCanvas* canvas_;
     QLabel* title_;
     QLabel* info_;

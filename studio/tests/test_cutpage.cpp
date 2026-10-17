@@ -92,6 +92,26 @@ static QString text(QWidget& w, const char* name) {
     return l ? l->text() : QStringLiteral("<%1 없음>").arg(QString::fromLatin1(name));
 }
 static QColor textColor(QPushButton* b) { return b->palette().color(QPalette::ButtonText); }
+// 페이지 안 그룹 이름 (찾은 순서 = 만든 순서 = 왼쪽→오른쪽, JOB-007 기준 13·15)
+static QStringList groupNames(QWidget* page) {
+    QStringList out;
+    for (auto* l : page->findChildren<QLabel*>())
+        if (l->property("gname").toBool()) out << l->text();
+    return out;
+}
+// 페이지 안 주 단추(Primary) 타일의 objectName 들
+static QStringList primaryTiles(QWidget* page) {
+    QStringList out;
+    for (auto* t : page->findChildren<Tile*>())
+        if (t->toolState() == ToolState::Primary) out << t->objectName();
+    return out;
+}
+// 슬롯 목록의 지금 항목 위젯 안에 글자가 t 인 QLabel 이 있는지 (지운 항목 위젯은 보지 않는다)
+static bool slotHas(QListWidget* l, const QString& t) {
+    for (int i = 0; i < l->count(); ++i)
+        if (QWidget* w = l->itemWidget(l->item(i)); w && labelWithText(w, t)) return true;
+    return false;
+}
 
 // ---- A-1 표기 함수 (기준 1-4) ---------------------------------------------------
 static void testText() {
@@ -182,7 +202,7 @@ static void testWindow() {
     QStringList names;
     for (auto* b : tb) names << b->text();
     const QStringList want = {QStringLiteral("파일"), QStringLiteral("홈"), QStringLiteral("① 바닥 정하기"),
-                              QStringLiteral("② 막으로 자르기"), QStringLiteral("측정·탁본"), QStringLiteral("내보내기")};
+                              QStringLiteral("② 막으로 자르기"), QStringLiteral("③ 도면 편집"), QStringLiteral("내보내기")};
     CHECK(names == want, "[8] 탭: %s", qUtf8Printable(names.join(QStringLiteral(" · "))));
     if (tb.size() != 6) return;
     QPushButton* cutTab = tb[pCut];
@@ -196,11 +216,21 @@ static void testWindow() {
     eq(text(w, "ToolBadge"), QStringLiteral("▣ 바닥 정하기"), "[8] ToolBadge");
     CHECK(ctxBar->isVisible(), "[8] CtxBar 보임");
     CHECK(textColor(cutTab) == theme::Faint, "[8] 누른 뒤 ② 글자색 %s", qUtf8Printable(textColor(cutTab).name()));
+    // [J7-12] ③ 도면 편집도 확정 전에는 ② 와 같이 잠김 (누르면 ① 로 안내)
+    const int pEdit = 4;
+    QPushButton* editTab = tb[pEdit];
+    CHECK(editTab->property("locked").toBool(), "[J7-12] ③ 잠김");
+    CHECK(editTab->toolTip().contains(QStringLiteral("바닥 확정 후 사용")), "[J7-12] ③ 툴팁 '%s'", qUtf8Printable(editTab->toolTip()));
+    CHECK(textColor(editTab) == theme::Faint, "[J7-12] ③ 글자색 %s", qUtf8Printable(textColor(editTab).name()));
+    editTab->click();
+    CHECK(rb->currentPage() == pBase, "[J7-12] 잠긴 ③ 누름 → 페이지 %d", rb->currentPage());
+    CHECK(text(w, "StHint").contains(QStringLiteral("먼저 ① 바닥 정하기에서")), "[J7-12] 상태줄 '%s'", qUtf8Printable(text(w, "StHint")));
 
     // [9] 확정 → ②
     key(w, QEvent::KeyPress, Qt::Key_Return);
     CHECK(rb->currentPage() == pCut, "[9] 확정 뒤 페이지 %d", rb->currentPage());
     CHECK(!cutTab->property("locked").toBool() && cutTab->toolTip().isEmpty(), "[9] 잠김 풀림");
+    CHECK(!editTab->property("locked").toBool() && editTab->toolTip().isEmpty(), "[J7-12] 확정 뒤 ③ 잠김 풀림");
     CHECK(textColor(cutTab) == theme::Ink, "[9] ② 글자색 %s", qUtf8Printable(textColor(cutTab).name()));
     CHECK(ctxBar->isVisible(), "[9] CtxBar 보임");
     eq(text(w, "ToolBadge"), QStringLiteral("✂ 막으로 자르기"), "[9] ToolBadge");
@@ -348,8 +378,8 @@ static void testWindow() {
     key(w, QEvent::KeyPress, Qt::Key_S);
     CHECK(rb->currentPage() == pCut && ctxBar->isVisible(), "[15] S → ②");
     eq(text(w, "ToolBadge"), QStringLiteral("✂ 막으로 자르기"), "[15] S → ToolBadge");
-    tb[4]->click();
-    CHECK(!ctxBar->isVisible(), "[15] 측정·탁본 → CtxBar 숨김");
+    tb[5]->click();
+    CHECK(!ctxBar->isVisible(), "[15] 내보내기 → CtxBar 숨김");
     key(w, QEvent::KeyPress, Qt::Key_S);
     CHECK(rb->currentPage() == pCut, "[15] S → ② (%d)", rb->currentPage());
     key(w, QEvent::KeyPress, Qt::Key_O);
@@ -368,6 +398,161 @@ static void testWindow() {
     key(w, QEvent::KeyPress, Qt::Key_S);
     CHECK(slotList->currentRow() == 0, "[17] 슬롯 %d", slotList->currentRow());
     eq(title(), t105, "[17] ② 종단면");
+
+    // ---- JOB-007: ② 고정 · 넘기기 · ③ 도면 편집 (수용 기준 13-19, [17] 끝 = ② · 105° · 고정 전) ----
+    auto stFix = [&w] { return text(w, "StFix"); };
+    auto* stFixLbl = w.findChild<QLabel*>(QStringLiteral("StFix"));
+    auto* fixTile = w.findChild<Tile*>(QStringLiteral("fixAngle"));
+    auto* editTile = w.findChild<Tile*>(QStringLiteral("toEdit"));
+    auto* pane3d = w.findChild<View3DPane*>();
+    if (!stack || !stFixLbl || !fixTile || !editTile || !pane3d) {
+        CHECK(false, "[J7-13] 고정·넘기기 위젯을 찾지 못함");
+        w.close();
+        return;
+    }
+    QWidget* cutPage = stack->widget(pCut);
+    QWidget* editPage = stack->widget(pEdit);
+    // [J7-13] ② 고정 · 넘기기
+    eq(cp::fixText(std::nullopt), QStringLiteral("막 고정 전"), "[J7-13] fixText(없음)");
+    eq(cp::fixText(12.0), QStringLiteral("막 12° 고정"), "[J7-13] fixText(12)");
+    eq(cp::fixText(-20.0), QStringLiteral("막 −20° 고정"), "[J7-13] fixText(-20)");
+    eq(cp::slotMemo(12.0), QStringLiteral("막 12°"), "[J7-13] slotMemo(12)");
+    eq(cp::kStatus, QStringLiteral("⑥ 단면 보기 — 오른쪽 단면이 뜻한 자리인지 보고 「지금 각도 고정」 → 「도면 편집으로」"), "[J7-13] kStatus");
+    const QStringList cutGroups = groupNames(cutPage);
+    CHECK(cutGroups.size() == 5 && cutGroups.last() == cp::kGrpFix, "[J7-13] ② 그룹 %s", qUtf8Printable(cutGroups.join(QStringLiteral(" | "))));
+    eq(fixTile->text(), QStringLiteral("지금 각도 고정"), "[J7-13] fixAngle 글자");
+    eq(editTile->text(), QStringLiteral("도면 편집으로"), "[J7-13] toEdit 글자");
+    CHECK(fixTile->toolState() == ToolState::Idle && editTile->toolState() == ToolState::Primary, "[J7-13] fixAngle 대기 · toEdit 주 단추");
+    CHECK(fixTile->sizeHint().height() == tileH && editTile->sizeHint().height() == tileH, "[J7-13] 타일 높이 %d·%d · 홈 %d",
+          fixTile->sizeHint().height(), editTile->sizeHint().height(), tileH);
+    CHECK(primaryTiles(cutPage) == QStringList{QStringLiteral("toEdit")}, "[J7-13] ② 주 단추 %s", qUtf8Printable(primaryTiles(cutPage).join(',')));
+    CHECK(cutPage->sizeHint().height() <= stack->widget(pBase)->sizeHint().height(), "[J7-13] ② 페이지 높이 %d > ① %d",
+          cutPage->sizeHint().height(), stack->widget(pBase)->sizeHint().height());
+    CHECK(stFixLbl->isVisible(), "[J7-13] StFix 보임");
+    eq(stFix(), QStringLiteral("막 고정 전"), "[J7-13] StFix");
+    eq(text(w, "StHint"), cp::kStatus, "[J7-13] StHint");
+    QLabel* ctxFix = labelWithText(ctxBar, cp::kTileFix);
+    CHECK(ctxFix && ctxFix->isVisible(), "[J7-13] ctx 「지금 각도 고정」 보임");
+    std::printf("[J7-13] window minimumSizeHint width=%d\n", w.minimumSizeHint().width());
+    CHECK(w.minimumSizeHint().width() <= 1845, "[J7-13] 창 최소 폭 %d > 1845", w.minimumSizeHint().width());
+
+    // [J7-14] 고정 · 풀림
+    tap(w, Qt::Key_Return);
+    eq(stFix(), QStringLiteral("막 105° 고정"), "[J7-14] Enter → StFix");
+    CHECK(fixTile->toolState() == ToolState::On, "[J7-14] fixAngle 켜짐");
+    CHECK(slotHas(slotList, QStringLiteral("막 105° 고정")), "[J7-14] 슬롯 「막 105° 고정」");
+    tap(w, Qt::Key_Right);
+    CHECK(wait([&] { return ctxRight().startsWith(QStringLiteral("막 106° · 끄는 동안 ")); }), "[J7-14] → '%s'", qUtf8Printable(ctxRight()));
+    eq(stFix(), QStringLiteral("막 고정 전"), "[J7-14] 막을 움직이면 풀림");
+    CHECK(fixTile->toolState() == ToolState::Idle, "[J7-14] fixAngle 대기");
+    CHECK(!slotHas(slotList, QStringLiteral("막 105° 고정")) && slotHas(slotList, QStringLiteral("막 105°")),
+          "[J7-14] 슬롯 고정 표시만 풀림 (메모 막 105°)");
+    key(w, QEvent::KeyPress, Qt::Key_Z, Qt::ControlModifier);
+    eq(title(), t105, "[J7-14] Ctrl+Z SheetTitle");
+    eq(stFix(), QStringLiteral("막 고정 전"), "[J7-14] Ctrl+Z 뒤 StFix");
+    fixTile->click();
+    eq(stFix(), QStringLiteral("막 105° 고정"), "[J7-14] 타일 → StFix");
+
+    // [J7-15] ③ 화면
+    editTile->click();
+    CHECK(rb->currentPage() == pEdit, "[J7-15] toEdit → 페이지 %d", rb->currentPage());
+    eq(text(w, "ToolBadge"), cp::kEditBadge, "[J7-15] ToolBadge");
+    eq(ctxHint->text(), cp::kEditHint, "[J7-15] CtxHint");
+    eq(ctxHint->toolTip(), cp::kEditHint, "[J7-15] CtxHint 툴팁");
+    CHECK(ctxBar->isVisible(), "[J7-15] CtxBar 보임");
+    eq(text(w, "StHint"), cp::kEditStatus, "[J7-15] StHint");
+    eq(stFix(), QStringLiteral("막 105° 고정"), "[J7-15] StFix");
+    CHECK(text(w, "View3DTitle").contains(QStringLiteral("3D — 고정된 막")), "[J7-15] View3DTitle '%s'", qUtf8Printable(text(w, "View3DTitle")));
+    eq(title(), QStringLiteral("A–A′ 정면 실측도"), "[J7-15] SheetTitle");
+    CHECK(ctxRight().startsWith(QStringLiteral("점 ")), "[J7-15] CtxRight '%s'", qUtf8Printable(ctxRight()));
+    CHECK(dupMove && !dupMove->isVisible() && ctxFix && !ctxFix->isVisible() && dupSide && dupSide->isVisible(),
+          "[J7-15] ③ ctx: ← → · 지금 각도 고정 숨김, 좌/우 반전 보임");
+    CHECK(canvas->toolTip().isEmpty(), "[J7-15] 3D 툴팁 비어야");
+    settle();
+    CHECK(pane3d->width() == 330, "[J7-15] 3D 보조창 폭 %d", pane3d->width());
+    const QStringList editGroups = groupNames(editPage);
+    const QStringList wantGroups = {QStringLiteral("파일"), QStringLiteral("고정된 막"), QStringLiteral("선 다듬기 · 간략화"),
+                                    QStringLiteral("도판 표시 (겹침)"), QStringLiteral("내보내기")};
+    CHECK(editGroups == wantGroups, "[J7-15] ③ 그룹 %s", qUtf8Printable(editGroups.join(QStringLiteral(" | "))));
+    auto* fixedLbl = editPage->findChild<QLabel*>(QStringLiteral("FixedAngle"));
+    eq(fixedLbl ? fixedLbl->text() : QString(), QStringLiteral("막 105° 고정"), "[J7-15] FixedAngle");
+    auto* backBtn = editPage->findChild<QPushButton*>(QStringLiteral("backToCut"));
+    eq(backBtn ? backBtn->text() : QString(), QStringLiteral("↩ 3D로 돌아가 다시 자르기"), "[J7-15] backToCut 글자");
+    CHECK(primaryTiles(editPage) == QStringList{QStringLiteral("export")}, "[J7-15] ③ 주 단추 %s", qUtf8Printable(primaryTiles(editPage).join(',')));
+    CHECK(editPage->sizeHint().height() <= stack->widget(pBase)->sizeHint().height(), "[J7-15] ③ 페이지 높이 %d > ① %d",
+          editPage->sizeHint().height(), stack->widget(pBase)->sizeHint().height());
+    std::printf("[J7-15] window minimumSizeHint width=%d\n", w.minimumSizeHint().width());
+    CHECK(w.minimumSizeHint().width() <= 1845, "[J7-15] 창 최소 폭 %d > 1845", w.minimumSizeHint().width());
+
+    // [J7-16] ③ 에서는 막이 돌지 않음 (키 무시 · 왼쪽 끌기 = 보는 방향)
+    tap(w, Qt::Key_Right);
+    tap(w, Qt::Key_Period);
+    tap(w, Qt::Key_BracketRight);
+    for (int i = 0; i < 5; ++i) settle();
+    eq(stFix(), QStringLiteral("막 105° 고정"), "[J7-16] 키 뒤 StFix");
+    CHECK(ctxRight().startsWith(QStringLiteral("점 ")), "[J7-16] CtxRight '%s'", qUtf8Printable(ctxRight()));
+    const QImage img1 = canvas->grab().toImage();
+    mouse(canvas, QEvent::MouseButtonPress, {100, 100}, Qt::LeftButton, Qt::LeftButton);
+    mouse(canvas, QEvent::MouseMove, {140, 120}, Qt::NoButton, Qt::LeftButton);
+    mouse(canvas, QEvent::MouseButtonRelease, {140, 120}, Qt::LeftButton, Qt::NoButton);
+    settle();
+    CHECK(canvas->grab().toImage() != img1, "[J7-16] ③ 왼쪽 끌기 = 보는 방향이 돌아야 함");
+    eq(stFix(), QStringLiteral("막 105° 고정"), "[J7-16] 끌기 뒤 StFix");
+
+    // [J7-17] 다시 자르기
+    if (backBtn) backBtn->click();
+    CHECK(rb->currentPage() == pCut, "[J7-17] 다시 자르기 → 페이지 %d", rb->currentPage());
+    eq(text(w, "ToolBadge"), QStringLiteral("✂ 막으로 자르기"), "[J7-17] ToolBadge");
+    eq(title(), t105, "[J7-17] SheetTitle");
+    eq(stFix(), QStringLiteral("막 105° 고정"), "[J7-17] StFix (막을 움직이기 전)");
+    settle();
+    CHECK(pane3d->width() > 330, "[J7-17] ② 3D 보조창 폭 %d", pane3d->width());
+    editTab->click();
+    CHECK(rb->currentPage() == pEdit, "[J7-17] ③ 탭 → 페이지 %d", rb->currentPage());
+    key(w, QEvent::KeyPress, Qt::Key_Escape);
+    CHECK(rb->currentPage() == pHome && !ctxBar->isVisible() && !stFixLbl->isVisible(), "[J7-17] Esc → 홈 %d · CtxBar %d · StFix %d",
+          rb->currentPage(), int(ctxBar->isVisible()), int(stFixLbl->isVisible()));
+
+    // [J7-18] 들어가면 자동 고정 · 슬롯이 고정 각을 기억
+    key(w, QEvent::KeyPress, Qt::Key_S);
+    CHECK(rb->currentPage() == pCut, "[J7-18] S → ② (%d)", rb->currentPage());
+    tap(w, Qt::Key_Left);
+    CHECK(wait([&] { return ctxRight().startsWith(QStringLiteral("막 104° · 끄는 동안 ")); }), "[J7-18] ← '%s'", qUtf8Printable(ctxRight()));
+    eq(stFix(), QStringLiteral("막 고정 전"), "[J7-18] ← 뒤 StFix");
+    editTab->click();
+    eq(stFix(), QStringLiteral("막 104° 고정"), "[J7-18] ③ 들어가면 자동 고정");
+    CHECK(slotHas(slotList, QStringLiteral("막 104° 고정")), "[J7-18] 슬롯 「막 104° 고정」");
+    slotList->setCurrentRow(1);
+    eq(title(), QStringLiteral("B–B′ 구연부 횡단면"), "[J7-18] ③ 가로 슬롯");
+    slotList->setCurrentRow(0);
+    eq(title(), QStringLiteral("A–A′ 정면 실측도"), "[J7-18] ③ A–A′");
+    eq(stFix(), QStringLiteral("막 104° 고정"), "[J7-18] 슬롯을 다시 골라도 고정 각");
+    key(w, QEvent::KeyPress, Qt::Key_S);
+    eq(title(), QStringLiteral("A–A′ 실시간 단면 — 104°"), "[J7-18] S → ②");
+    tap(w, Qt::Key_Left);  // ② 에서 가로 슬롯을 보며 고정 → 첫 종단면 A–A′ 에 남는다
+    CHECK(wait([&] { return ctxRight().startsWith(QStringLiteral("막 103° · 끄는 동안 ")); }), "[J7-18] ← '%s'", qUtf8Printable(ctxRight()));
+    slotList->setCurrentRow(1);
+    eq(title(), QStringLiteral("B–B′ 구연부 횡단면"), "[J7-18] ② 가로 슬롯");
+    tap(w, Qt::Key_Return);
+    eq(stFix(), QStringLiteral("막 103° 고정"), "[J7-18] 가로 슬롯에서 Enter");
+    editTile->click();
+    CHECK(rb->currentPage() == pEdit, "[J7-18] toEdit → 페이지 %d", rb->currentPage());
+    eq(title(), QStringLiteral("A–A′ 정면 실측도"), "[J7-18] ③ 첫 종단면");
+    slotList->setCurrentRow(1);
+    slotList->setCurrentRow(0);
+    eq(stFix(), QStringLiteral("막 103° 고정"), "[J7-18] A–A′ 가 고정 각 103°");
+    CHECK(slotHas(slotList, QStringLiteral("막 103° 고정")), "[J7-18] 슬롯 「막 103° 고정」");
+    key(w, QEvent::KeyPress, Qt::Key_S);
+    eq(title(), QStringLiteral("A–A′ 실시간 단면 — 103°"), "[J7-18] S → ② 103°");
+
+    // [J7-19] 새 문서 = 고정 풀림
+    w.openSample(false);
+    key(w, QEvent::KeyPress, Qt::Key_S);
+    tap(w, Qt::Key_Return);
+    eq(stFix(), QStringLiteral("막 0° 고정"), "[J7-19] 새 예제 ② Enter");
+    w.openSample(false);
+    key(w, QEvent::KeyPress, Qt::Key_S);
+    eq(stFix(), QStringLiteral("막 고정 전"), "[J7-19] 다시 연 예제");
     w.close();
 }
 

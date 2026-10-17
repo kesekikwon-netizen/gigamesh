@@ -83,6 +83,12 @@ void Tile::drawIcon(QPainter& p, const QString& k, const QRectF& r, const QColor
         p.drawPath(a); p.drawLine(P(12, 2), P(12, 21));
     } else if (k == "check") {  // 확정 (이 자세로 확정)
         p.drawPolyline(QPolygonF{P(4, 13), P(10, 19), P(20, 6)});
+    } else if (k == "lock") {  // ② 지금 각도 고정 (원문 i-lock: 둥근 몸통 + 고리)
+        p.drawRoundedRect(QRectF(P(5, 11), P(19, 21)), 2, 2);
+        p.drawArc(QRectF(P(8, 4), P(16, 14)), 0, 180 * 16);
+        p.drawLine(P(8, 9), P(8, 11)); p.drawLine(P(16, 9), P(16, 11));
+    } else if (k == "next") {  // ② 도면 편집으로 (원문 i-next: → 화살표)
+        p.drawLine(P(4, 12), P(20, 12)); p.drawPolyline(QPolygonF{P(14, 6), P(20, 12), P(14, 18)});
     } else if (k == "axX" || k == "axY" || k == "axZ") {  // ② 막 방향: 글자 아이콘 (축 색은 R2 승인 전 — 먹색)
         p.setFont(theme::uiFont(16, true));
         p.drawText(r, Qt::AlignCenter, k.right(1));

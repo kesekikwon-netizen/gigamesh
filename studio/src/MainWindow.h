@@ -7,6 +7,7 @@
 #include <QElapsedTimer>
 #include <QMainWindow>
 #include <QVector>
+#include <optional>
 
 class QFileSystemWatcher;
 class QLabel;
@@ -82,6 +83,10 @@ private:
     bool requirePose();  // 확정 전이면 안내하고 ① 페이지로 → false
     void confirmPose();  // 이 자세로 확정 (Enter)
     void recordRecent();  // 최근 목록에 현재 유물 기록 (경로가 있을 때)
+    // ② 지금 각도 고정 (Enter): 지금 막 각도를 종단면 슬롯에 남기고 고정 표시 — 막·문서·자세가 바뀌면 풀림
+    void fixAngle();
+    bool angleFixed() const;       // 고정 각이 지금 막 각도와 같은지 (확정 뒤 · 끄는 중 아님)
+    int firstVerticalSlot() const;  // 첫 종단면 슬롯 번호 (없으면 −1)
 
     ArtifactDoc doc_;
     PlateOptions opts_;
@@ -112,7 +117,10 @@ private:
     QVector<QWidget*> ctxCutKeys_;   // 단면 도구 단축키 묶음 (← → · W · - + · 1~5 · R · Esc)
     QVector<QWidget*> ctxDupKeys_;   // 그중 ② 리본과 겹쳐 ② 에서 숨기는 것 (← → · R)
     QVector<QWidget*> ctxBaseKeys_;  // ① 바닥 정하기 단축키 묶음 (Enter 확정 · Shift −90°)
-    int pHome_ = -1, pBase_ = -1, pCut_ = -1;  // 리본 페이지: 홈, ① 바닥 정하기, ② 막으로 자르기
+    int pHome_ = -1, pBase_ = -1, pCut_ = -1, pEdit_ = -1;  // 리본 페이지: 홈, ① 바닥 정하기, ② 막으로 자르기, ③ 도면 편집
+    std::optional<double> fixedAngle_;  // ② 「지금 각도 고정」 한 막 각도 (화면 상태 — 파일·되돌리기에 남지 않음)
+    QVector<QWidget*> ctxFixKeys_;      // ② ctx: Enter 지금 각도 고정
+    QLabel* fixedLbl_ = nullptr;        // ③ 리본 「고정된 막」: 막 12° 고정
     RibbonGroup* cutAxisGroup_ = nullptr;      // ② 막 방향 (그룹 이름에 지금 각)
     QLabel* cutAngle_ = nullptr;               // ② 각도 칸
     QWidget* slotPanel_ = nullptr;
@@ -125,6 +133,7 @@ private:
     QLabel* stScale_ = nullptr;
     QLabel* stRef_ = nullptr;
     QLabel* stDirty_ = nullptr;
+    QLabel* stFix_ = nullptr;  // ②·③ 상태줄 오른쪽: 막 고정 전 / 막 12° 고정
 };
 
 }  // namespace studio

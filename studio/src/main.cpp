@@ -2,6 +2,7 @@
 #include "MainWindow.h"
 #include "Theme.h"
 
+#include <QAbstractButton>
 #include <QApplication>
 #include <QKeyEvent>
 #include <QSettings>
@@ -31,6 +32,8 @@ int main(int argc, char** argv) {
     //         예: DongArch3DStudio.exe --sample --flip --shot shot_flip.png
     //         --cut — S 로 ② 막으로 자르기에 가서 → 를 12번(디자인 시안의 12°) 누른 뒤 찍는다
     //         예: DongArch3DStudio.exe --sample --cut --shot shot_cut.png
+    //         --edit — 300 ms 에 「도면 편집으로」(toEdit)를 눌러 ③ 도면 편집에서 찍는다(--cut 과 함께면 12° 고정)
+    //         예: DongArch3DStudio.exe --sample --cut --edit --shot shot_edit.png
     const int shotIdx = int(args.indexOf("--shot"));
     const bool baseStage = args.contains("--base");
     if (args.size() > 1 && !args[1].startsWith("--shot")) {
@@ -46,6 +49,9 @@ int main(int argc, char** argv) {
             QApplication::sendEvent(&w, &down);
             QApplication::sendEvent(&w, &up);
         }
+    });
+    if (args.contains("--edit")) QTimer::singleShot(300, &w, [&w] {  // 실제 단추 경로 (먼저 확정 → 자동 고정 → ③)
+        if (auto* b = w.findChild<QAbstractButton*>("toEdit")) b->click();
     });
     if (shotIdx > 0 && shotIdx + 1 < args.size()) {
         const QString out = args[shotIdx + 1];

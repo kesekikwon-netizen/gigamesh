@@ -229,13 +229,11 @@ SheetPane::SheetPane(QWidget* parent) : QWidget(parent) {
     sh->setContentsMargins(12, 0, 12, 0);
     dims_ = new QLabel(strip);
     dims_->setTextFormat(Qt::RichText);
-    // 창 최소 폭은 기준선 단계가 들어오기 전(JOB-006) 글 폭까지만 민다 — 새 글 폭이면 오프스크린 □ 글꼴에서 창 최소 폭이
-    // 검수 캡처 폭 1845 px 를 넘는다(1791 → 1874). 좁으면 글 끝이 잘린다(실제 글꼴 1845 px 에서는 여유).
-    order_ = new QLabel(QStringLiteral("그리는 순서: 방안눈금 → 탁본음영 → 외곽선(먹) → 단면선(빨강)"), strip);
+    order_ = new QLabel(QStringLiteral("그리는 순서: 방안눈금 → 탁본음영 → 기준선(먹) → 외곽선(먹) → 단면선(빨강)"), strip);
     order_->setStyleSheet(QStringLiteral("color:%1;").arg(theme::hex(theme::Muted)));
-    order_->ensurePolished();
-    order_->setMinimumWidth(order_->minimumSizeHint().width());
-    order_->setText(QStringLiteral("그리는 순서: 방안눈금 → 탁본음영 → 기준선(먹) → 외곽선(먹) → 단면선(빨강)"));
+    // 그리는 순서 글이 창 최소 폭·3D 보조창 폭(R1 27 %, ③ 330 px)을 밀지 않게 — 좁으면 글 끝이 잘린다.
+    // (0 은 Qt 에서 「정하지 않음」이라 글 폭 그대로 밀었다 — 오프스크린 □ 글꼴에서 3D 가 최소 폭으로 눌림)
+    order_->setMinimumWidth(1);
     sh->addWidget(dims_);
     sh->addStretch();
     sh->addWidget(order_);

@@ -199,7 +199,7 @@ void MainWindow::buildRibbon() {
     pHome_ = ribbon_->addPage(QStringLiteral("홈"));
     pBase_ = ribbon_->addPage(QStringLiteral("① 바닥 정하기"));
     pCut_ = ribbon_->addPage(cutpage::kTabName);
-    const int pMeasure = ribbon_->addPage(QStringLiteral("측정·탁본"));
+    pEdit_ = ribbon_->addPage(cutpage::kEditTab);
     const int pExport = ribbon_->addPage(QStringLiteral("내보내기"));
     {
         auto* g = ribbon_->addGroup(pFile, QStringLiteral("파일 · Artec 연동"));
@@ -271,6 +271,12 @@ void MainWindow::buildRibbon() {
                  {textLabel(cutpage::kStandard, g, theme::Done)},
                  {textLabel(cutpage::kCheckUser, g, theme::Muted)}});
     }
+    {
+        auto* g = ribbon_->addGroup(pCut_, cutpage::kGrpFix);
+        g->tile("fixAngle", cutpage::kTileFix, "lock", QStringLiteral("지금 각도 고정 (Enter) — 지금 막 각도로 종단면 도면을 정합니다 · 막을 다시 움직이면 풀립니다"));
+        g->tile("toEdit", cutpage::kTileEdit, "next",
+                QStringLiteral("③ 도면 편집으로 — 고정 전이면 지금 각도로 고정하고 넘어갑니다 · 중심선 = 3D 중심축 · 바닥선 = 바닥판 · 구연선 = 구연 평면"));
+    }
     const QList<QPair<QString, QString>> poseTips = {
         {"poseX", QStringLiteral("X 축(바닥판 가로, 왼→오른쪽)을 축으로 +90° 돌립니다 (오른손 법칙) · Shift 를 누른 채 누르면 −90°")},
         {"poseY", QStringLiteral("Y 축(바닥판 세로, 앞→뒤)을 축으로 +90° 돌립니다 (오른손 법칙) · Shift 를 누른 채 누르면 −90°")},
@@ -282,12 +288,26 @@ void MainWindow::buildRibbon() {
         for (auto* b : ribbon_->findChildren<QPushButton*>(id)) b->setToolTip(tip);
     for (auto* b : ribbon_->findChildren<QPushButton*>("combined"))
         b->setToolTip(QStringLiteral("국내 보고서 표준 (D5) · R 로 좌/우 반전 — 같은 단면을 거울상으로 그립니다"));
-    simplifyGroup(pMeasure);
-    showGroup(pMeasure);
+    // ③ 도면 편집 (디자인 v2 phase=edit): 파일 · 고정된 막 · 선 다듬기 · 도판 표시 · 내보내기
+    fileGroup(pEdit_);
+    {
+        auto* g = ribbon_->addGroup(pEdit_, cutpage::kGrpFixed);
+        fixedLbl_ = textLabel(cutpage::fixText(std::nullopt), g);
+        fixedLbl_->setObjectName("FixedAngle");
+        fixedLbl_->ensurePolished();  // 각이 바뀌어도 리본이 옆으로 밀리지 않게 가장 긴 글 폭으로
+        fixedLbl_->setMinimumWidth(fixedLbl_->fontMetrics().horizontalAdvance(cutpage::fixText(-179.5)));
+        auto* back = g->button("backToCut", cutpage::kBackToCut, "S");
+        back->setToolTip(QStringLiteral("② 막으로 자르기로 돌아가 막을 다시 움직입니다 (S) — 막을 움직이면 고정이 풀립니다"));
+        g->rows({{fixedLbl_}, {back}});
+    }
+    simplifyGroup(pEdit_);
+    showGroup(pEdit_);
+    exportGroup(pEdit_);
     exportGroup(pExport);
     ribbon_->setCurrentPage(pHome_);
 
     for (const char* id : {"export"}) ribbon_->setState(id, ToolState::Primary);  // R3: 화면당 하나
+    ribbon_->setState("toEdit", ToolState::Primary);  // R3: ② 막으로 자르기의 주 단추
     ribbon_->setState("poseConfirm", ToolState::Primary);  // R3: ① 바닥 정하기 페이지의 주 단추 (확정 뒤 Idle)
     for (const char* id : {"shade", "lines", "grid", "combined", "refBase"}) ribbon_->setState(id, ToolState::On);
     connect(ribbon_, &Ribbon::pageChanged, this, &MainWindow::onPage);
@@ -337,8 +357,9 @@ QWidget* MainWindow::buildCtxBar() {
     ctxDupKeys_ = {ctxCutKeys_[0], ctxCutKeys_[1], ctxCutKeys_[8], ctxCutKeys_[9]};  // ← → · R (② 리본에 같은 배지)
     ctxBaseKeys_ = {kbdLabel("Enter", w), new QLabel(QStringLiteral("확정"), w),  // R8: ① 바닥 정하기
                     kbdLabel("Shift", w), new QLabel(QStringLiteral("−90°"), w)};
+    ctxFixKeys_ = {kbdLabel("Enter", w), new QLabel(cutpage::kTileFix, w)};  // ② 에서만 (확정 뒤)
     for (auto* x : ctxCutKeys_) h->addWidget(x);
-    for (auto* x : ctxBaseKeys_) {
+    for (auto* x : ctxFixKeys_ + ctxBaseKeys_) {
         h->addWidget(x);
         x->hide();
     }
@@ -418,6 +439,9 @@ QWidget* MainWindow::buildStatusBar() {
     stScale_ = new QLabel(QStringLiteral("축척 <span style='font-family:Consolas'>1:1 (실제크기)</span>"), w);
     stRef_ = new QLabel(w);
     stDirty_ = new QLabel(w);
+    stFix_ = new QLabel(w);
+    stFix_->setObjectName("StFix");
+    stFix_->hide();  // ②·③ 확정 뒤에만
     h->addWidget(stHint_, 1);
     h->addWidget(stCursor_);
     h->addWidget(vsep(w));
@@ -425,6 +449,7 @@ QWidget* MainWindow::buildStatusBar() {
     h->addWidget(vsep(w));
     h->addWidget(stRef_);
     h->addWidget(stDirty_);
+    h->addWidget(stFix_);
     return w;
 }
 
@@ -519,6 +544,7 @@ bool MainWindow::openPath(const QString& path) {
     undo_.clear();
     redo_.clear();
     slot_ = 0;
+    fixedAngle_.reset();  // 새 문서 = 고정 풀림
     pages_->setCurrentIndex(1);
     ribbon_->setCurrentPage(pBase_);  // ① 바닥 정하기
     sheet_->canvas()->setDoc(&doc_);
@@ -547,6 +573,7 @@ void MainWindow::openSample(bool poseStage) {
     undo_.clear();
     redo_.clear();
     slot_ = 0;
+    fixedAngle_.reset();  // 새 문서 = 고정 풀림
     pages_->setCurrentIndex(1);
     ribbon_->setCurrentPage(poseStage ? pBase_ : pHome_);
     sheet_->canvas()->setDoc(&doc_);
@@ -562,6 +589,7 @@ void MainWindow::openArtecBlindSample(bool poseStage) {
     undo_.clear();
     redo_.clear();
     slot_ = 0;
+    fixedAngle_.reset();  // 새 문서 = 고정 풀림
     pages_->setCurrentIndex(1);
     ribbon_->setCurrentPage(poseStage ? pBase_ : pHome_);
     sheet_->canvas()->setDoc(&doc_);
@@ -578,6 +606,8 @@ void MainWindow::showHome() {
 
 // ---- 상태 갱신 --------------------------------------------------------------
 void MainWindow::refreshAll(bool geometryChanged) {
+    // ③ 에서는 지금 각이 곧 고정 각 (들어올 때 자동 고정 · 되돌리기·슬롯 고르기로 각이 바뀌면 그 각으로)
+    if (ribbon_->currentPage() == pEdit_ && doc_.isLoaded() && doc_.poseConfirmed() && !angleFixed()) fixAngle();
     if (geometryChanged) dirtyExport_ = true;
     applyOptions();
     refreshSlots();
@@ -589,9 +619,13 @@ void MainWindow::refreshAll(bool geometryChanged) {
     const bool base = doc_.isLoaded() && !doc_.poseConfirmed();
     ribbon_->setState("poseConfirm", base ? ToolState::Primary : ToolState::Idle);  // R3: 확정 전 주 단추 = poseConfirm
     ribbon_->setPageLocked(pCut_, base, cutpage::kLockTip);  // 숨기지 않고 잠김 표시 (누르면 ① 로 안내)
-    const bool onCut = ribbon_->currentPage() == pCut_;
-    for (auto* w : ctxCutKeys_) w->setVisible(!base && !(onCut && ctxDupKeys_.contains(w)));
+    ribbon_->setPageLocked(pEdit_, base, cutpage::kLockTip);
+    const bool onCut = ribbon_->currentPage() == pCut_, onEdit = ribbon_->currentPage() == pEdit_;
+    for (auto* w : ctxCutKeys_)  // ③ 에서는 막이 돌지 않는다 → ← → 묶음 숨김
+        w->setVisible(!base && !(onCut && ctxDupKeys_.contains(w)) && !(onEdit && (w == ctxCutKeys_[0] || w == ctxCutKeys_[1])));
     for (auto* w : ctxBaseKeys_) w->setVisible(base);
+    for (auto* w : ctxFixKeys_) w->setVisible(!base && onCut);
+    stFix_->setVisible(!base && (onCut || onEdit));
     if (base) {
         // ① 바닥 정하기 = 「▣ 바닥 정하기」를 손에 든 상태 (R1: ctx 줄 보임)
         if (!hand_.isEmpty()) setHandTool(QString());
@@ -617,6 +651,7 @@ void MainWindow::refreshAll(bool geometryChanged) {
         setHint(QStringLiteral("실측선이 완성되었습니다 — 다음: <span style='font-family:Consolas'>Ctrl+P</span> 「도면」으로 보고서 도판을 만들거나 「SVG 일러스트」로 내보내세요."));
     else setHint(QStringLiteral("저장했습니다. 다른 슬롯을 고르거나 [단면 추가] 로 횡단면을 더하세요."));
     if (onCut) setHint(cutpage::kStatus);
+    if (onEdit) setHint(cutpage::kEditStatus);
     updateCutInfo();
 }
 
@@ -635,6 +670,30 @@ void MainWindow::updateCutInfo() {
     cutAxisGroup_->setTitle(cutpage::axisGroupName(a));
     ribbon_->setState("axX", cutpage::atAxis(a, CutAxis::X) ? ToolState::On : ToolState::Idle);
     ribbon_->setState("axY", cutpage::atAxis(a, CutAxis::Y) ? ToolState::On : ToolState::Idle);
+    const QString fx = cutpage::fixText(angleFixed() ? fixedAngle_ : std::nullopt);
+    stFix_->setText(fx);
+    fixedLbl_->setText(fx);
+    ribbon_->setState("fixAngle", angleFixed() ? ToolState::On : ToolState::Idle);
+}
+
+bool MainWindow::angleFixed() const {
+    return fixedAngle_ && doc_.poseConfirmed() && !doc_.isPreviewing() && !cut_.active() &&
+           std::fabs(std::remainder(*fixedAngle_ - doc_.frontAngle(), 360.0)) <= 1e-9;
+}
+
+int MainWindow::firstVerticalSlot() const {
+    const auto& sl = doc_.slotList();
+    const auto v = std::find_if(sl.begin(), sl.end(), [](const SectionSlot& s) { return s.kind == SlotKind::Vertical; });
+    return v == sl.end() ? -1 : int(v - sl.begin());
+}
+
+void MainWindow::fixAngle() {
+    fixedAngle_ = doc_.frontAngle();
+    auto& sl = doc_.slotList();  // 고정할 종단면: 지금 슬롯이 종단면이면 그것, 아니면 첫 종단면 (③ 에 들어갈 때 고를 슬롯)
+    const int k = slot_ < int(sl.size()) && sl[size_t(slot_)].kind == SlotKind::Vertical ? slot_ : firstVerticalSlot();
+    if (k < 0) return;
+    sl[size_t(k)].angleDeg = *fixedAngle_;  // 슬롯을 다시 골라도 고정 각으로 돌아온다
+    sl[size_t(k)].note = cutpage::slotMemo(*fixedAngle_);
 }
 
 void MainWindow::refreshSlots() {
@@ -658,7 +717,9 @@ void MainWindow::refreshSlots() {
         auto* m = new QLabel(meta, w);
         m->setFont(theme::monoFont(11));
         m->setStyleSheet(QStringLiteral("color:%1; background:transparent;").arg(theme::hex(theme::Muted)));
-        auto* nt = new QLabel(s.note, w);
+        const bool fx = s.kind == SlotKind::Vertical && angleFixed() &&  // 고정 표시는 살아 있는 상태로 (저장하지 않음)
+                        std::fabs(std::remainder(s.angleDeg - *fixedAngle_, 360.0)) <= 1e-9;
+        auto* nt = new QLabel(fx ? cutpage::fixText(fixedAngle_) : s.note, w);
         nt->setStyleSheet(QStringLiteral("color:%1; font-size:11px; background:transparent;").arg(theme::hex(theme::Muted)));
         v->addWidget(n);
         v->addWidget(m);
@@ -715,6 +776,7 @@ void MainWindow::confirmPose() {
     doc_.confirmPose();
     QApplication::restoreOverrideCursor();
     slot_ = 0;
+    fixedAngle_.reset();
     ribbon_->setCurrentPage(pCut_);  // 확정하면 곧바로 ② 막으로 자르기
     refreshAll(true);
     sheet_->canvas()->fitView();
@@ -724,19 +786,21 @@ void MainWindow::confirmPose() {
 // ---- 도구·동작 ----------------------------------------------------------------
 void MainWindow::onPage(int p) {
     flushCut();  // 탭 이동도 "다른 동작" — 막 각도를 먼저 확정
-    if (p == pCut_ && (!doc_.isLoaded() || !requirePose())) return;  // 확정 전 → ① 로 안내
-    if (p != pCut_ && hand_ == "cut") setHandTool(QString());
-    sheet_->setCutPage(p == pCut_);
-    view3d_->setCutPage(p == pCut_);
-    if (p == pCut_) {
+    const bool cut = p == pCut_, edit = p == pEdit_;  // ② = 「✂ 막으로 자르기」, ③ = 「✎ 도면 편집」을 든 페이지
+    if ((cut || edit) && (!doc_.isLoaded() || !requirePose())) return;  // 확정 전 → ① 로 안내
+    if ((!cut && hand_ == "cut") || (!edit && hand_ == "edit")) setHandTool(QString());
+    sheet_->setCutPage(cut);
+    view3d_->setCutPage(cut);
+    view3d_->setEditPage(edit);
+    view3d_->setMinimumWidth(edit ? 330 : 240);  // ③ 3D 330 px 고정 (디자인 가이드 「편집 단계는 도판을 넓게」)
+    view3d_->setMaximumWidth(edit ? 330 : QWIDGETSIZE_MAX);
+    if (cut || edit) {
         const auto& sl = doc_.slotList();  // 가로 슬롯을 보고 있었으면 첫 종단면으로 (각도는 그대로)
-        if (slot_ < int(sl.size()) && sl[size_t(slot_)].kind == SlotKind::Horizontal) {
-            const auto v = std::find_if(sl.begin(), sl.end(), [](const SectionSlot& s) { return s.kind == SlotKind::Vertical; });
-            if (v != sl.end()) slot_ = int(v - sl.begin());
-        }
-        setHandTool("cut");
+        if (slot_ < int(sl.size()) && sl[size_t(slot_)].kind == SlotKind::Horizontal && firstVerticalSlot() >= 0)
+            slot_ = firstVerticalSlot();
+        setHandTool(cut ? "cut" : "edit");
     }
-    if (doc_.poseConfirmed()) refreshAll(false);  // 확정 전이면 requirePose 안내를 지우지 않게 부르지 않는다
+    if (doc_.poseConfirmed()) refreshAll(false);  // 확정 전이면 requirePose 안내를 지우지 않게 부르지 않는다 (③ 은 여기서 자동 고정)
 }
 
 void MainWindow::setHandTool(const QString& id) {
@@ -748,8 +812,9 @@ void MainWindow::setHandTool(const QString& id) {
         return;
     }
     ribbon_->setState(id, ToolState::Hand);  // R3: 손에 든 도구는 하나
-    ctxBadge_->setText(id == "cut" ? cutpage::kCtxBadge : QStringLiteral("◠ 외곽선 편집 중"));
-    ctxHint_->setText(id == "cut" ? cutpage::kCtxHint : QStringLiteral("간격 칩으로 외곽선 점 수를, 곡선 칩으로 매끄러움을 고릅니다."));
+    ctxBadge_->setText(id == "cut" ? cutpage::kCtxBadge : id == "edit" ? cutpage::kEditBadge : QStringLiteral("◠ 외곽선 편집 중"));
+    ctxHint_->setText(id == "cut" ? cutpage::kCtxHint : id == "edit" ? cutpage::kEditHint
+                                                                     : QStringLiteral("간격 칩으로 외곽선 점 수를, 곡선 칩으로 매끄러움을 고릅니다."));
     ctxHint_->setToolTip(ctxHint_->text());
     view3d_->canvas()->setCutTool(id == "cut");
     ctx_->show();
@@ -766,6 +831,7 @@ void MainWindow::restore(const ViewState& s) {
     doc_.setSimplifyTol(s.simplify);
     doc_.setSmooth(s.smooth);
     doc_.setFrontAngle(s.angle);
+    fixedAngle_.reset();  // 되돌리기·다시 = 막 각도가 바뀜 (③ 에서는 refreshAll 이 그 각으로 다시 고정)
     static const double tol[] = {0.1, 0.3, 0.5, 1.0};
     for (int i = 0; i < 4; ++i)
         if (std::fabs(tol[i] - s.simplify) < 1e-9) ribbon_->setChip("simplify", i);
@@ -804,7 +870,12 @@ void MainWindow::refreshPreview() {
 }
 
 void MainWindow::beginCutInput() {
-    if (!cut_.active()) pushUndo();
+    if (cut_.active()) return;
+    pushUndo();
+    if (fixedAngle_) {  // 막을 움직이면 고정이 풀린다 — 끄는 동안은 refreshAll 이 오지 않아 슬롯 목록을 여기서
+        fixedAngle_.reset();
+        refreshSlots();
+    }
 }
 
 void MainWindow::flushCut() {
@@ -820,7 +891,7 @@ void MainWindow::cancelCut() {
 
 void MainWindow::saveSlotAngle(int k) {
     auto& sl = doc_.slotList();
-    const QString memo = QStringLiteral("막 ") + cutpage::angleText(doc_.frontAngle());  // 예: 막 12°
+    const QString memo = cutpage::slotMemo(doc_.frontAngle());  // 예: 막 12°
     int seen = 0;
     for (int i = 0; i < int(sl.size()); ++i) {
         if (sl[size_t(i)].kind != SlotKind::Vertical) continue;
@@ -872,8 +943,8 @@ void MainWindow::onAction(const QString& id) {
     }
     if (!doc_.isLoaded()) return;
     // 확정 전에는 단면·치수·내보내기 동작을 하지 않는다 (표시 토글 shade·lines·grid·shadeMode 는 허용)
-    static const QStringList needPose = {"cut", "outline", "cutMinus", "cutPlus", "axX", "axY", "addSlot",
-                                         "refBase", "refRim", "export", "svg", "dxf", "combined"};
+    static const QStringList needPose = {"cut", "outline", "cutMinus", "cutPlus", "axX", "axY", "addSlot", "refBase", "refRim",
+                                         "export", "svg", "dxf", "combined", "fixAngle", "toEdit", "backToCut"};
     if (needPose.contains(id) && !requirePose()) return;
     if (id == "poseX" || id == "poseY" || id == "poseZ") {
         // 고정 월드축 +90° (오른손 법칙), Shift 를 누른 채면 −90°. 자세 조작은 되돌리기에 쌓지 않는다.
@@ -902,6 +973,7 @@ void MainWindow::onAction(const QString& id) {
         doc_.confirmPose();
         QApplication::restoreOverrideCursor();
         slot_ = 0;
+        fixedAngle_.reset();
         refreshAll(true);
     } else if (id == "refBase" || id == "refRim") {
         pushUndo();
@@ -919,14 +991,20 @@ void MainWindow::onAction(const QString& id) {
         if (!pending && std::fabs(std::remainder(goal - doc_.frontAngle(), 360.0)) <= 1e-9) return;  // 이미 그 각
         if (pending) cancelCut();  // 되돌리기 한 칸은 beginCutInput 이 이미 쌓았다
         else pushUndo();
+        fixedAngle_.reset();
         QApplication::setOverrideCursor(Qt::WaitCursor);  // 원본 다시 계산 ≈ 1.4 s
         doc_.alignCut(id == "axX" ? CutAxis::X : CutAxis::Y);  // 미리보기도 함께 지운다
         QApplication::restoreOverrideCursor();
         refreshAll(true);
     } else if (id == "cut") {
-        ribbon_->setCurrentPage(hand_ == "cut" ? pHome_ : pCut_);  // ② 막으로 자르기 = 도구를 든 페이지
+        ribbon_->setCurrentPage(hand_ == "cut" ? pHome_ : pCut_);  // ② 막으로 자르기 = 도구를 든 페이지 (③ 에서 S = 다시 자르기)
+    } else if (id == "fixAngle") {
+        fixAngle();
+        refreshAll(false);
+    } else if (id == "toEdit" || id == "backToCut") {
+        ribbon_->setCurrentPage(id == "toEdit" ? pEdit_ : pCut_);  // ③ 은 들어갈 때 지금 각으로 고정 (refreshAll)
     } else if (id == "outline") {
-        if (ribbon_->currentPage() == pCut_) ribbon_->setCurrentPage(pHome_);
+        if (ribbon_->currentPage() == pCut_ || ribbon_->currentPage() == pEdit_) ribbon_->setCurrentPage(pHome_);
         setHandTool(hand_ == id ? QString() : id);
     } else if (id == "combined") {
         // D5 좌/우 반전 (R): 같은 단면의 거울상. 다시 계산하지 않고, 되돌리기에 쌓지 않는다.
@@ -1025,6 +1103,7 @@ void MainWindow::keyPressEvent(QKeyEvent* e) {
             default: break;  // I · L · V 표시 토글 등은 그대로
         }
     }
+    if (cutSign != 0 && ribbon_->currentPage() == pEdit_) return;  // ③ 에서는 막이 돌지 않는다 (고정된 막)
     if (cutSign != 0) {
         // ② 막 1° (← → 만 Shift 15°): 누르는 동안 LOD 미리보기, 뗀 뒤 300 ms 에 원본 확정 (자동 반복 포함)
         const bool arrow = e->key() == Qt::Key_Left || e->key() == Qt::Key_Right;
@@ -1035,9 +1114,13 @@ void MainWindow::keyPressEvent(QKeyEvent* e) {
         return;
     }
     switch (e->key()) {
-        case Qt::Key_Escape:  // ② 에서는 홈으로 (= 단면 도구 내려놓기)
-            if (ribbon_->currentPage() == pCut_) ribbon_->setCurrentPage(pHome_);
+        case Qt::Key_Escape:  // ②·③ 에서는 홈으로 (= 손에 든 도구 내려놓기)
+            if (ribbon_->currentPage() == pCut_ || ribbon_->currentPage() == pEdit_) ribbon_->setCurrentPage(pHome_);
             else setHandTool(QString());
+            break;
+        case Qt::Key_Return:
+        case Qt::Key_Enter:  // ② 지금 각도 고정
+            if (ribbon_->currentPage() == pCut_) onAction("fixAngle");
             break;
         case Qt::Key_S: onAction("cut"); break;
         case Qt::Key_O: onAction("outline"); break;
