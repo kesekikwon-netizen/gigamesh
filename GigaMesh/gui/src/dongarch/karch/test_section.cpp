@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cstdio>
 #include <algorithm>
+#include <string>
 #include <vector>
 
 using DongArch::KArch::ComposeSection;
@@ -44,7 +45,15 @@ static bool pointIn(const Point2& q, const std::vector<Point2>& p) {
     return in;
 }
 
-int main() {
+static std::string outPath(int argc, char** argv, const char* name) {
+    std::string dir = (argc > 1 && argv[1] != nullptr) ? argv[1] : "";
+    if (!dir.empty() && dir.back() != '/' && dir.back() != '\\') {
+        dir += '/';
+    }
+    return dir + name; // argv[1] = output dir, else relative to CTest cwd (build folder)
+}
+
+int main(int argc, char** argv) {
     SyntheticParams sp;
     sp.radialSeg = 180;
     sp.heightSeg = 20;
@@ -117,7 +126,7 @@ int main() {
     }
 
     const auto sil = ExtractSilhouette(mesh, SilhouetteMode::MaxRadius, 0.25);
-    if (!WriteDrawingSvg("D:\\gigamesh\\karch_t5_cyl.svg", sil.leftOutline, sec)) {
+    if (!WriteDrawingSvg(outPath(argc, argv, "karch_t5_cyl.svg"), sil.leftOutline, sec)) {
         std::fprintf(stderr, "FAIL svg\n");
         return 1;
     }
