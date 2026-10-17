@@ -237,3 +237,5 @@ shot_edit_font.png: band y 154-165 x 1530-1831 · y 302-476 x 941-1395 · y 479-
 - **정본 R5 문장 반례**: 미스캔 예제 간격 0.1 에서 추정 내벽선 편차 **0.0563 mm > 0.05**(간격/2). 곡선 켬·끔 공통, `artifacts/studio_fit_b_raw.csv` 로 파이썬 재현이 제품 값과 일치(간격 0.5 에서 5e-7). 기준 2·4·6 은 예제만, 미스캔은 간격 0.5 만 보므로 수용 기준 밖이다. 화면은 `최대 편차 0.06 mm` 로 정직하게 보인다.
 - **성능**: `test_cut [d]` 미리보기 중앙값 0.72 → 0.91 ms(한도 16 ms), 원본 다시 계산 1340.7 → 1389.7 ms(JOB-007 `LastTest_verify.log` ↔ JOB-008). `maxDeviationMm` 시간은 재지 않았다.
 
+## 추기 (오케스트레이터) — GitHub Actions
+- run [39071942719](https://github.com/kesekikwon-netizen/gigamesh/actions/runs/39071942719) (HEAD a913448): **성공 — `100% tests passed out of 18`** (새 시험 studio_fit 포함).

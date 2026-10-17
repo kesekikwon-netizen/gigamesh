@@ -64,5 +64,11 @@
     "최대 편차 표시",
     "허용치 = 간격/2",
     "25만 면 초과 치수(후속 JOB-009)"
-  ]
+  ],
+  "ci": {
+    "run": 39071942719,
+    "conclusion": "success",
+    "tests": "18/18",
+    "url": "https://github.com/kesekikwon-netizen/gigamesh/actions/runs/39071942719"
+  }
 }

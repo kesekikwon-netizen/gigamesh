@@ -22,7 +22,7 @@
 | 18-22 캡처 | 해시·실제 글꼴 화소 비교 | 통과 — 시작 화면 해시 같음, 도판 칸 밖 차이 0, 단면이 기준선에서 멈춤 |
 | 23 기운 바닥·구연 5경우 | `studio_fit` | 통과(틈 0.6–1.3 mm 남음 — §5-4) |
 | 24 25만 면 초과 | `studio_fit` | 통과(외곽선 정상). **치수는 LOD 오류 재현** — §5-8 |
-| GitHub Actions | ACTIONS_RESULT | ACTIONS_STATUS |
+| GitHub Actions | run [39071942719](https://github.com/kesekikwon-netizen/gigamesh/actions/runs/39071942719) | **성공 — 18/18** |
 
 ## 3. 실패·미실행
 - 재작업 없음.
