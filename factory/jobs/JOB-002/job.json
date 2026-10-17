@@ -2,12 +2,12 @@
   "id": "JOB-002",
   "title": "K-Arch 테스트의 D:\\gigamesh 절대 경로 하드코딩 제거 — CI 러너에서 karch_test_section·karch_test_dimensions 실패 수정",
   "request": "GitHub Actions run 39010516345 (factory/JOB-001) 에서 karch_test_section(FAIL svg)·karch_test_dimensions(FAIL write svg) 가 실패했다. 원인은 기존 테스트가 결과 SVG 를 D:\\gigamesh\\karch_t5_cyl.svg, D:\\gigamesh\\karch_t6_cyl.svg, D:\\gigamesh\\karch_t6_aligned.svg 절대 경로에 쓰도록 하드코딩(test_section.cpp:120, test_dimensions.cpp:95,123)한 것이며 test_dxf.cpp:34-42 도 같은 경로를 우선 시도한다. 세 테스트가 argv[1] 폴더 또는 cwd 상대 경로에만 쓰도록 고쳐 러너와 개발 PC 모두에서 통과하게 한다. 제품 코드(DxfWriter 등)와 테스트의 검증 논리는 바꾸지 않는다. 사용자 지시: '다되면 깃커밋 깃액션까지실행'(Actions 녹색이 목표).",
-  "status": "approved",
+  "status": "merged",
   "branch": "factory/JOB-002",
   "worktree": ".worktrees/JOB-002",
   "base_sha": "d74ae33b1480fcbd64db9e8bec897033c07c441f",
   "created": "2026-10-17T15:40:28+09:00",
-  "updated": "2026-10-17T18:39:57+09:00",
+  "updated": "2026-10-17T18:41:42+09:00",
   "history": [
     {
       "at": "2026-10-17T15:40:28+09:00",
@@ -50,6 +50,13 @@
       "to": "approved",
       "by": "user(권)",
       "note": "사용자 승인 '승인' 2026-10-17T09:38:02Z"
+    },
+    {
+      "at": "2026-10-17T18:41:42+09:00",
+      "from": "approved",
+      "to": "merged",
+      "by": "factory",
+      "note": "factory/setup 에 --no-ff 병합, 병합 커밋 d651215. worktree 제거, 브랜치는 보존"
     }
   ],
   "reviews": {
@@ -71,5 +78,6 @@
     "at": "2026-10-17T16:09:23+09:00",
     "result": "4/4 pass",
     "note": "code/correctness/security/ui 모두 PASS. 사용자 승인(/factory approve JOB-002) 대기 — 승인 전 병합 없음"
-  }
+  },
+  "merged_commit": "d651215"
 }

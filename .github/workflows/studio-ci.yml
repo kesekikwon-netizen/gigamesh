@@ -28,7 +28,7 @@ env:
 
 jobs:
   build-and-verify:
-    name: MSVC C++20 · Ninja · CTest (11 Suites) · UI_RULES Shots
+    name: MSVC C++20 · Ninja · CTest (12 Suites) · UI_RULES Shots
     runs-on: windows-latest
     timeout-minutes: 15
 
@@ -57,10 +57,10 @@ jobs:
             -DSTUDIO_ENABLE_PCH=ON `
             -DSTUDIO_BUILD_KARCH_TESTS=ON
 
-      - name: Build DongArch3DStudio & 11 Test Targets
+      - name: Build DongArch3DStudio & 12 Test Targets
         run: cmake --build studio/build-ci --parallel
 
-      - name: Run CTest (10 K-Arch Unit Tests + Headless Studio Pipeline)
+      - name: Run CTest (11 K-Arch Unit Tests + Headless Studio Pipeline)
         working-directory: studio/build-ci
         run: ctest --output-on-failure --parallel 4
 

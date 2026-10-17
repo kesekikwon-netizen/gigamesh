@@ -2,12 +2,12 @@
   "id": "JOB-001",
   "title": "DXF 내보내기 단위 헤더($INSUNITS=4 mm)·R12·11 레이어 자동 검증 테스트",
   "request": "시연 작업: K-Arch DxfWriter 가 만드는 DXF 가 R12(AC1009)·$INSUNITS=4(mm)·11 레이어 규약을 지키는지 명세대로 검증하는 테스트를 보강한다. 도판 좌/우 배치(D5)와 무관한 작업으로 선정.",
-  "status": "approved",
+  "status": "merged",
   "branch": "factory/JOB-001",
   "worktree": ".worktrees/JOB-001",
   "base_sha": "e7e641bd43716ccd57aad8246332d117d048a310",
   "created": "2026-10-17T14:50:30+09:00",
-  "updated": "2026-10-17T18:39:57+09:00",
+  "updated": "2026-10-17T18:41:42+09:00",
   "history": [
     {
       "at": "2026-10-17T14:50:30+09:00",
@@ -50,6 +50,13 @@
       "to": "approved",
       "by": "user(권)",
       "note": "사용자 승인 '승인' 2026-10-17T09:38:02Z"
+    },
+    {
+      "at": "2026-10-17T18:41:42+09:00",
+      "from": "approved",
+      "to": "merged",
+      "by": "factory",
+      "note": "factory/setup 에 --no-ff 병합, 병합 커밋 a244ce4. worktree 제거, 브랜치는 보존"
     }
   ],
   "reviews": {
@@ -71,5 +78,6 @@
     "at": "2026-10-17T15:29:43+09:00",
     "result": "4/4 pass",
     "note": "AI 검토 4/4 PASS (code, correctness, security, ui). 사용자 승인(/factory approve JOB-001) 대기 — 승인 전 병합 없음"
-  }
+  },
+  "merged_commit": "a244ce4"
 }
