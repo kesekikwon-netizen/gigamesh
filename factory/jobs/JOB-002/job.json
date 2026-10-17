@@ -2,12 +2,12 @@
   "id": "JOB-002",
   "title": "K-Arch 테스트의 D:\\gigamesh 절대 경로 하드코딩 제거 — CI 러너에서 karch_test_section·karch_test_dimensions 실패 수정",
   "request": "GitHub Actions run 39010516345 (factory/JOB-001) 에서 karch_test_section(FAIL svg)·karch_test_dimensions(FAIL write svg) 가 실패했다. 원인은 기존 테스트가 결과 SVG 를 D:\\gigamesh\\karch_t5_cyl.svg, D:\\gigamesh\\karch_t6_cyl.svg, D:\\gigamesh\\karch_t6_aligned.svg 절대 경로에 쓰도록 하드코딩(test_section.cpp:120, test_dimensions.cpp:95,123)한 것이며 test_dxf.cpp:34-42 도 같은 경로를 우선 시도한다. 세 테스트가 argv[1] 폴더 또는 cwd 상대 경로에만 쓰도록 고쳐 러너와 개발 PC 모두에서 통과하게 한다. 제품 코드(DxfWriter 등)와 테스트의 검증 논리는 바꾸지 않는다. 사용자 지시: '다되면 깃커밋 깃액션까지실행'(Actions 녹색이 목표).",
-  "status": "review",
+  "status": "approved",
   "branch": "factory/JOB-002",
   "worktree": ".worktrees/JOB-002",
   "base_sha": "d74ae33b1480fcbd64db9e8bec897033c07c441f",
   "created": "2026-10-17T15:40:28+09:00",
-  "updated": "2026-10-17T16:09:23+09:00",
+  "updated": "2026-10-17T18:39:57+09:00",
   "history": [
     {
       "at": "2026-10-17T15:40:28+09:00",
@@ -43,6 +43,13 @@
       "to": "review",
       "by": "test-runner",
       "note": "독립 재검증 PASS (깨끗한 빌드, ctest 11/11, argv[1]·없는 폴더 시험, D:\\gigamesh 스냅샷 불변)"
+    },
+    {
+      "at": "2026-10-17T18:39:57+09:00",
+      "from": "review",
+      "to": "approved",
+      "by": "user(권)",
+      "note": "사용자 승인 '승인' 2026-10-17T09:38:02Z"
     }
   ],
   "reviews": {
@@ -51,7 +58,15 @@
     "security": "pass",
     "ui": "pass"
   },
-  "approvals": [],
+  "approvals": [
+    {
+      "by": "user",
+      "name": "권",
+      "at": "2026-10-17T09:38:02Z",
+      "source": "프로젝트 채팅 메시지 cmsg_01UctbLfpCdxpYUV6qkSEBApEdKCW9NZr3HWzuAfQe6Ttk '승인' — 코디네이터 안내문(cmsg_01UctbLfpCdxpYUV6qkSEBApWLE9Z39aJK3WVqJ1jaqicT) '/factory approve JOB-001, /factory approve JOB-002 두 줄만 기다립니다'에 대한 답글",
+      "note": "JOB-001·JOB-002 둘 다에 대한 승인으로 해석(코디네이터 릴레이 09:38:57Z)"
+    }
+  ],
   "review_summary": {
     "at": "2026-10-17T16:09:23+09:00",
     "result": "4/4 pass",

@@ -2,12 +2,12 @@
   "id": "JOB-001",
   "title": "DXF 내보내기 단위 헤더($INSUNITS=4 mm)·R12·11 레이어 자동 검증 테스트",
   "request": "시연 작업: K-Arch DxfWriter 가 만드는 DXF 가 R12(AC1009)·$INSUNITS=4(mm)·11 레이어 규약을 지키는지 명세대로 검증하는 테스트를 보강한다. 도판 좌/우 배치(D5)와 무관한 작업으로 선정.",
-  "status": "review",
+  "status": "approved",
   "branch": "factory/JOB-001",
   "worktree": ".worktrees/JOB-001",
   "base_sha": "e7e641bd43716ccd57aad8246332d117d048a310",
   "created": "2026-10-17T14:50:30+09:00",
-  "updated": "2026-10-17T15:29:23+09:00",
+  "updated": "2026-10-17T18:39:57+09:00",
   "history": [
     {
       "at": "2026-10-17T14:50:30+09:00",
@@ -43,6 +43,13 @@
       "to": "review",
       "by": "test-runner",
       "note": "독립 재검증 PASS (깨끗한 빌드, ctest 12/12, DXF 파일 직접 대조 AC-1~AC-8 통과)"
+    },
+    {
+      "at": "2026-10-17T18:39:57+09:00",
+      "from": "review",
+      "to": "approved",
+      "by": "user(권)",
+      "note": "사용자 승인 '승인' 2026-10-17T09:38:02Z"
     }
   ],
   "reviews": {
@@ -51,7 +58,15 @@
     "security": "pass",
     "ui": "pass"
   },
-  "approvals": [],
+  "approvals": [
+    {
+      "by": "user",
+      "name": "권",
+      "at": "2026-10-17T09:38:02Z",
+      "source": "프로젝트 채팅 메시지 cmsg_01UctbLfpCdxpYUV6qkSEBApEdKCW9NZr3HWzuAfQe6Ttk '승인' — 코디네이터 안내문(cmsg_01UctbLfpCdxpYUV6qkSEBApWLE9Z39aJK3WVqJ1jaqicT) '/factory approve JOB-001, /factory approve JOB-002 두 줄만 기다립니다'에 대한 답글",
+      "note": "JOB-001·JOB-002 둘 다에 대한 승인으로 해석(코디네이터 릴레이 09:38:57Z)"
+    }
+  ],
   "review_summary": {
     "at": "2026-10-17T15:29:43+09:00",
     "result": "4/4 pass",
