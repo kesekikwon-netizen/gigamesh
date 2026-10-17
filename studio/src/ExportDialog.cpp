@@ -122,7 +122,7 @@ ExportDialog::ExportDialog(const ArtifactDoc& doc, int slot, const PlateOptions&
     rv->addSpacing(6);
     section(QStringLiteral("포함할 레이어 (위에서 아래로 그리는 순서)"));
     cSec_ = new QCheckBox(QStringLiteral("단면선 Layer (맨 위 · 순수 빨강 #FF0000 · 0.35 mm)"), right);
-    cOut_ = new QCheckBox(QStringLiteral("외곽선·중심선 Layer (먹색 #141413 · 0.50 mm)"), right);
+    cOut_ = new QCheckBox(QStringLiteral("외곽선·기준선 Layer (먹색 · 외곽선 0.50 · 기준선 0.10~0.25 mm)"), right);
     cShade_ = new QCheckBox(QStringLiteral("유물 음영·디지털 탁본 (외면 쪽 300 DPI 이미지)"), right);
     cGrid_ = new QCheckBox(QStringLiteral("방안 눈금 (1mm/10mm) · 치수 대장 · 축척 막대"), right);
     for (auto* c : {cSec_, cOut_, cShade_, cGrid_}) {
@@ -252,9 +252,9 @@ void ExportDialog::sync() {
     static const char* labels[] = {"SVG / 도면 저장", "PDF / 도면 저장", "DXF / 도면 저장", "PNG / 도면 저장"};
     saveBtn_->setText(QString::fromUtf8(labels[int(fmt_)]));
     static const char* notes[] = {
-        "• SVG 선택 시: Adobe Illustrator에서 열었을 때 단면선·외곽선·중심축·눈금이 각각 독립된 레이어로 분리되며 1:1 mm 치수가 정확히 유지됩니다.",
+        "• SVG 선택 시: Adobe Illustrator에서 열었을 때 단면선·외곽선·기준선(중심선·구연선·바닥선)·눈금이 각각 독립된 레이어로 분리되며 1:1 mm 치수가 정확히 유지됩니다.",
         "• PDF 선택 시: 보고서 도판 그대로 용지 크기·축척이 고정된 벡터 PDF로 저장합니다.",
-        "• DXF 선택 시: R12 · mm 단위 · K-Arch 11 레이어(01_AXIS_CENTER … 11_SCALE_BAR)로 CAD에서 1:1로 엽니다. 음영은 포함되지 않습니다.",
+        "• DXF 선택 시: R12 · mm 단위 · K-Arch 11 레이어(01_AXIS_CENTER … 11_SCALE_BAR — 기준선: 중심선 01 · 구연선 07 · 바닥선 08)로 CAD에서 1:1로 엽니다. 음영은 포함되지 않습니다.",
         "• PNG 선택 시: 300 DPI 래스터 도판(용지 크기)으로 저장합니다.",
     };
     note_->setText(QString::fromUtf8(notes[int(fmt_)]));

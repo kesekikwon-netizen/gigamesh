@@ -8,19 +8,36 @@
 #include <QPainter>
 #include <QRectF>
 #include <QString>
+#include <optional>
 
 namespace studio {
 
 struct PlateOptions {
     bool grid = true;     // 방안 눈금·치수·축척 막대
     bool shade = true;    // 유물 음영 / 디지털 탁본
-    bool outline = true;  // 외곽선·중심축
+    bool outline = true;  // 외곽선·기준선(중심선·구연선·바닥선)
     bool section = true;  // 단면선 (빨강)
     bool hatch = false;   // 단면 빗금 (보고서 양식 선택)
     bool labels = true;   // 머리 치수(구경·기고) 표기
     ShadeMode shadeMode = ShadeMode::DTak;
     int slot = 0;         // 슬롯 번호 (수평 슬롯이면 평면 단면)
+    // 0 = 화면(기준선 1 · 1 · 1.4 px, 중심선 연장 도면 3 mm), > 0 = 용지(paintSheet 가 넣음: 종이 1 mm 의 장치 px —
+    // 기준선 굵기·연장을 종이 기준으로)
+    double paperPxPerMm = 0.0;
 };
+
+struct RefLine {
+    KA::Point2 a, b;
+};
+// 기준선 (디자인 v2 가이드 §6 · 도면 mm, x = R(대칭이라 좌/우 부호 무관), y = H)
+struct PlateRefLines {
+    std::optional<RefLine> center, rim, base;
+};
+// center = 3D 중심축 (0,−ext)→(0,H+ext) · rim = 구연 평면 (−구경/2,H)→(+구경/2,H) · base = 바닥판 (−저경/2,0)→(+저경/2,0).
+// H = 메시 높이(바닥판 Z 0 → 최고점, 도판 height 와 같음). 미로드·확정 전 = 셋 다 없음, 구경·저경이 0 이면 그 선 없음.
+PlateRefLines plateRefLines(const ArtifactDoc& doc, double extMm);
+// 내보낸 종단면 도판의 정면 방위각: "정면 방위각 12° (위에서 보아 반시계)". 가로 슬롯·미로드·확정 전 = 빈 문자열.
+QString azimuthNote(const ArtifactDoc& doc, int slot);
 
 struct ShadeImage {
     QImage image;

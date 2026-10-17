@@ -229,9 +229,13 @@ SheetPane::SheetPane(QWidget* parent) : QWidget(parent) {
     sh->setContentsMargins(12, 0, 12, 0);
     dims_ = new QLabel(strip);
     dims_->setTextFormat(Qt::RichText);
+    // 창 최소 폭은 기준선 단계가 들어오기 전(JOB-006) 글 폭까지만 민다 — 새 글 폭이면 오프스크린 □ 글꼴에서 창 최소 폭이
+    // 검수 캡처 폭 1845 px 를 넘는다(1791 → 1874). 좁으면 글 끝이 잘린다(실제 글꼴 1845 px 에서는 여유).
     order_ = new QLabel(QStringLiteral("그리는 순서: 방안눈금 → 탁본음영 → 외곽선(먹) → 단면선(빨강)"), strip);
     order_->setStyleSheet(QStringLiteral("color:%1;").arg(theme::hex(theme::Muted)));
-    order_->setMinimumWidth(0);
+    order_->ensurePolished();
+    order_->setMinimumWidth(order_->minimumSizeHint().width());
+    order_->setText(QStringLiteral("그리는 순서: 방안눈금 → 탁본음영 → 기준선(먹) → 외곽선(먹) → 단면선(빨강)"));
     sh->addWidget(dims_);
     sh->addStretch();
     sh->addWidget(order_);
