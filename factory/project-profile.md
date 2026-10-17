@@ -41,7 +41,7 @@ Artec 등 3D 스캐너의 유물 메시(mm) → 정위치(바닥 수평·회전 
 ## 기준 SHA
 - 새 이력 기반: `feat/dongarch-studio` **bd534539b41393d402e4f00eaa8da216d2cc96a1** (2026-10-17 10:20). 이후 그 브랜치의 커밋은 수동 검토 후 체리픽.
 - 옛 이력: `master` d9f5543 (= `younga1234/git11` master).
-- factory/setup 병합 이력: JOB-001 → a244ce4, JOB-002 → d651215 (2026-10-17, 사용자 승인 09:38 UTC). JOB-003 → eb95b13, JOB-004 → 200ec16, JOB-005 → 30af4e6 (2026-10-17, 사용자 "/goal 전부 승인한다" 14:04 UTC, 병합마다 깨끗한 빌드 재검증 13/14/15 통과). GitHub `main` 은 아직 LICENSE 1커밋 그대로 — main 병합은 별도 지시가 있을 때만.
+- factory/setup 병합 이력: JOB-001 → a244ce4, JOB-002 → d651215 (2026-10-17, 사용자 승인 09:38 UTC). JOB-003 → eb95b13, JOB-004 → 200ec16, JOB-005 → 30af4e6 (2026-10-17, 사용자 "/goal 전부 승인한다" 14:04 UTC, 병합마다 깨끗한 빌드 재검증 13/14/15 통과, 병합본 Actions run 39039646665 성공 15/15). GitHub `main` 은 아직 LICENSE 1커밋 그대로 — main 병합은 별도 지시가 있을 때만.
 
 ## 알려진 위험 (작업 명세 때 참고)
 1. 파편(유물편) 미지원: 열린 호 버림, 파손 하단에서 허위 저경 가능(`DimensionAnalyzer.cpp:153-193`).

@@ -90,7 +90,11 @@
     {
       "by": "user",
       "at": "2026-10-17T23:04:03+09:00",
-      "note": "프로젝트 채팅 \"/goal 전부 승인한다\" (권, 2026-10-17 14:04:03 UTC, cmsg_01UctbLfpCdxpYUV6qkSEBApFtttKQap4XFBAwyvwA5tdi) — 그때 승인 대기였던 JOB-003·JOB-004·JOB-005 전부. 직전 스레드 답글이 세 작업과 순서(JOB-003 → JOB-004 → JOB-005)를 적었고, JOB-005 정면각 방향(\"위에서 보아 반시계\") 변경을 포함한다(코디네이터 확인 14:04:29)."
+      "note": "프로젝트 채팅 \"/goal 전부 승인한다\" (권, 2026-10-17 14:04:03 UTC, cmsg_01UctbLfpCdxpYUV6qkSEBApFtttKQap4XFBAwyvwA5tdi) — 그때 승인 대기였던 JOB-003·JOB-004·JOB-005 전부. 직전 스레드 답글이 세 작업과 순서(JOB-003 → JOB-004 → JOB-005)를 적었고, JOB-005 정면각 방향(\"위에서 보아 반시계\") 변경을 포함한다(코디네이터 확인 14:04:29).",
+      "sources": [
+        "프로젝트 채팅 \"/goal 전부 승인한다\" (2026-10-17 14:04:03 UTC, cmsg_01UctbLfpCdxpYUV6qkSEBApFtttKQap4XFBAwyvwA5tdi)",
+        "프로젝트 채팅 \"/factory approve JOB-003 JOB-004 JOB-005\" (2026-10-17 14:05:03 UTC, cmsg_01UctbLfpCdxpYUV6qkSEBApLtHE6hxGpe2DUfnFJf2Fwp)"
+      ]
     }
   ],
   "human_review_required": [
@@ -104,5 +108,13 @@
     "note": "blocking 0. 사람 검토 항목 다수(좌표계·수직 기준·기울어진 채 확정 시 표시·흐름 변화·UI 정본 변경) — 승인 보고서 참조. 사용자 승인 대기"
   },
   "head": "e9b655a",
-  "merge_sha": "eb95b13"
+  "merge_sha": "eb95b13",
+  "merged_ci": {
+    "branch": "factory/setup",
+    "head": "e5a15d1",
+    "run": 39039646665,
+    "conclusion": "success",
+    "tests": "15/15",
+    "url": "https://github.com/kesekikwon-netizen/gigamesh/actions/runs/39039646665"
+  }
 }
