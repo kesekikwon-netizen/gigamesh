@@ -22,7 +22,7 @@
 | 12-13 전체 빌드·테스트 | `verify.ps1`(깨끗한 빌드) | 통과 — 60/60 빌드, **ctest 14/14**, 경고 0 |
 | 14-19 옛 문구 제거·새 문구·정본·색·범위 | grep·git diff | 통과 — mirrorX 0, 새 문구 6/6, 새 색 0, 15파일 모두 명세 표 안 |
 | 20-23 캡처·눈 검수 | shot_main / shot_flip / shot_export | 통과 — 단면 오른쪽·음영 왼쪽, flip 은 거울상 |
-| GitHub Actions | (push 후 기록) | ACTIONS_RESULT |
+| GitHub Actions | run [39032156091](https://github.com/kesekikwon-netizen/gigamesh/actions/runs/39032156091) | **성공 — 14/14** |
 
 ## 3. 실패·미실행
 - 미리보기 시간 측정은 004b(JOB-005) 범위라 하지 않았다.

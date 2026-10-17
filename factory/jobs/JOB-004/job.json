@@ -64,5 +64,11 @@
     "at": "2026-10-17T21:20:15+09:00",
     "result": "4/4 pass",
     "note": "blocking 0. 사용자 승인 대기(JOB-003 승인 전제)"
+  },
+  "ci": {
+    "run": 39032156091,
+    "conclusion": "success",
+    "tests": "14/14",
+    "url": "https://github.com/kesekikwon-netizen/gigamesh/actions/runs/39032156091"
   }
 }
