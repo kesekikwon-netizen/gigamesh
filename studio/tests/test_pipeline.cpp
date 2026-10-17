@@ -48,13 +48,24 @@ int main(int argc, char** argv) {
     CHECK(!doc.displaySection().empty(), "no section");
     CHECK(doc.displayOutline().size() > 10, "outline too short");
 
-    // 토기 표준: 단면은 왼쪽(x<0), 외곽은 오른쪽(x>0)
-    double secMaxX = -1e9, olMinX = 1e9;
+    // D5: 외면(외곽) 왼쪽 x<0 · 단면 오른쪽 x>0
+    double secMinX = 1e9, olMaxX = -1e9;
     for (const auto& p : doc.displaySection())
-        for (const auto& q : p) secMaxX = std::max(secMaxX, q.x);
-    for (const auto& q : doc.displayOutline()) olMinX = std::min(olMinX, q.x);
-    CHECK(secMaxX <= 0.5, "section must be left, maxX=%.2f", secMaxX);
-    CHECK(olMinX >= -0.5, "outline must be right, minX=%.2f", olMinX);
+        for (const auto& q : p) secMinX = std::min(secMinX, q.x);
+    for (const auto& q : doc.displayOutline()) olMaxX = std::max(olMaxX, q.x);
+    CHECK(secMinX >= -0.5, "section must be right, minX=%.2f", secMinX);
+    CHECK(olMaxX <= 0.5, "outline must be left, maxX=%.2f", olMaxX);
+    // R 반전(Left) = 예전 배치: 단면은 왼쪽(x<0), 외곽은 오른쪽(x>0)
+    doc.setSectionSide(SectionSide::Left);
+    {
+        double secMaxX = -1e9, olMinX = 1e9;
+        for (const auto& p : doc.displaySection())
+            for (const auto& q : p) secMaxX = std::max(secMaxX, q.x);
+        for (const auto& q : doc.displayOutline()) olMinX = std::min(olMinX, q.x);
+        CHECK(secMaxX <= 0.5, "section must be left, maxX=%.2f", secMaxX);
+        CHECK(olMinX >= -0.5, "outline must be right, minX=%.2f", olMinX);
+    }
+    doc.setSectionSide(SectionSide::Right);
 
     // 단면 고리를 높이 92 mm 수평선으로 자른 폭 = 기벽 두께
     {

@@ -91,16 +91,17 @@ void SheetCanvas::paintEvent(QPaintEvent*) {
     const QTransform t = xf();
     Plate::paint(p, *doc_, t, ppm_, 12.0, opts_, &shade_);
 
-    // 커서 풍선 (기벽 두께) — 단면 쪽(왼쪽)에 마우스를 대면
+    // 커서 풍선 (기벽 두께) — 단면 쪽(D5 기본 오른쪽, R 반전 시 왼쪽)에 마우스를 대면
     const bool vertical = opts_.slot < 0 || opts_.slot >= int(doc_->slotList().size()) ||
                           doc_->slotList()[size_t(opts_.slot)].kind == SlotKind::Vertical;
     if (hover_ && vertical && opts_.section) {
         const double h = hoverMm_.y();
         const double wall = doc_->wallThicknessAt(h);
         const double rOut = outerRadiusAt(h);
-        if (wall > 0 && rOut > 0 && hoverMm_.x() < 0 && hoverMm_.x() > -rOut - 15) {
+        const double s = doc_->sectionSign();  // 단면 쪽 x 부호
+        if (wall > 0 && rOut > 0 && s * hoverMm_.x() > 0 && s * hoverMm_.x() < rOut + 15) {
             p.setRenderHint(QPainter::Antialiasing);
-            const QPointF dot = t.map(QPointF(-rOut, h));
+            const QPointF dot = t.map(QPointF(s * rOut, h));
             p.setPen(QPen(theme::ProfileRed, 1));
             p.setBrush(theme::ProfileRed);
             p.drawEllipse(dot, 3.5, 3.5);
@@ -110,8 +111,14 @@ void SheetCanvas::paintEvent(QPaintEvent*) {
             const QString l2 = QStringLiteral("높이 H %1 · 외경 %2").arg(h, 0, 'f', 1).arg(2 * rOut, 0, 'f', 1);
             const QFont f1 = theme::monoFont(13, true), f2 = theme::monoFont(11);
             const double w = std::max(QFontMetricsF(f1).horizontalAdvance(l1), QFontMetricsF(f2).horizontalAdvance(l2)) + 22;
+            // 풍선 상자는 축에서 먼 쪽 (화면 밖이면 반대쪽)
             QRectF box(dot.x() - w - 14, dot.y() - 22, w, 44);
-            if (box.left() < 4) box.moveLeft(dot.x() + 14);
+            if (s > 0) {
+                box.moveLeft(dot.x() + 14);
+                if (box.right() > width() - 4) box.moveRight(dot.x() - 14);
+            } else if (box.left() < 4) {
+                box.moveLeft(dot.x() + 14);
+            }
             p.setPen(QPen(theme::Edge, 1));
             p.setBrush(theme::Surface);
             p.drawRoundedRect(box, 4, 4);
@@ -236,8 +243,10 @@ void SheetPane::refresh(const ArtifactDoc& doc, int slot) {
     if (slot >= 0 && slot < int(sl.size())) {
         const auto& s = sl[size_t(slot)];
         title_->setText(s.name);
-        QString subText = s.kind == SlotKind::Vertical ? QStringLiteral("좌측 종단면 · 우측 외곽 및 디지털 탁본")
-                                                       : QStringLiteral("H %1 mm 수평 절단 평면").arg(s.z, 0, 'f', 1);
+        QString subText = s.kind != SlotKind::Vertical ? QStringLiteral("H %1 mm 수평 절단 평면").arg(s.z, 0, 'f', 1)
+                          : doc.sectionSide() == SectionSide::Right
+                              ? QStringLiteral("외면 왼쪽 · 단면 오른쪽 (국내 보고서 표준)")
+                              : QStringLiteral("단면 왼쪽 · 외면 오른쪽 (R 반전)");
         if (s.kind == SlotKind::Vertical && doc.hasEstimatedInner())
             subText += QStringLiteral(" · 내벽 미스캔 파선 보정(%1 mm)").arg(doc.estimatedWallMm(), 0, 'f', 1);
         sub_->setText(subText);

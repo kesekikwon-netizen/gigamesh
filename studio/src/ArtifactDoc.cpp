@@ -105,10 +105,19 @@ std::vector<double> zBand(const KA::MeshData &m, int n) {
   return zs;
 }
 
-std::vector<KA::Point2> mirrorX(std::vector<KA::Point2> v) {
+// 도판 좌/우 부호 s(+1 / −1)를 x 에 곱한다 — ×(−1) 은 정확한 부호 반전(오차 0)
+std::vector<KA::Point2> signedX(std::vector<KA::Point2> v, double s) {
   for (auto &p : v)
-    p.x = -p.x;
+    p.x *= s;
   return v;
+}
+
+std::vector<std::vector<KA::Point2>>
+signedX(std::vector<std::vector<KA::Point2>> polys, double s) {
+  for (auto &v : polys)
+    for (auto &p : v)
+      p.x *= s;
+  return polys;
 }
 
 double perpDist(const KA::Point2 &p, const KA::Point2 &a, const KA::Point2 &b) {
@@ -674,7 +683,7 @@ void ArtifactDoc::resetSlots() {
   slotList_.clear();
   const double h = base_.bboxMax.z - base_.bboxMin.z;
   slotList_.push_back(
-      {QStringLiteral("A–A′ 정면 실측도"), QStringLiteral("좌단면·우외곽"),
+      {QStringLiteral("A–A′ 정면 실측도"), QStringLiteral("종단면"),
        QStringLiteral("보고서 주 도판 (1:1)"), SlotKind::Vertical, 0.0, 0.0});
   slotList_.push_back({QStringLiteral("B–B′ 구연부 횡단면"),
                        QStringLiteral("수평절단"),
@@ -689,10 +698,11 @@ void ArtifactDoc::resetSlots() {
                        0.0, std::min(3.0, h * 0.03)});
 }
 
-std::vector<std::vector<KA::Point2>> ArtifactDoc::displaySection() const {
+// ---- 화면용 선: 자연 좌표에서 간략화·곡선 → 마지막에 좌/우 부호 (D5) ----------
+std::vector<std::vector<KA::Point2>> ArtifactDoc::sectionNatural() const {
   if (!scannedSolidLines_.empty() && !estimatedInnerLines_.empty()) {
-    const auto solids = displayScannedSolid();
-    const auto dashed = displayEstimatedInner();
+    const auto solids = scannedSolidNatural();
+    const auto dashed = estimatedInnerNatural();
     if (!solids.empty() && !dashed.empty()) {
       std::vector<KA::Point2> poly = solids.front();
       for (size_t i = dashed.front().size(); i-- > 0;)
@@ -703,7 +713,7 @@ std::vector<std::vector<KA::Point2>> ArtifactDoc::displaySection() const {
   }
   std::vector<std::vector<KA::Point2>> out;
   for (const auto &poly : sectionLoops_) {
-    auto p = simplifyDP(mirrorX(poly), simplifyTol_ * 0.5, true);
+    auto p = simplifyDP(poly, simplifyTol_ * 0.5, true);
     if (smooth_)
       p = smoothCatmull(p, true, 3);
     if (p.size() >= 3)
@@ -712,10 +722,10 @@ std::vector<std::vector<KA::Point2>> ArtifactDoc::displaySection() const {
   return out;
 }
 
-std::vector<std::vector<KA::Point2>> ArtifactDoc::displayScannedSolid() const {
+std::vector<std::vector<KA::Point2>> ArtifactDoc::scannedSolidNatural() const {
   std::vector<std::vector<KA::Point2>> out;
   for (const auto &line : scannedSolidLines_) {
-    auto p = simplifyDP(mirrorX(line), simplifyTol_ * 0.5, false);
+    auto p = simplifyDP(line, simplifyTol_ * 0.5, false);
     if (smooth_ && p.size() >= 3)
       p = smoothCatmull(p, false, 3);
     if (p.size() >= 2)
@@ -725,10 +735,10 @@ std::vector<std::vector<KA::Point2>> ArtifactDoc::displayScannedSolid() const {
 }
 
 std::vector<std::vector<KA::Point2>>
-ArtifactDoc::displayEstimatedInner() const {
+ArtifactDoc::estimatedInnerNatural() const {
   std::vector<std::vector<KA::Point2>> out;
   for (const auto &line : estimatedInnerLines_) {
-    auto p = simplifyDP(mirrorX(line), simplifyTol_ * 0.5, false);
+    auto p = simplifyDP(line, simplifyTol_ * 0.5, false);
     if (smooth_ && p.size() >= 3)
       p = smoothCatmull(p, false, 3);
     if (p.size() >= 2)
@@ -737,17 +747,33 @@ ArtifactDoc::displayEstimatedInner() const {
   return out;
 }
 
+std::vector<std::vector<KA::Point2>> ArtifactDoc::displaySection() const {
+  return signedX(sectionNatural(), sectionSign());
+}
+
+std::vector<std::vector<KA::Point2>> ArtifactDoc::displayScannedSolid() const {
+  return signedX(scannedSolidNatural(), sectionSign());
+}
+
+std::vector<std::vector<KA::Point2>>
+ArtifactDoc::displayEstimatedInner() const {
+  return signedX(estimatedInnerNatural(), sectionSign());
+}
+
 std::vector<KA::Point2> ArtifactDoc::displayOutline() const {
-  auto p = simplifyDP(mirrorX(sil_.leftOutline), simplifyTol_, false);
+  // 외곽(leftOutline, x < 0)도 단면과 같은 부호: Right 는 그대로 왼쪽, Left 는 오른쪽
+  auto p = simplifyDP(sil_.leftOutline, simplifyTol_, false);
   if (smooth_)
     p = smoothCatmull(p, false, 4);
-  return p;
+  return signedX(std::move(p), sectionSign());
 }
 
 std::vector<std::pair<KA::Point2, KA::Point2>>
 ArtifactDoc::displayHatch() const {
+  // 빗금은 부호 적용 전(자연 좌표) 단면으로 계산한 뒤 끝점 x 에 같은 부호를
+  // 곱한다 — 정확한 거울상 (Right "/", Left "\")
   std::vector<std::pair<KA::Point2, KA::Point2>> out;
-  const auto polys = displaySection();
+  const auto polys = sectionNatural();
   const double c = std::sqrt(0.5), spacing = 1.5;
   auto rot = [&](KA::Point2 p, double s) {
     return KA::Point2{c * p.x + s * c * p.y, -s * c * p.x + c * p.y};
@@ -773,6 +799,11 @@ ArtifactDoc::displayHatch() const {
     for (size_t i = 0; i + 1 < xs.size(); i += 2)
       if (xs[i + 1] - xs[i] > 0.3)
         out.push_back({rot({xs[i], y}, -1.0), rot({xs[i + 1], y}, -1.0)});
+  }
+  const double sgn = sectionSign();
+  for (auto &[a, b] : out) {
+    a.x *= sgn;
+    b.x *= sgn;
   }
   return out;
 }

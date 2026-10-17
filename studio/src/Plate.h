@@ -32,7 +32,8 @@ class Plate {
 public:
     // 도면 내용이 차지하는 영역 (mm, y 위로 +), 여백 포함
     static QRectF extentMm(const ArtifactDoc& doc, int slot);
-    // 오른쪽 절반 음영 영상 (yaw 180°: 왼쪽 실루엣을 오른쪽에 보이게)
+    // 외면 음영 영상 (전체 폭, 그릴 때 외면 쪽 절반만 쓴다). D5 기본(Right): yaw 0° 정면 —
+    // 영상 왼쪽 절반 = x<0 외면, Left(R 반전): yaw 180° 뒤 — 영상 오른쪽 절반이 외면
     static ShadeImage renderShade(const ArtifactDoc& doc, ShadeMode mode, double pxPerMm);
     // mmToDev: 도면 mm(y 위로 +) → 장치 좌표. px1mm: 장치에서 도면 1 mm 의 길이, textPx: 글자 크기(장치 px).
     static void paint(QPainter& p, const ArtifactDoc& doc, const QTransform& mmToDev, double px1mm, double textPx,

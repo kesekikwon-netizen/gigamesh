@@ -73,6 +73,8 @@ RasterView View3DCanvas::view() const {
         v.centerZ = 0.5 * (z0 + z1);
         return v;
     }
+    // D5: R 로 도판을 뒤집으면(단면 왼쪽) 3D 도 뒤에서 보아 "3D 왼쪽·오른쪽 = 도판" 을 지킨다
+    if (doc_->sectionSide() == SectionSide::Left) v.yawDeg = yaw_ + 180.0;
     const double r = std::max({std::fabs(m.bboxMin.x), std::fabs(m.bboxMax.x), std::fabs(m.bboxMin.y), std::fabs(m.bboxMax.y)});
     const double h = m.bboxMax.z - m.bboxMin.z;
     const double extent = std::sqrt(4 * r * r + h * h) * 1.12;
@@ -141,15 +143,24 @@ void View3DCanvas::paintEvent(QPaintEvent*) {
     p.setPen(QPen(theme::Ink, 1, Qt::DashDotLine));
     p.drawLine(projectPoint({0, 0, z0}, v), projectPoint({0, 0, z1}, v));
 
-    // 절단 단면선: 흰 3 px 테 + 빨강
+    // 절단 단면선. 종단면(수직 슬롯)은 선분 중점의 월드 x 로 나눠 단면 쪽 반(x ≥ 0 = 도판의 단면)만
+    // 흰 3 px 테 + 빨강으로 굵게, 반대쪽 반(x < 0 = 도판의 외면)은 가는 빨강 파선. 수평 슬롯은 전부 굵게.
+    std::vector<QPolygonF> thick, thin;
+    for (const auto& pl : cut_) {
+        for (size_t i = 0; i + 1 < pl.pts.size(); ++i) {
+            const bool sec = horiz || pl.pts[i].x + pl.pts[i + 1].x >= 0.0;
+            auto& runs = sec ? thick : thin;
+            const bool cont = i > 0 && (horiz || (pl.pts[i - 1].x + pl.pts[i].x >= 0.0) == sec);
+            if (!cont) runs.push_back(QPolygonF{projectPoint(pl.pts[i], v)});
+            runs.back() << projectPoint(pl.pts[i + 1], v);
+        }
+    }
+    p.setPen(QPen(theme::ProfileRed, 1, Qt::DashLine));
+    for (const auto& poly : thin) p.drawPolyline(poly);
     for (int pass = 0; pass < 2; ++pass) {
         p.setPen(QPen(pass == 0 ? QColor(Qt::white) : theme::ProfileRed, pass == 0 ? 5.0 : 2.0, Qt::SolidLine, Qt::RoundCap,
                       Qt::RoundJoin));
-        for (const auto& pl : cut_) {
-            QPolygonF poly;
-            for (const auto& q : pl.pts) poly << projectPoint(q, v);
-            if (poly.size() > 1) p.drawPolyline(poly);
-        }
+        for (const auto& poly : thick) p.drawPolyline(poly);
     }
     // A / A′ 표지
     const QString a = horiz ? sl[size_t(slot_)].name.left(1) : QStringLiteral("A");

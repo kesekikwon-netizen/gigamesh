@@ -45,6 +45,10 @@ QFrame* vsep(QWidget* p) {
     return f;
 }
 const char* kShadeNames[] = {"음영: 실사", "음영: 깊이 음영", "음영: 디지털 탁본 (D-Tak)"};
+// 리본 「단면 위치」 단추 글자 (D5 기본 / R 반전)
+QString sideText(SectionSide s) {
+    return s == SectionSide::Right ? QStringLiteral("외면 왼쪽·단면 오른쪽") : QStringLiteral("단면 왼쪽·외면 오른쪽 (반전)");
+}
 }  // namespace
 
 MainWindow::MainWindow() {
@@ -139,7 +143,7 @@ void MainWindow::buildRibbon() {
         g->tile("cut", QStringLiteral("단면선"), "cut",
                 QStringLiteral("단면선 도구 (S) · Artec 미스캔 내벽 파선 자동 보정(W)"));
         g->tile("outline", QStringLiteral("외곽선"), "outline", QStringLiteral("외곽선 도구 (O)"));
-        g->column({{"combined", {QStringLiteral("좌단면·우외곽 결합 (토기 표준)"), ""}},
+        g->column({{"combined", {sideText(doc_.sectionSide()), "R"}},
                    {"cutMove", {QStringLiteral("절단 위치 이동 (1°)"), "[ ]"}},
                    {"addSlot", {QStringLiteral("단면 추가 (횡단면)"), "N"}}});
     };
@@ -208,6 +212,8 @@ void MainWindow::buildRibbon() {
         {"poseDrop", QStringLiteral("바닥에 내려놓기 — 가장 낮은 점이 바닥판(Z 0 mm)에 닿게 내립니다")}};
     for (const auto& [id, tip] : poseTips)
         for (auto* b : ribbon_->findChildren<QPushButton*>(id)) b->setToolTip(tip);
+    for (auto* b : ribbon_->findChildren<QPushButton*>("combined"))
+        b->setToolTip(QStringLiteral("국내 보고서 표준 (D5) · R 로 좌/우 반전 — 같은 단면을 거울상으로 그립니다"));
     simplifyGroup(pMeasure);
     showGroup(pMeasure);
     exportGroup(pExport);
@@ -251,6 +257,7 @@ QWidget* MainWindow::buildCtxBar() {
                    kbdLabel("W", w),   new QLabel(QStringLiteral("미스캔 내벽 파선보정"), w),
                    kbdLabel("- +", w), new QLabel(QStringLiteral("추정 두께 ±0.5mm"), w),
                    kbdLabel("1~5", w), new QLabel(QStringLiteral("슬롯 저장"), w),
+                   kbdLabel("R", w),   new QLabel(QStringLiteral("좌/우 반전"), w),
                    kbdLabel("Esc", w), new QLabel(QStringLiteral("내려놓기"), w)};
     ctxBaseKeys_ = {kbdLabel("Enter", w), new QLabel(QStringLiteral("확정"), w),  // R8: ① 바닥 정하기
                     kbdLabel("Shift", w), new QLabel(QStringLiteral("−90°"), w)};
@@ -668,7 +675,7 @@ void MainWindow::saveSlotAngle(int k) {
         }
     }
     const QChar c = QChar('A' + std::min(25, seen));
-    sl.push_back({QStringLiteral("%1–%1′ 정면 실측도").arg(c), QStringLiteral("좌단면·우외곽"),
+    sl.push_back({QStringLiteral("%1–%1′ 정면 실측도").arg(c), QStringLiteral("종단면"),
                   QStringLiteral("절단 각도 %1°").arg(doc_.frontAngle(), 0, 'f', 1), SlotKind::Vertical, doc_.frontAngle(), 0.0});
     slot_ = int(sl.size()) - 1;
     refreshAll(false);
@@ -706,7 +713,7 @@ void MainWindow::onAction(const QString& id) {
     if (!doc_.isLoaded()) return;
     // 확정 전에는 단면·치수·내보내기 동작을 하지 않는다 (표시 토글 shade·lines·grid·shadeMode 는 허용)
     static const QStringList needPose = {"cut", "outline", "cutMove", "addSlot", "rotate",
-                                         "refBase", "refRim", "export", "svg", "dxf"};
+                                         "refBase", "refRim", "export", "svg", "dxf", "combined"};
     if (needPose.contains(id) && !requirePose()) return;
     if (id == "poseX" || id == "poseY" || id == "poseZ") {
         // 고정 월드축 +90° (오른손 법칙), Shift 를 누른 채면 −90°. 자세 조작은 되돌리기에 쌓지 않는다.
@@ -749,6 +756,14 @@ void MainWindow::onAction(const QString& id) {
     } else if (id == "cutMove") {
         pushUndo();
         setFrontAngle(doc_.frontAngle() + 1.0);
+    } else if (id == "combined") {
+        // D5 좌/우 반전 (R): 같은 단면의 거울상. 다시 계산하지 않고, 되돌리기에 쌓지 않는다.
+        doc_.toggleSectionSide();
+        ribbon_->setText("combined", sideText(doc_.sectionSide()));
+        refreshAll(true);  // 도판·3D·음영(보는 방향)을 다시 그린다
+        setHint(doc_.sectionSide() == SectionSide::Right
+                    ? QStringLiteral("단면 위치: 외면 왼쪽 · 단면 오른쪽 (국내 보고서 표준)")
+                    : QStringLiteral("단면 위치: 단면 왼쪽 · 외면 오른쪽 (R 반전) — R 을 다시 누르면 되돌립니다"));
     } else if (id == "addSlot") {
         const double h = doc_.dims().height;
         const double z = (lastHoverH_ > 0.5 && lastHoverH_ < h - 0.5) ? lastHoverH_ : doc_.dims().bellyZ;
@@ -868,7 +883,7 @@ void MainWindow::keyPressEvent(QKeyEvent* e) {
         case Qt::Key_Period: pushUndo(); setFrontAngle(doc_.frontAngle() + 1.0); break;
         case Qt::Key_BracketLeft: pushUndo(); setFrontAngle(doc_.frontAngle() - 1.0); break;
         case Qt::Key_BracketRight: pushUndo(); setFrontAngle(doc_.frontAngle() + 1.0); break;
-        case Qt::Key_R: pushUndo(); setFrontAngle(doc_.frontAngle() + 180.0); break;
+        case Qt::Key_R: onAction("combined"); break;  // D5 좌/우 반전
         case Qt::Key_1: case Qt::Key_2: case Qt::Key_3: case Qt::Key_4: case Qt::Key_5:
             saveSlotAngle(e->key() - Qt::Key_0);
             break;

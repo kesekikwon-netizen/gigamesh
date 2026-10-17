@@ -123,7 +123,7 @@ ExportDialog::ExportDialog(const ArtifactDoc& doc, int slot, const PlateOptions&
     section(QStringLiteral("포함할 레이어 (위에서 아래로 그리는 순서)"));
     cSec_ = new QCheckBox(QStringLiteral("단면선 Layer (맨 위 · 순수 빨강 #FF0000 · 0.35 mm)"), right);
     cOut_ = new QCheckBox(QStringLiteral("외곽선·중심선 Layer (먹색 #141413 · 0.50 mm)"), right);
-    cShade_ = new QCheckBox(QStringLiteral("유물 음영·디지털 탁본 (우측 300 DPI 이미지)"), right);
+    cShade_ = new QCheckBox(QStringLiteral("유물 음영·디지털 탁본 (외면 쪽 300 DPI 이미지)"), right);
     cGrid_ = new QCheckBox(QStringLiteral("방안 눈금 (1mm/10mm) · 치수 대장 · 축척 막대"), right);
     for (auto* c : {cSec_, cOut_, cShade_, cGrid_}) {
         c->setChecked(true);
