@@ -175,6 +175,7 @@ public:
 ### B. 회귀
 
 13. CTest 15종(기존 14 + `studio_cut`): `B` 에서 `ctest --output-on-failure` 출력에 `100% tests passed, 0 tests failed out of 15`.
+    - **(오케스트레이터 수정, decision.md)**: 이 PC·CI 의 CTest 는 실패가 없을 때 `100% tests passed out of 15` 처럼 `, 0 tests failed` 없이 찍는다(JOB-004 CI 로그 같음). 판정은 `100% tests passed` 와 `out of 15` 가 같은 줄에 있고 `tests failed` 가 0 이 아닌 줄이 없는 것으로 한다.
 14. 지금과 같은 값(verify.ps1 직후 `B\Testing\Temporary\LastTest.log`): `grep -c "H=184.80 rim=142.00 belly=165.50 base=142.00 wall=6.80 pts=85/1318 lodFaces=26180"` ≥ 1, `grep -c "STL(m->mm): verts=38720 H=184.80 rim=142.00 noiseRemoved=2"` ≥ 1, `grep -c "ArtecBlind: H=190.30 rim=124.00 hasEst=1 estWall=6.95"` ≥ 1 (기준: `D:\_dongarch_build\verify_job004\studio\Testing\Temporary\LastTest.log` — 세 줄 모두 있음 확인).
 15. verify.ps1 종료 코드 0, `B\verify-summary.md` 마지막 줄 `결과: PASS`, 빌드 경고 0: `grep -ci "warning" D:/_dongarch_build/verify_job005/studio-logs/02_build.log` = `0`.
 16. 기존 시험 무변경: `git diff --name-only b033aef -- studio/tests/test_pipeline.cpp studio/tests/test_pose.cpp studio/tests/test_side.cpp` → 출력 없음.
