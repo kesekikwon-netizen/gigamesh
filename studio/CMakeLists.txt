@@ -91,6 +91,9 @@ add_test(NAME studio_pipeline COMMAND test_studio_pipeline ${CMAKE_CURRENT_BINAR
 add_executable(test_studio_pose tests/test_pose.cpp)
 target_link_libraries(test_studio_pose PRIVATE studio_core)
 add_test(NAME studio_pose COMMAND test_studio_pose ${CMAKE_CURRENT_BINARY_DIR})
+add_executable(test_studio_side tests/test_side.cpp)
+target_link_libraries(test_studio_side PRIVATE studio_core)
+add_test(NAME studio_side COMMAND test_studio_side ${CMAKE_CURRENT_BINARY_DIR})
 
 if(STUDIO_BUILD_KARCH_TESTS)
   set(KARCH_TESTS

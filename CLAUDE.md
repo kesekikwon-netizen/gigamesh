@@ -7,7 +7,7 @@
 - **UI 정본**: `docs/ui/UI_RULES.md`(R1~R8) + `docs/ui/mockup/`. 목업과 코드가 다르면 코드가 틀린 것이다. 구형 시안(`docs/legacy/`, 삭제된 `docs/dongarch3d/mockups/`)은 참조하지 않는다.
 - **앱 본체**: `studio/`(Qt 6) + `GigaMesh/gui/src/dongarch/karch/`(K-Arch 엔진). `GigaMesh/`의 Qt 5 GUI(`gui/src/dongarch/*`)는 알고리즘 참조·CLI용이며 새 기능을 넣지 않는다.
 - **라이선스**: 저장소 전체 GPL-3.0-or-later. `GigaMesh/external/triangle`은 비상업 조건이라 GigaMesh 기반 실행파일은 상용 배포 불가 — Studio/K-Arch는 triangle을 쓰지 않는다. Artec SDK·Studio 바이너리·번역·분석 결과는 절대 커밋하지 않는다.
-- **미결(사용자 결정 대기)**: 토기 도판 좌/우 배치(현재 코드 = 왼쪽 단면·오른쪽 외곽; K-Arch 엔진 주석·Phase D 목업은 반대). 결정 전에는 배치 코드를 바꾸지 않는다.
+- **토기 도판 좌/우(D5, 2026-10-17 확정)**: 외면 왼쪽 · 단면 오른쪽(국내 보고서 표준), `R` 로 좌/우 반전. 근거: `factory/project-profile.md` D5.
 - 결정 기록: `factory/project-profile.md` §결정.
 
 ## 2. 좌표·단위 규약 (코드와 문서 모두 이 규약으로)

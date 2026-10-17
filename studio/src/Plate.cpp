@@ -118,7 +118,9 @@ ShadeImage Plate::renderShade(const ArtifactDoc &doc, ShadeMode mode,
   const double r = maxR(doc) + 2.0, h = height(doc) + 4.0;
   pxPerMm = std::clamp(pxPerMm, 0.5, std::min(4000.0 / (2 * r), 4000.0 / h));
   RasterView v;
-  v.yawDeg = 180.0;
+  // D5: Right(기본) = 정면(카메라 −Y, yaw 0°)에서 본 x<0 반쪽 → 영상 왼쪽 절반이
+  // 외면. Left(R 반전) = 뒤(yaw 180°)에서 본 모양 → 영상 오른쪽 절반이 외면.
+  v.yawDeg = doc.sectionSide() == SectionSide::Right ? 0.0 : 180.0;
   v.pitchDeg = 0.0;
   v.pxPerMm = pxPerMm;
   const QSize sz(int(std::ceil(2 * r * pxPerMm)), int(std::ceil(h * pxPerMm)));
@@ -249,11 +251,14 @@ void Plate::paint(QPainter &p, const ArtifactDoc &doc, const QTransform &t,
     return;
   }
 
-  // 2) 유물 음영 (오른쪽 절반) -----------------------------------------------
+  // 2) 유물 음영 (외면 쪽 절반: Right 왼쪽 x ≤ 0, Left 오른쪽 x ≥ 0) ---------
   if (o.shade && shade && !shade->isNull()) {
     const QRectF dst = t.mapRect(shade->rectMm);
-    const QRectF half = t.mapRect(QRectF(
-        0, shade->rectMm.top(), shade->rectMm.right(), shade->rectMm.height()));
+    const QRectF &sr = shade->rectMm;
+    const QRectF half = t.mapRect(
+        doc.sectionSide() == SectionSide::Right
+            ? QRectF(sr.left(), sr.top(), -sr.left(), sr.height())
+            : QRectF(0, sr.top(), sr.right(), sr.height()));
     p.save();
     p.setClipRect(half);
     p.setRenderHint(QPainter::SmoothPixmapTransform, true);
@@ -627,16 +632,21 @@ bool exportSvgLayered(const ArtifactDoc &doc, const ExportRequest &r,
     const ShadeImage sh = Plate::renderShade(
         doc, r.opts.shadeMode, 300.0 / 25.4 / std::max(0.25, 1.0 / s));
     if (!sh.isNull()) {
-      // 오른쪽 절반만
+      // 외면 쪽 절반만 (Right: 영상 왼쪽 절반을 축 왼쪽에, Left: 오른쪽 절반을 축
+      // 오른쪽에)
+      const bool right = doc.sectionSide() == SectionSide::Right;
       const int half = sh.image.width() / 2;
-      const QImage right =
-          sh.image.copy(half, 0, sh.image.width() - half, sh.image.height());
+      const QImage part =
+          right ? sh.image.copy(0, 0, half, sh.image.height())
+                : sh.image.copy(half, 0, sh.image.width() - half,
+                                sh.image.height());
       QByteArray png;
       QBuffer buf(&png);
       buf.open(QIODevice::WriteOnly);
-      right.save(&buf, "PNG");
+      part.save(&buf, "PNG");
       layer("shade_dtak", QStringLiteral("음영·탁본"));
-      out << "<image x=\"" << n3(X(0)) << "\" y=\"" << n3(Y(sh.rectMm.bottom()))
+      out << "<image x=\"" << n3(X(right ? sh.rectMm.left() : 0.0))
+          << "\" y=\"" << n3(Y(sh.rectMm.bottom()))
           << "\" width=\"" << n3(sh.rectMm.width() / 2 * s) << "\" height=\""
           << n3(sh.rectMm.height() * s)
           << "\" preserveAspectRatio=\"none\" "
@@ -710,8 +720,8 @@ bool exportSvgLayered(const ArtifactDoc &doc, const ExportRequest &r,
   return true;
 }
 
-// ---- DXF R12 (K-Arch 11 레이어, 1:1 mm, 화면과 같은 좌단면·우외곽)
-// -----------
+// ---- DXF R12 (K-Arch 11 레이어, 1:1 mm, 화면과 같은 배치(D5 기본 외면 왼쪽·단면
+// 오른쪽, R 반전 따름)) ----------------------------------------------------------
 bool exportDxf(const ArtifactDoc &doc, const ExportRequest &r, QString *err) {
   KA::DxfWriter w;
   if (!w.Open(r.path.toLocal8Bit().toStdString())) {

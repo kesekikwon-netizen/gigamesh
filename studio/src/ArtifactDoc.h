@@ -21,7 +21,7 @@ enum class SlotKind { Vertical, Horizontal };
 
 struct SectionSlot {
   QString name; // "A–A′ 정면 실측도"
-  QString meta; // "좌단면·우외곽 · 184.5 mm"
+  QString meta; // "종단면 · 184.5 mm" (좌/우 배치는 도판 머리에 표시)
   QString note; // "보고서 주 도판 (1:1)"
   SlotKind kind = SlotKind::Vertical;
   double angleDeg = 0.0; // Vertical: 정면 회전각
@@ -37,6 +37,11 @@ struct Dims5 {
 
 // ① 바닥 정하기: 바닥판(Z = 0 평면)의 고정 월드축
 enum class PoseAxis { X, Y, Z };
+
+// 도판에서 단면이 놓이는 쪽. D5(2026-10-17 확정): 기본 Right = 외면 왼쪽·단면
+// 오른쪽(국내 보고서 표준), Left = R 로 좌/우 반전(같은 단면의 거울상 = 도판을
+// 뒤에서 본 모양). 계산값은 바꾸지 않는다.
+enum class SectionSide { Right, Left };
 
 class ArtifactDoc {
 public:
@@ -78,6 +83,17 @@ public:
   void setSimplifyTol(double mm) { simplifyTol_ = mm; }
   void setSmooth(bool on) { smooth_ = on; }
 
+  // 도판 좌/우 (D5). 다시 계산하지 않는다 — 그리기 부호만. 파일을 바꿔 열어도
+  // 유지(한 세션 동안의 사용자 선택), 되돌리기에 쌓지 않는다.
+  void setSectionSide(SectionSide s) { side_ = s; }
+  SectionSide sectionSide() const { return side_; }
+  void toggleSectionSide() {
+    side_ = side_ == SectionSide::Right ? SectionSide::Left : SectionSide::Right;
+  }
+  double sectionSign() const { // Right → +1.0, Left → −1.0
+    return side_ == SectionSide::Right ? 1.0 : -1.0;
+  }
+
   // Artec 스캐너 음영지대(내벽 미스캔·Watertight 홀필 마개) 기벽 자동 추정 보정
   void setInferInnerWall(bool on);
   bool inferInnerWall() const { return inferInnerWall_; }
@@ -108,8 +124,9 @@ public:
   const KA::Dimensions &rawDims() const { return dims_; }
   const Dims5 &dims() const { return d5_; }
 
-  // 화면/내보내기용 선 (간략화·곡선 옵션 적용, 도면 좌표 x=R, y=H, 토기 표준:
-  // 단면 왼쪽 / 외곽 오른쪽)
+  // 화면/내보내기용 선 (간략화·곡선 옵션 적용, 도면 좌표 x=R, y=H). D5 기본
+  // (Right): 외곽 왼쪽 x ≤ 0 · 단면 오른쪽 x ≥ 0, Left: x 부호만 반전(거울상).
+  // 부호는 간략화·곡선 다듬기가 모두 끝난 뒤 마지막에 x 에 sectionSign() 을 곱한다.
   std::vector<std::vector<KA::Point2>> displaySection() const;
   // Artec 미스캔 보정 시 실제 스캔된 실선 구간(외벽·구연·상부내벽·바닥)
   std::vector<std::vector<KA::Point2>> displayScannedSolid() const;
@@ -147,6 +164,10 @@ private:
   void shiftBoth(double dx, double dy, double dz);
   double measureWallBySlice(double z) const;
   void buildSectionLoops();
+  // 자연 좌표(K-Arch: 단면 x ≥ 0, 외곽 x < 0)의 화면용 선 — 좌/우 부호 적용 전
+  std::vector<std::vector<KA::Point2>> sectionNatural() const;
+  std::vector<std::vector<KA::Point2>> scannedSolidNatural() const;
+  std::vector<std::vector<KA::Point2>> estimatedInnerNatural() const;
 
   std::vector<std::vector<KA::Point2>>
       sectionLoops_; // 실제 Y=0 절단 고리 (x ≥ 0, K-Arch 좌표)
@@ -180,6 +201,7 @@ private:
   HeightRef heightRef_ = HeightRef::Base;
   double simplifyTol_ = 0.5;
   bool smooth_ = true;
+  SectionSide side_ = SectionSide::Right; // D5 기본: 외면 왼쪽 · 단면 오른쪽
   bool inferInnerWall_ = true;   // Artec 미스캔 내벽/홀필 마개 자동 보정
   double estimatedWallMm_ = 6.8; // 추정 기벽 두께 (mm)
   std::vector<SectionSlot> slotList_;
