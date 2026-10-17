@@ -2,16 +2,41 @@
   "id": "JOB-007",
   "title": "③ 도면 편집 넘기기 — 지금 각도 고정 → 도면 편집, 기준선 레이어(중심선·구연선·바닥선)",
   "request": "사용자 08:03 핵심 요구(바닥 정하기 → 얇은 막으로 자르기 → 도면 편집으로 넘기기 → Illustrator 내보내기·자동 축척), 사용자 요구 '기준선 레이어'(백로그 후보 14), 09:39 \"승인개발진행\", 10:59 \"전부 다되면 개발진행하라\". 디자인 v2 phase=cut 의 '고정 · 넘기기' 그룹과 ③ 도면 편집 화면.",
-  "status": "queued",
+  "status": "build",
   "branch": "factory/JOB-007",
   "worktree": ".worktrees/JOB-007",
   "base_sha": "688b7bd7db520832ceed731ce53da4c1c434a6c1",
   "depends_on": "JOB-006 (factory/JOB-006 @ 688b7bd) — JOB-006 승인 전제. JOB-006 이 rework 되면 이 브랜치를 그 위로 다시 쌓아야 함",
   "created": "2026-10-18T01:11:24+09:00",
-  "updated": "2026-10-18T01:11:24+09:00",
+  "updated": "2026-10-18T02:30:34+09:00",
   "history": [
-    { "at": "2026-10-18T01:11:24+09:00", "from": null, "to": "queued", "by": "factory", "note": "등록 — JOB-006 이 승인 대기에 도달해 다음 작업 시작(사용자 \"전부 다되면 개발진행하라\")" }
+    {
+      "at": "2026-10-18T01:11:24+09:00",
+      "from": null,
+      "to": "queued",
+      "by": "factory",
+      "note": "등록 — JOB-006 이 승인 대기에 도달해 다음 작업 시작(사용자 \"전부 다되면 개발진행하라\")"
+    },
+    {
+      "at": "2026-10-18T02:30:34+09:00",
+      "from": "queued",
+      "to": "spec",
+      "by": "spec-writer",
+      "note": "spec.md — 디자인 원문·코드 대조 비평 2명(must 2·should 10·nit 14) 모두 반영, 수용 기준 35개, 제품 ≈229(빈 줄·주석 제외 ≈187), 나누지 않음"
+    },
+    {
+      "at": "2026-10-18T02:30:34+09:00",
+      "from": "spec",
+      "to": "build",
+      "by": "factory",
+      "note": "builder 시작 — 구현·검증·검토·재작업(최대 2회)을 한 워크플로로"
+    }
   ],
-  "reviews": { "code": "na", "correctness": "na", "security": "na", "ui": "na" },
+  "reviews": {
+    "code": "na",
+    "correctness": "na",
+    "security": "na",
+    "ui": "na"
+  },
   "approvals": []
 }
