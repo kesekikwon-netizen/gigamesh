@@ -71,3 +71,17 @@ package-lock.json
 .claude/mcp/*/dist/
 .claude/mcp/*/node_modules/
 .claude/snapshots/
+
+# --- DongArch3D factory (2026-10-17) ---
+# 벤더 SDK 사본·외부 빌드 영역·작업 worktree
+/Qt/
+/_dongarch_build/
+/.worktrees/
+# factory 작업 산출물(빌드 로그·캡처)은 커밋하지 않음, 기록(md/json)만 커밋
+factory/jobs/*/artifacts/
+# K-Arch 테스트가 cwd에 남기는 산출물
+/karch_t*.svg
+/karch_t*.dxf
+# GigaMesh core 테스트용 소형 데이터는 예외로 추적 (GigaMesh/.gitignore 에도 예외 있음)
+!GigaMesh/testdata/*.obj
+!GigaMesh/testdata/*.ply

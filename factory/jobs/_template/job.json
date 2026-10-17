@@ -1,0 +1,16 @@
+{
+  "id": "JOB-NNN",
+  "title": "",
+  "request": "",
+  "status": "queued",
+  "branch": "factory/JOB-NNN",
+  "worktree": ".worktrees/JOB-NNN",
+  "base_sha": "",
+  "created": "YYYY-MM-DDTHH:MM:SS+09:00",
+  "updated": "YYYY-MM-DDTHH:MM:SS+09:00",
+  "history": [
+    { "at": "YYYY-MM-DDTHH:MM:SS+09:00", "from": null, "to": "queued", "by": "factory", "note": "등록" }
+  ],
+  "reviews": { "code": "na", "correctness": "na", "security": "na", "ui": "na" },
+  "approvals": []
+}

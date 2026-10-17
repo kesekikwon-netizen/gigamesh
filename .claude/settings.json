@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git branch:*)",
+      "Bash(git worktree list:*)",
+      "Bash(cmake:*)",
+      "Bash(ctest:*)",
+      "Bash(pwsh factory/scripts/*)",
+      "Bash(powershell -NoProfile -ExecutionPolicy Bypass -File factory/scripts/*)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git stash:*)",
+      "Bash(git clean -fd:*)"
+    ]
+  }
+}

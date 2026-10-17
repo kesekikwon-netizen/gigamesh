@@ -2,7 +2,7 @@ name: DongArch3D Studio CI
 
 on:
   push:
-    branches: [master, main, "feat/**"]
+    branches: [master, main, "feat/**", "factory/**"]
     paths:
       - "studio/**"
       - "GigaMesh/gui/src/dongarch/karch/**"
@@ -61,7 +61,8 @@ jobs:
         run: cmake --build studio/build-ci --parallel
 
       - name: Run CTest (10 K-Arch Unit Tests + Headless Studio Pipeline)
-        run: ctest --test-dir studio/build-ci --output-on-failure --parallel 4
+        working-directory: studio/build-ci
+        run: ctest --output-on-failure --parallel 4
 
       - name: Capture 5 Canonical UI_RULES Verification Screenshots (Offscreen)
         run: |
@@ -85,5 +86,5 @@ jobs:
           retention-days: 14
           path: |
             studio/build-ci/shots/*.png
-            studio/build-ci/studio_out.*
+            studio/build-ci/studio_plate.*
             studio/build-ci/studio_blind.*

@@ -1,0 +1,57 @@
+name: ci-gigamesh (Qt5 reference build)
+
+# GigaMesh(Qt 5) 쪽은 알고리즘 참조·CLI 용도라 매 푸시마다 돌리지 않는다.
+# 수동 실행(workflow_dispatch) 또는 주 1회. 로컬(Windows 11, VS2022 BuildTools, Qt 5.15.2)에서
+# 2026-10-17 에 동일 명령으로 빌드 7분·오류 0·ctest 통과를 확인했다. 러너에서의 Qt 설치 단계는 미검증.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 18 * * 0"   # 매주 월요일 03:00 KST
+
+concurrency:
+  group: ci-gigamesh-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0            # GigaMesh/CMakeLists.txt 가 git rev-parse/log 를 실행한다
+
+      - name: Install Qt 5.15.2 (msvc2019_64)
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "5.15.2"
+          arch: win64_msvc2019_64
+          cache: true
+
+      - name: Prepare git-ignored generated files (analyticsConfig.h, .qm, png, .tex)
+        shell: pwsh
+        run: pwsh -NoProfile -File factory/scripts/prepare-gigamesh.ps1 -Root GigaMesh -QtBin "$env:QT_ROOT_DIR/bin"
+
+      - name: Configure (Visual Studio 17 2022, /utf-8)
+        shell: pwsh
+        run: cmake -S GigaMesh -B D:\b\gm -G "Visual Studio 17 2022" -A x64 -DCMAKE_PREFIX_PATH="$env:QT_ROOT_DIR" -DCMAKE_CXX_FLAGS="/DWIN32 /D_WINDOWS /EHsc /utf-8" -DENABLE_TESTS=ON
+
+      - name: Build (Release)
+        shell: pwsh
+        run: cmake --build D:\b\gm --config Release --parallel
+
+      - name: Test (ctest, from build dir)
+        shell: pwsh
+        working-directory: D:\b\gm
+        run: ctest -C Release --output-on-failure
+
+      - name: Upload executables
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gigamesh-win64
+          retention-days: 7
+          path: |
+            D:\b\gm\gui\Release\DongArch3D.exe
+            D:\b\gm\cli\Release\*.exe
+            D:\b\gm\tests\Release\gigameshCore_tests.exe

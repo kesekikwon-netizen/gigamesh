@@ -40,6 +40,9 @@ build/
 *.ply
 *.xyz
 *.stl
+# Exception: small core test fixtures (DongArch3D, 2026-10-17)
+!testdata/*.obj
+!testdata/*.ply
 # (our own) texture map files:
 ./*.tex
 # 3D-data files (volume)
