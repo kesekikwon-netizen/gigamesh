@@ -1,0 +1,87 @@
+{
+  "id": "JOB-003",
+  "title": "① 바닥 정하기 — 스캔을 들어온 자세 그대로 열고 X·Y·Z 회전·뒤집기·처음 자세로·자동 세우기로 바닥판에 올려 확정",
+  "request": "사용자 2026-10-17 09:39 \"승인개발진행\"(코디네이터 릴레이) + 08:03 핵심 요구: 바닥 정하기(X·Y·Z 이동·회전으로 바닥판에 올려 확정) → 얇은 막 절단 실시간 단면 → 도면 편집. 07:46 손 실측 순서 그대로 원칙. 디자인 v2 주 화면 ① 단계. 코디네이터 기본값: Studio 에서 실제로 돌아가는 가장 작은 조각.",
+  "status": "review",
+  "branch": "factory/JOB-003",
+  "worktree": ".worktrees/JOB-003",
+  "base_sha": "58a33aea2a7aa11146b1df437aad24c157f78f35",
+  "created": "2026-10-17T18:43:58+09:00",
+  "updated": "2026-10-17T20:10:37+09:00",
+  "history": [
+    {
+      "at": "2026-10-17T18:43:58+09:00",
+      "from": null,
+      "to": "queued",
+      "by": "factory",
+      "note": "제품 개발 첫 작업 등록 (사용자 승인개발진행)"
+    },
+    {
+      "at": "2026-10-17T19:35:29+09:00",
+      "from": "queued",
+      "to": "spec",
+      "by": "spec-writer",
+      "note": "spec.md 236줄, AC 1~23"
+    },
+    {
+      "at": "2026-10-17T19:35:29+09:00",
+      "from": "spec",
+      "to": "build",
+      "by": "builder",
+      "note": "커밋 1ad49b4(엔진·테스트)·e9b655a(화면), 15파일 +821/-109, 자체 ctest 13/13"
+    },
+    {
+      "at": "2026-10-17T19:35:29+09:00",
+      "from": "build",
+      "to": "verify",
+      "by": "factory",
+      "note": "test-runner 독립 재검증"
+    },
+    {
+      "at": "2026-10-17T19:35:29+09:00",
+      "from": "verify",
+      "to": "rework",
+      "by": "test-runner",
+      "note": "FAIL: 기준 6 (들어온 자세로 확정 시 dims().ok 불성립)"
+    },
+    {
+      "at": "2026-10-17T19:35:29+09:00",
+      "from": "rework",
+      "to": "build",
+      "by": "builder",
+      "note": "재작업 1회차 — 명세 모순으로 차단(코드 변경 없음), 권고 (가) 6a/6b 분리"
+    },
+    {
+      "at": "2026-10-17T19:35:29+09:00",
+      "from": "build",
+      "to": "verify",
+      "by": "factory(오케스트레이터)",
+      "note": "명세 기준 6 → 6a/6b 수정(decision.md), studio_pose 재실행 근거 추기"
+    },
+    {
+      "at": "2026-10-17T19:35:29+09:00",
+      "from": "verify",
+      "to": "review",
+      "by": "factory",
+      "note": "수정된 명세 기준 verify PASS → 검토 4종 순차 시작"
+    }
+  ],
+  "reviews": {
+    "code": "pass",
+    "correctness": "pass",
+    "security": "pass",
+    "ui": "pass"
+  },
+  "approvals": [],
+  "human_review_required": [
+    "좌표계·수직 기준(바닥판 Z=0, +Z 위)",
+    "회전 합성 순서·축 규약",
+    "바닥에 내려놓기(접지) 수치 규칙"
+  ],
+  "review_summary": {
+    "at": "2026-10-17T20:10:37+09:00",
+    "result": "4/4 pass",
+    "note": "blocking 0. 사람 검토 항목 다수(좌표계·수직 기준·기울어진 채 확정 시 표시·흐름 변화·UI 정본 변경) — 승인 보고서 참조. 사용자 승인 대기"
+  },
+  "head": "e9b655a"
+}
