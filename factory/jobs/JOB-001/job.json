@@ -1,0 +1,60 @@
+{
+  "id": "JOB-001",
+  "title": "DXF 내보내기 단위 헤더($INSUNITS=4 mm)·R12·11 레이어 자동 검증 테스트",
+  "request": "시연 작업: K-Arch DxfWriter 가 만드는 DXF 가 R12(AC1009)·$INSUNITS=4(mm)·11 레이어 규약을 지키는지 명세대로 검증하는 테스트를 보강한다. 도판 좌/우 배치(D5)와 무관한 작업으로 선정.",
+  "status": "review",
+  "branch": "factory/JOB-001",
+  "worktree": ".worktrees/JOB-001",
+  "base_sha": "e7e641bd43716ccd57aad8246332d117d048a310",
+  "created": "2026-10-17T14:50:30+09:00",
+  "updated": "2026-10-17T15:29:23+09:00",
+  "history": [
+    {
+      "at": "2026-10-17T14:50:30+09:00",
+      "from": null,
+      "to": "queued",
+      "by": "factory",
+      "note": "2단계 시연 작업 등록 (사용자 요청 '다되면 깃커밋 깃액션까지실행' 에 따른 자동 진행)"
+    },
+    {
+      "at": "2026-10-17T15:00:26+09:00",
+      "from": "queued",
+      "to": "spec",
+      "by": "spec-writer",
+      "note": "spec.md 작성 완료 (AC-1~AC-8)"
+    },
+    {
+      "at": "2026-10-17T15:00:38+09:00",
+      "from": "spec",
+      "to": "build",
+      "by": "factory",
+      "note": "builder 시작 (worktree .worktrees/JOB-001, 브랜치 factory/JOB-001, base e7e641b)"
+    },
+    {
+      "at": "2026-10-17T15:11:26+09:00",
+      "from": "build",
+      "to": "verify",
+      "by": "builder",
+      "note": "커밋 4ed86af (test_dxf_units.cpp 589줄 + studio/CMakeLists.txt), 자체 ctest 12/12"
+    },
+    {
+      "at": "2026-10-17T15:19:45+09:00",
+      "from": "verify",
+      "to": "review",
+      "by": "test-runner",
+      "note": "독립 재검증 PASS (깨끗한 빌드, ctest 12/12, DXF 파일 직접 대조 AC-1~AC-8 통과)"
+    }
+  ],
+  "reviews": {
+    "code": "pass",
+    "correctness": "pass",
+    "security": "pass",
+    "ui": "pass"
+  },
+  "approvals": [],
+  "review_summary": {
+    "at": "2026-10-17T15:29:43+09:00",
+    "result": "4/4 pass",
+    "note": "AI 검토 4/4 PASS (code, correctness, security, ui). 사용자 승인(/factory approve JOB-001) 대기 — 승인 전 병합 없음"
+  }
+}
