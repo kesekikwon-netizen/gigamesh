@@ -35,3 +35,7 @@ description: DongArch3D 작업 공장. /factory <개발 요청>, /factory status
 ## 작업 폴더 형식
 
 `factory/jobs/README.md` 참조. 필수 파일: `job.json`, `spec.md`, `build-log.md`, `verify.md`, `review-code.md`, `review-correctness.md`, `review-security.md`, `review-ui.md`, `decision.md`. 산출물(로그·캡처·SVG/DXF)은 `artifacts/`(gitignore)에.
+
+## 승인 보고서 보존
+- 작업이 review/needs-human 에 이르면 `factory/jobs/JOB-NNN/approval-report.md` 를 쓰고 커밋한다(승인 근거의 정본).
+- 사용자에게 보낼 사본은 작업별 이름(`JOB-NNN-approval.md`)으로 만들어 보낸다. 공용 이름(`approval-report.md`)으로 보내면 다음 작업 보고서가 같은 자리를 덮어써 승인 근거가 사라진다.
