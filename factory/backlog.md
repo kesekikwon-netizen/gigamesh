@@ -15,7 +15,7 @@
 5. Illustrator 실제 가져오기 검증 절차와 캡처 기록.
 6. 토기 도판 좌/우 배치 — **D5 결정 후**.
 7. '문양' 축(문양 전개/탁본 벡터화/능선) 로드맵 명세 — 보고서 표준 조사 결과 후.
-8. 조사 문서 4종(`/mnt/project-files/gigamesh-docs/plan-설계초안.md`, `research-실측표준.md`, `research-자동화범위.md`, `research-도구비교.md`)을 저장소 `plan/`·`research/`로 반입 — 코드 무변경, JOB-002 뒤 별도 작업.
+8. 조사 문서 4종(`/mnt/project-files/gigamesh-docs/plan-설계초안.md`, `research-실측표준.md`, `research-자동화범위.md`, `research-도구비교.md`)을 저장소 `plan/`·`research/`로, **화면 디자인 완성본** `/mnt/project-files/gigamesh-docs/design/dongarch3d-design.html`(열람: https://claude.ai/artifact/C4b5eZFrQmF2NPaJZCmJQ8 — 화면 4개: 주 화면·4면 전개·내보내기 창·시작 화면, 디자인 가이드: 색 토큰 15개·글꼴·4 px 간격·아이콘 20종·도면 선 규약·용어표·단계 잠금 규칙)을 `docs/design/`으로 반입 — 코드 무변경, JOB-002 뒤 별도 작업. 반입 시 `docs/ui/UI_RULES.md`(R1~R8)와의 차이를 표로 남기고 정본은 하나로 정한다.
 9. 병합 기준 커밋 bd53453 고정 후 `feat/dongarch-studio`의 이후 커밋을 분류해 수용(체리픽 정책).
 10. 1차 MVP 범위를 완형 토기로 한정하고 완료 게이트에 "사용자 Artec 완형 스캔 1점 통과"를 둔다(파편은 2차).
 11. 단위 정책을 "추정 후 사용자 확정, 확정 전 잠금"으로 명세(후보 1과 합침 가능).
