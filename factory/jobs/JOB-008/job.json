@@ -1,0 +1,17 @@
+{
+  "id": "JOB-008",
+  "title": "단면·외곽선을 기준선에 맞추기 — 단면 곡선이 구연선·바닥선을 넘지 않게, 외곽선 끝 틈 메우기",
+  "request": "사용자 요구: 실측 도면(단면·외곽선)이 국내 보고서 표준대로 기준선(중심선·구연선·바닥선) 위에 정확히 놓여 Illustrator 로 1:1 축척 출력. JOB-007 검토·완전성 점검에서 발견: 기본 Catmull-Rom 곡선이 단면 끝을 부풀려 예제 단면이 구연선 위 +3.1 mm·바닥선 아래 −3.7 mm 로 넘치고, 외면 외곽선 끝이 구연선·바닥선에 약 3 mm 못 미침(K-Arch 실루엣 꼭짓점 z 2·98 백분위). 사용자 \"전부 다되면 개발진행하라\".",
+  "status": "queued",
+  "branch": "factory/JOB-008",
+  "worktree": ".worktrees/JOB-008",
+  "base_sha": "89846ba",
+  "depends_on": "JOB-007 (factory/JOB-007 @ 89846ba) — JOB-006·JOB-007 승인 전제",
+  "created": "2026-10-18T04:08:56+09:00",
+  "updated": "2026-10-18T04:08:56+09:00",
+  "history": [
+    { "at": "2026-10-18T04:08:56+09:00", "from": null, "to": "queued", "by": "factory", "note": "등록 — JOB-007 검토에서 발견된 실측 정확성 문제, JOB-007 승인 대기 중 이어서 시작" }
+  ],
+  "reviews": { "code": "na", "correctness": "na", "security": "na", "ui": "na" },
+  "approvals": []
+}
