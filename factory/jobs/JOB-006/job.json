@@ -2,16 +2,41 @@
   "id": "JOB-006",
   "title": "② 막으로 자르기 (004c) — ② 페이지: 탭·리본 그룹(막 방향 Y/X·각도 ±·단면 위치·잠김 안내)·ctx·상태줄 원문 라벨·--cut 캡처",
   "request": "사용자 08:03 핵심 요구(바닥 정하기 → 얇은 막으로 자르기 → 도면 편집), 09:39 \"승인개발진행\", 10:59 \"전부 다되면 개발진행하라\". JOB-004 명세 §10 후속 조각 2(004c) 씨앗, 화면 디자인 v2 phase=cut.",
-  "status": "queued",
+  "status": "build",
   "branch": "factory/JOB-006",
   "worktree": ".worktrees/JOB-006",
   "base_sha": "804f60d043baf9a922982e6d1ee47a5bc2758239",
   "depends_on": "JOB-005 (factory/JOB-005 @ 804f60d) — JOB-003·JOB-004·JOB-005 승인 전제. 앞 작업이 rework 되면 이 브랜치를 그 위로 다시 쌓아야 함",
   "created": "2026-10-17T22:38:55+09:00",
-  "updated": "2026-10-17T22:38:55+09:00",
+  "updated": "2026-10-17T23:36:34+09:00",
   "history": [
-    { "at": "2026-10-17T22:38:55+09:00", "from": null, "to": "queued", "by": "factory", "note": "등록 — JOB-005 가 승인 대기에 도달해 다음 작업 시작(사용자 \"전부 다되면 개발진행하라\")" }
+    {
+      "at": "2026-10-17T22:38:55+09:00",
+      "from": null,
+      "to": "queued",
+      "by": "factory",
+      "note": "등록 — JOB-005 가 승인 대기에 도달해 다음 작업 시작(사용자 \"전부 다되면 개발진행하라\")"
+    },
+    {
+      "at": "2026-10-17T23:36:34+09:00",
+      "from": "queued",
+      "to": "spec",
+      "by": "spec-writer",
+      "note": "spec.md — 디자인 v2 원문 대조·코드 대조 비평 2명(must 2·should 13) 반영, 수용 기준 34개, 제품 ≈300(빈 줄·주석 제외 ≈247)"
+    },
+    {
+      "at": "2026-10-17T23:36:34+09:00",
+      "from": "spec",
+      "to": "build",
+      "by": "factory",
+      "note": "builder 시작 — 구현·검증·검토를 한 워크플로로(재작업 최대 2회)"
+    }
   ],
-  "reviews": { "code": "na", "correctness": "na", "security": "na", "ui": "na" },
+  "reviews": {
+    "code": "na",
+    "correctness": "na",
+    "security": "na",
+    "ui": "na"
+  },
   "approvals": []
 }
