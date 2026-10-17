@@ -16,6 +16,7 @@ struct RasterView {
     double pxPerMm = 2.0;
     QPointF centerPx;       // 원점(R 0, H hMid)이 놓일 화면 위치
     double centerZ = 0.0;   // 화면 중심에 둘 H (mm)
+    double centerX = 0.0, centerY = 0.0;  // 화면 중심에 둘 월드 x·y (mm) — 확정 전 바닥판 맞춤용, 기본 0
 };
 
 // 정사영 렌더. 카메라는 -Y 쪽에서 +Y 방향을 본다 (화면 x = 월드 x, 화면 위 = 월드 z).

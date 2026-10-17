@@ -22,10 +22,13 @@ int main(int argc, char** argv) {
 
     const QStringList args = app.arguments();
     // 검수용: --shot <png> [--max] [--export] — 창을 그려 저장하고 끝낸다
+    //         --sample|--blind [--base] — 예제를 연다. --base 면 확정 전(들어온 자세) ① 바닥 정하기 페이지
+    //         예: DongArch3DStudio.exe --sample --base --shot shot_base.png (파일 경로 인자는 원래 확정 전으로 열림)
     const int shotIdx = int(args.indexOf("--shot"));
+    const bool baseStage = args.contains("--base");
     if (args.size() > 1 && !args[1].startsWith("--shot")) {
-        if (args[1] == "--sample") w.openSample();
-        else if (args[1] == "--blind") w.openArtecBlindSample();
+        if (args[1] == "--sample") w.openSample(baseStage);
+        else if (args[1] == "--blind") w.openArtecBlindSample(baseStage);
         else if (args[1] != "--home") w.openPath(args[1]);
     }
     if (shotIdx > 0 && shotIdx + 1 < args.size()) {

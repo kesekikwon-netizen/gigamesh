@@ -57,6 +57,45 @@ void translate(KA::MeshData &m, double dx, double dy, double dz) {
   }
 }
 
+// 바운딩 박스만 다시 잰다 (K-Arch computeBbox 와 같은 규칙). 강체 변환은 평균
+// 변 길이·경계 유무를 바꾸지 않으므로 FillMeshStats(면 수에 비례하는 변 표)를
+// 다시 돌리지 않는다.
+void updateBbox(KA::MeshData &m) {
+  if (m.vertices.empty()) {
+    m.bboxMin = KA::Point3{};
+    m.bboxMax = KA::Point3{};
+    return;
+  }
+  KA::Point3 lo = m.vertices.front(), hi = lo;
+  for (const auto &p : m.vertices) {
+    lo.x = std::min(lo.x, p.x);
+    lo.y = std::min(lo.y, p.y);
+    lo.z = std::min(lo.z, p.z);
+    hi.x = std::max(hi.x, p.x);
+    hi.y = std::max(hi.y, p.y);
+    hi.z = std::max(hi.z, p.z);
+  }
+  m.bboxMin = lo;
+  m.bboxMax = hi;
+}
+
+// 각도 deg 의 cos·sin. 90° 정수배는 정확히 {−1, 0, 1} (반복 회전 누적 오차 방지)
+void cosSinDeg(double deg, double &c, double &s) {
+  const double q = deg / 90.0, k = std::round(q);
+  if (std::fabs(q - k) < 1e-12) {
+    static constexpr int kCos[4] = {1, 0, -1, 0};
+    static constexpr int kSin[4] = {0, 1, 0, -1};
+    const int i = int(std::fmod(std::fmod(k, 4.0) + 4.0, 4.0));
+    c = kCos[i];
+    s = kSin[i];
+    return;
+  }
+  c = std::cos(deg * kDeg);
+  s = std::sin(deg * kDeg);
+}
+
+constexpr double kGroundTolMm = 0.3; // 디자인 v2 접지 판정 권고값
+
 std::vector<double> zBand(const KA::MeshData &m, int n) {
   const double z0 = m.bboxMin.z + 0.12 * (m.bboxMax.z - m.bboxMin.z);
   const double z1 = m.bboxMin.z + 0.88 * (m.bboxMax.z - m.bboxMin.z);
@@ -184,6 +223,24 @@ std::vector<KA::Point2> smoothCatmull(const std::vector<KA::Point2> &pts,
   return out;
 }
 
+void ArtifactDoc::loadMesh(KA::MeshData m, std::vector<QRgb> colors,
+                           const QString &name) {
+  base_ = std::move(m);
+  KA::FillMeshStats(base_);
+  baseColors_ = std::move(colors);
+  name_ = name;
+  frontAngle_ = 0.0;
+  rawVertices_ = base_.vertices; // 처음 자세로 되돌릴 사본 (면은 공유)
+  buildLodMesh(base_, baseColors_, lodBase_, lodColors_, 35000);
+  rawLod_ = lodBase_;
+  rawLodColors_ = lodColors_;
+  pendingAligned_ = false;
+  pendingNote_.clear();
+  pendingRmse_ = 0.0;
+  unconfirm();
+  centered_ = false;
+}
+
 bool ArtifactDoc::loadFile(const QString &path, QString *err) {
   MeshReadResult r = readMeshAny(path);
   if (!r.ok) {
@@ -191,19 +248,17 @@ bool ArtifactDoc::loadFile(const QString &path, QString *err) {
       *err = r.message;
     return false;
   }
-  base_ = std::move(r.mesh);
-  baseColors_ = std::move(r.vertexColors);
   scannerProfile_ = r.scannerProfile;
   unitNote_ = r.unitNote;
   removedNoiseFaces_ = r.removedNoiseFaces;
   path_ = path;
-  name_ = QFileInfo(path).completeBaseName();
-  frontAngle_ = 0.0;
-  autoAlign();
+  // 들어온 자세 그대로 — 바닥은 사람이 ① 바닥 정하기에서 확정한다
+  loadMesh(std::move(r.mesh), std::move(r.vertexColors),
+           QFileInfo(path).completeBaseName());
   return true;
 }
 
-void ArtifactDoc::loadSample() {
+void ArtifactDoc::loadSample(bool confirm) {
   KA::Testing::SyntheticParams sp;
   sp.radialSeg = 160;
   sp.heightSeg = 120;
@@ -214,19 +269,22 @@ void ArtifactDoc::loadSample() {
   sp.noiseSigma = 0.05;
   const auto vessel =
       KA::Testing::MakeTorusProfileVessel(82.6, 71.0, 184.5, 6.8, sp);
-  base_ = vessel.toMesh();
-  KA::FillMeshStats(base_);
-  baseColors_ = makeSyntheticArtecColors(base_);
+  KA::MeshData m = vessel.toMesh();
+  KA::FillMeshStats(m);
+  std::vector<QRgb> cols = makeSyntheticArtecColors(m);
   scannerProfile_ = QStringLiteral("Artec Space Spider 급 (내장 샘플)");
   unitNote_.clear();
   removedNoiseFaces_ = 0;
   path_.clear();
-  name_ = QStringLiteral("예제_합성토기_01호");
-  frontAngle_ = 0.0;
-  autoAlign();
+  loadMesh(std::move(m), std::move(cols),
+           QStringLiteral("예제_합성토기_01호"));
+  if (confirm) {
+    autoAlign();
+    confirmPose();
+  }
 }
 
-void ArtifactDoc::loadArtecBlindSample() {
+void ArtifactDoc::loadArtecBlindSample(bool confirm) {
   // 좁은 아가리 항아리에서 광학 스캐너(Artec Space Spider / Eva)가 구연부
   // 안쪽(상부 35%)만 찍고 동체부·저부 내벽은 찍지 못해 외벽 단일 쉘(또는 홀필
   // 마개)로 남은 실제 현장 상황을 재현
@@ -263,53 +321,204 @@ void ArtifactDoc::loadArtecBlindSample() {
   }
   full.faces = std::move(kept);
   KA::FillMeshStats(full);
-  base_ = std::move(full);
-  baseColors_ = makeSyntheticArtecColors(base_);
+  std::vector<QRgb> cols = makeSyntheticArtecColors(full);
   scannerProfile_ =
       QStringLiteral("Artec Space Spider (내벽 미스캔 보정 샘플)");
   unitNote_.clear();
   removedNoiseFaces_ = 0;
   path_.clear();
-  name_ = QStringLiteral("Artec_내벽미스캔_단경호_02호");
-  frontAngle_ = 0.0;
   inferInnerWall_ = true;
-  autoAlign();
+  loadMesh(std::move(full), std::move(cols),
+           QStringLiteral("Artec_내벽미스캔_단경호_02호"));
+  if (confirm) {
+    autoAlign();
+    confirmPose();
+  }
 }
 
 void ArtifactDoc::rescaleUnits(double factor) {
   if (base_.vertices.empty() || factor <= 0 || std::fabs(factor - 1.0) < 1e-9)
     return;
-  for (auto &p : base_.vertices) {
-    p.x *= factor;
-    p.y *= factor;
-    p.z *= factor;
-  }
+  auto scale = [factor](std::vector<KA::Point3> &vs) {
+    for (auto &p : vs) {
+      p.x *= factor;
+      p.y *= factor;
+      p.z *= factor;
+    }
+  };
+  // 원 자세 사본과 현재 자세에 같은 배율
+  scale(base_.vertices);
+  scale(rawVertices_);
+  scale(lodBase_.vertices);
+  scale(rawLod_.vertices);
+  KA::FillMeshStats(base_);
+  KA::FillMeshStats(lodBase_);
+  KA::FillMeshStats(rawLod_);
   unitNote_ = QStringLiteral("단위 배율 ×%1 적용됨").arg(factor, 0, 'g', 4);
-  autoAlign();
+  unconfirm();
+  centered_ = false;
 }
 
 void ArtifactDoc::setInferInnerWall(bool on) {
   if (inferInnerWall_ == on)
     return;
   inferInnerWall_ = on;
-  if (isLoaded()) {
+  if (isLoaded() && poseConfirmed_) {
     buildSectionLoops();
   }
 }
 
 void ArtifactDoc::setEstimatedWallMm(double mm) {
   estimatedWallMm_ = std::clamp(mm, 1.5, 40.0);
-  if (isLoaded() && inferInnerWall_) {
+  if (isLoaded() && poseConfirmed_ && inferInnerWall_) {
     buildSectionLoops();
   }
 }
 
+// ---- ① 바닥 정하기 ----------------------------------------------------------
+void ArtifactDoc::rotateAbout(const double (&R)[3][3], const KA::Point3 &c) {
+  auto rot = [&](KA::MeshData &m) {
+    for (auto &p : m.vertices) {
+      const double dx = p.x - c.x, dy = p.y - c.y, dz = p.z - c.z;
+      p = KA::Point3{c.x + (R[0][0] * dx + R[0][1] * dy + R[0][2] * dz),
+                     c.y + (R[1][0] * dx + R[1][1] * dy + R[1][2] * dz),
+                     c.z + (R[2][0] * dx + R[2][1] * dy + R[2][2] * dz)};
+    }
+    updateBbox(m);
+  };
+  rot(base_);
+  rot(lodBase_);
+}
+
+void ArtifactDoc::shiftBoth(double dx, double dy, double dz) {
+  translate(base_, dx, dy, dz);
+  translate(lodBase_, dx, dy, dz);
+  updateBbox(base_);
+  updateBbox(lodBase_);
+}
+
+void ArtifactDoc::rotatePose(PoseAxis a, double deg) {
+  if (!isLoaded())
+    return;
+  double c = 1.0, s = 0.0;
+  cosSinDeg(deg, c, s);
+  // 고정 월드축 기준 오른손 법칙 (외재적 회전)
+  double R[3][3] = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+  switch (a) {
+  case PoseAxis::X:
+    R[1][1] = c, R[1][2] = -s, R[2][1] = s, R[2][2] = c;
+    break;
+  case PoseAxis::Y:
+    R[0][0] = c, R[0][2] = s, R[2][0] = -s, R[2][2] = c;
+    break;
+  case PoseAxis::Z:
+    R[0][0] = c, R[0][1] = -s, R[1][0] = s, R[1][1] = c;
+    break;
+  }
+  // 회전 중심 = 현재 자세의 축 정렬 바운딩 박스 중심
+  const KA::Point3 ctr{0.5 * (base_.bboxMin.x + base_.bboxMax.x),
+                       0.5 * (base_.bboxMin.y + base_.bboxMax.y),
+                       0.5 * (base_.bboxMin.z + base_.bboxMax.z)};
+  rotateAbout(R, ctr);
+  shiftBoth(0, 0, -base_.bboxMin.z); // 바닥에 내려놓기
+  unconfirm();
+  centered_ = false;
+}
+
+void ArtifactDoc::flipPose() { rotatePose(PoseAxis::X, 180.0); }
+
+void ArtifactDoc::resetPose() {
+  if (!isLoaded())
+    return;
+  base_.vertices = rawVertices_;
+  updateBbox(base_);
+  lodBase_ = rawLod_;
+  lodColors_ = rawLodColors_;
+  unconfirm();
+  centered_ = false;
+}
+
+void ArtifactDoc::dropToFloor() {
+  if (!isLoaded())
+    return;
+  shiftBoth(0, 0, -base_.bboxMin.z);
+  unconfirm();
+  centered_ = false;
+}
+
+bool ArtifactDoc::isGrounded() const {
+  return isLoaded() && std::fabs(mesh_.bboxMin.z) <= kGroundTolMm;
+}
+
+QString ArtifactDoc::groundNote() const {
+  if (!isLoaded())
+    return {};
+  if (isGrounded())
+    return autoCentered() ? QStringLiteral("바닥판에 닿음 · 중심선 자동")
+                          : QStringLiteral("바닥판에 닿음");
+  const double z = heightAboveFloor();
+  return z > 0 ? QStringLiteral("바닥판에서 %1 mm 위").arg(z, 0, 'f', 1)
+               : QStringLiteral("바닥판 아래 %1 mm").arg(-z, 0, 'f', 1);
+}
+
+void ArtifactDoc::unconfirm() {
+  poseConfirmed_ = false;
+  slotList_.clear();
+  recompute();
+}
+
+void ArtifactDoc::confirmPose() {
+  if (!isLoaded())
+    return;
+  if (centered_) {
+    // 자동 세우기 직후: 중심 맞춤·접지가 이미 끝났다 (예전 한 번 누르기와 같은
+    // 순서·같은 값)
+    aligned_ = pendingAligned_;
+    alignNote_ = pendingNote_;
+    axisRmse_ = pendingRmse_;
+  } else {
+    // 사람이 세운 자세 그대로(회전 없음), 중심선(수평 외곽 원 중심 평균)을
+    // 원점으로 — autoAlign 마지막 단계와 같은 규칙
+    const auto fits = KA::FitHorizontalOuters(base_, zBand(base_, 12));
+    double sx = 0, sy = 0;
+    int n = 0;
+    for (const auto &f : fits)
+      if (f.circle.ok)
+        sx += f.circle.xc, sy += f.circle.yc, ++n;
+    if (n > 0)
+      shiftBoth(-sx / n, -sy / n, 0);
+    else
+      shiftBoth(-0.5 * (base_.bboxMin.x + base_.bboxMax.x),
+                -0.5 * (base_.bboxMin.y + base_.bboxMax.y), 0);
+    aligned_ = n > 0;
+    alignNote_ = n > 0
+                     ? QStringLiteral("바닥판 기준 (사람 확정) · 중심선 원 맞춤")
+                     : QStringLiteral("바닥판 기준 (사람 확정) · 중심선 미검출");
+    axisRmse_ = -1.0;
+    if (!unitNote_.isEmpty())
+      alignNote_ += QStringLiteral(" · ") + unitNote_;
+    if (removedNoiseFaces_ > 0)
+      alignNote_ +=
+          QStringLiteral(" · 부유노이즈 %1면 제거").arg(removedNoiseFaces_);
+  }
+  if (base_.bboxMin.z != 0.0)
+    shiftBoth(0, 0, -base_.bboxMin.z); // 접지
+  frontAngle_ = 0.0;
+  poseConfirmed_ = true;
+  // 25만 면 초과 유물은 치수를 LOD 로 계산하므로 확정 자세로 다시 만든다
+  buildLodMesh(base_, baseColors_, lodBase_, lodColors_, 35000);
+  resetSlots();
+  recompute();
+}
+
 void ArtifactDoc::autoAlign() {
+  if (!isLoaded())
+    return;
   KA::MeshData m = base_;
   KA::FillMeshStats(m);
-  aligned_ = false;
-  alignNote_.clear();
-  axisRmse_ = 0.0;
+  bool aligned = false;
+  QString note;
+  double rmse = 0.0;
 
   // 초고해상도 Artec 메시(25만 면 초과)는 경량 프록시로 회전축(PCA+ODR)을 즉시
   // 찾고 원본에 변환 적용
@@ -357,30 +566,33 @@ void ArtifactDoc::autoAlign() {
     if (n > 0) {
       translate(m, -sx / n, -sy / n, 0);
     }
-    aligned_ = true;
-    axisRmse_ = ax.rmse;
-    alignNote_ = rim.error == KA::RimError::Ok
-                     ? QStringLiteral("바닥 수평(0 mm) · 회전 중심축 정렬됨")
-                     : QStringLiteral("회전 중심축 정렬됨 (구연부 미검출)");
+    aligned = true;
+    rmse = ax.rmse;
+    note = rim.error == KA::RimError::Ok
+               ? QStringLiteral("바닥 수평(0 mm) · 회전 중심축 정렬됨")
+               : QStringLiteral("회전 중심축 정렬됨 (구연부 미검출)");
   } else {
     const double cx = 0.5 * (m.bboxMin.x + m.bboxMax.x),
                  cy = 0.5 * (m.bboxMin.y + m.bboxMax.y);
     translate(m, -cx, -cy, 0);
-    alignNote_ = QStringLiteral("중심축 미정렬 — [중심축 맞춤] 필요");
+    note = QStringLiteral("중심축 미정렬 — [중심축 맞춤] 필요");
   }
   if (!unitNote_.isEmpty())
-    alignNote_ += QStringLiteral(" · ") + unitNote_;
+    note += QStringLiteral(" · ") + unitNote_;
   if (removedNoiseFaces_ > 0)
-    alignNote_ +=
-        QStringLiteral(" · 부유노이즈 %1면 제거").arg(removedNoiseFaces_);
+    note += QStringLiteral(" · 부유노이즈 %1면 제거").arg(removedNoiseFaces_);
 
   KA::FillMeshStats(m);
   translate(m, 0, 0, -m.bboxMin.z); // 바닥 H 0
   KA::FillMeshStats(m);
   base_ = std::move(m);
   buildLodMesh(base_, baseColors_, lodBase_, lodColors_, 35000);
-  resetSlots();
-  recompute();
+  // 확정은 사람 몫 — 결과 문구·오차는 확정 때 옮긴다
+  pendingAligned_ = aligned;
+  pendingNote_ = note;
+  pendingRmse_ = rmse;
+  unconfirm();
+  centered_ = true;
 }
 
 void ArtifactDoc::setFrontAngle(double deg) {
@@ -391,6 +603,27 @@ void ArtifactDoc::setFrontAngle(double deg) {
 void ArtifactDoc::recompute() {
   mesh_ = base_;
   lodMesh_ = lodBase_;
+  if (!poseConfirmed_) {
+    // 확정 전: 들어온(또는 사람이 돌리는) 자세만 보여 주고 단면·외곽·치수·
+    // 기벽은 계산하지 않는다. 바운딩 박스는 자세 조작마다 갱신되어 있고
+    // 강체 변환은 평균 변 길이·경계 유무를 바꾸지 않는다.
+    sil_ = {};
+    sec_ = {};
+    dims_ = {};
+    d5_ = {};
+    wallProfile_.clear();
+    wallZ0_ = 0.0;
+    wallStep_ = 1.0;
+    sectionLoops_.clear();
+    scannedSolidLines_.clear();
+    estimatedInnerLines_.clear();
+    estZMin_ = -1.0;
+    estZMax_ = -1.0;
+    aligned_ = false;
+    alignNote_ = QStringLiteral("바닥 미정");
+    axisRmse_ = -1.0;
+    return;
+  }
   if (std::fabs(frontAngle_) > 1e-9) {
     rotateZ(mesh_, -frontAngle_);
     rotateZ(lodMesh_, -frontAngle_);

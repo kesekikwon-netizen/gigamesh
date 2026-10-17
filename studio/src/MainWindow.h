@@ -25,9 +25,10 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
     MainWindow();
-    bool openPath(const QString& path);
-    void openSample();
-    void openArtecBlindSample();
+    bool openPath(const QString& path);  // 들어온 자세 그대로 ① 바닥 정하기 단계로 연다
+    // poseStage=false: 예전처럼 자동 세우기 → 확정 후 홈, true: 들어온 자세 그대로 ① 바닥 정하기
+    void openSample(bool poseStage = false);
+    void openArtecBlindSample(bool poseStage = false);
     void showHome();
 
 protected:
@@ -66,6 +67,9 @@ private:
     void applyWatchFolder(const QString& dir);
     void checkWatchFolder();
     void setHint(const QString& s);
+    bool requirePose();  // 확정 전이면 안내하고 ① 페이지로 → false
+    void confirmPose();  // 이 자세로 확정 (Enter)
+    void recordRecent();  // 최근 목록에 현재 유물 기록 (경로가 있을 때)
 
     ArtifactDoc doc_;
     PlateOptions opts_;
@@ -90,6 +94,9 @@ private:
     QLabel* ctxBadge_ = nullptr;
     QLabel* ctxHint_ = nullptr;
     QLabel* ctxRight_ = nullptr;
+    QVector<QWidget*> ctxCutKeys_;   // 단면 도구 단축키 묶음 ([ ] · W · - + · 1~5 · Esc)
+    QVector<QWidget*> ctxBaseKeys_;  // ① 바닥 정하기 단축키 묶음 (Enter 확정 · Shift −90°)
+    int pHome_ = -1, pBase_ = -1;     // 리본 페이지: 홈, ① 바닥 정하기
     QWidget* slotPanel_ = nullptr;
     QListWidget* slotList_ = nullptr;
     QLabel* slotCount_ = nullptr;

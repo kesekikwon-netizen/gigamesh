@@ -81,6 +81,8 @@ void Tile::drawIcon(QPainter& p, const QString& k, const QRectF& r, const QColor
         QPainterPath a;
         a.moveTo(P(12, 2)); a.lineTo(P(19, 10)); a.lineTo(P(16, 21)); a.lineTo(P(8, 21)); a.lineTo(P(5, 10)); a.closeSubpath();
         p.drawPath(a); p.drawLine(P(12, 2), P(12, 21));
+    } else if (k == "check") {  // 확정 (이 자세로 확정)
+        p.drawPolyline(QPolygonF{P(4, 13), P(10, 19), P(20, 6)});
     }
     p.restore();
 }
@@ -177,6 +179,7 @@ void RibbonGroup::column(const QList<QPair<QString, QPair<QString, QString>>>& i
     v->setSpacing(4);
     for (const auto& it : items) {
         auto* b = new SmallButton(it.second.first, it.second.second, col);
+        b->setObjectName(it.first);  // 타일처럼 id 로 찾을 수 있게 (툴팁 등)
         v->addWidget(b);
         rb_->registerWidget(it.first, b);
         const QString id = it.first;

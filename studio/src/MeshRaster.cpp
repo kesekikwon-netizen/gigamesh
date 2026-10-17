@@ -20,7 +20,8 @@ inline V3 cross(V3 a, V3 b) { return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b
 inline V3 toCam(const KA::Point3& p, const RasterView& v) {
     const double yw = v.yawDeg * std::numbers::pi / 180.0, pt = v.pitchDeg * std::numbers::pi / 180.0;
     const double cy = std::cos(yw), sy = std::sin(yw);
-    const double x1 = cy * p.x - sy * p.y, y1 = sy * p.x + cy * p.y, z1 = p.z - v.centerZ;
+    const double px = p.x - v.centerX, py = p.y - v.centerY;
+    const double x1 = cy * px - sy * py, y1 = sy * px + cy * py, z1 = p.z - v.centerZ;
     // 카메라는 -Y 에서 바라봄: 깊이 = -y1. pitch 는 X축 회전.
     const double cp = std::cos(pt), sp = std::sin(pt);
     const double up = cp * z1 - sp * y1;

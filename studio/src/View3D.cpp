@@ -12,6 +12,19 @@
 
 namespace studio {
 
+namespace {
+// ① 바닥 정하기(확정 전) 바닥판(실측판): Z = 0 평면 위 정사각형.
+// 중심 = 메시 바운딩 박스 중심 (x, y), 반쪽 길이 = (반폭 최대 + 20 mm) 를 10 mm 단위로 올림.
+struct FloorPlate {
+    double cx, cy, half;
+};
+FloorPlate floorPlate(const KA::MeshData& m) {
+    const double hx = 0.5 * (m.bboxMax.x - m.bboxMin.x), hy = 0.5 * (m.bboxMax.y - m.bboxMin.y);
+    return {0.5 * (m.bboxMin.x + m.bboxMax.x), 0.5 * (m.bboxMin.y + m.bboxMax.y),
+            std::ceil((std::max(hx, hy) + 20.0) / 10.0) * 10.0};
+}
+}  // namespace
+
 View3DCanvas::View3DCanvas(QWidget* parent) : QWidget(parent) {
     setMinimumSize(200, 200);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -22,7 +35,7 @@ void View3DCanvas::setDoc(const ArtifactDoc* d, int slot) {
     doc_ = d;
     slot_ = slot;
     cut_.clear();
-    if (doc_ && doc_->isLoaded()) {
+    if (doc_ && doc_->isLoaded() && doc_->poseConfirmed()) {  // 확정 전에는 절단하지 않는다
         const auto& sl = doc_->slotList();
         const auto& m = doc_->lodMesh().faces.empty() ? doc_->mesh() : doc_->lodMesh();
         if (slot >= 0 && slot < int(sl.size()) && sl[size_t(slot)].kind == SlotKind::Horizontal)
@@ -47,11 +60,23 @@ RasterView View3DCanvas::view() const {
     v.pitchDeg = pitch_;
     if (!doc_ || !doc_->isLoaded()) return v;
     const auto& m = doc_->mesh();
+    v.centerPx = QPointF(width() / 2.0, height() / 2.0);
+    if (!doc_->poseConfirmed()) {
+        // 확정 전: (메시 바운딩 박스 ∪ 바닥판) 의 중심·크기로 맞춘다. 판이 메시 발자국을 덮으므로 x·y 는 판 기준,
+        // 돌려 봐도 판 모서리가 들어오도록 반경 = 반쪽 길이 × √2.
+        const FloorPlate f = floorPlate(m);
+        const double z0 = std::min(m.bboxMin.z, 0.0), z1 = std::max(m.bboxMax.z, 0.0);
+        const double r = f.half * std::sqrt(2.0), h = z1 - z0;
+        v.pxPerMm = std::min(width(), height()) / std::max(1.0, std::sqrt(4 * r * r + h * h) * 1.05);
+        v.centerX = f.cx;
+        v.centerY = f.cy;
+        v.centerZ = 0.5 * (z0 + z1);
+        return v;
+    }
     const double r = std::max({std::fabs(m.bboxMin.x), std::fabs(m.bboxMax.x), std::fabs(m.bboxMin.y), std::fabs(m.bboxMax.y)});
     const double h = m.bboxMax.z - m.bboxMin.z;
     const double extent = std::sqrt(4 * r * r + h * h) * 1.12;
     v.pxPerMm = std::min(width(), height()) / std::max(1.0, extent);
-    v.centerPx = QPointF(width() / 2.0, height() / 2.0);
     v.centerZ = m.bboxMin.z + h / 2.0;
     return v;
 }
@@ -69,6 +94,27 @@ void View3DCanvas::paintEvent(QPaintEvent*) {
         dirty_ = false;
     }
     p.setRenderHint(QPainter::Antialiasing);
+    if (!doc_->poseConfirmed()) {
+        // ① 바닥 정하기: 바닥판(Wash) + 1 cm 방안(Grid10mm) + 테두리(Edge) 를 유물보다 먼저(뒤쪽에) 그린다
+        const FloorPlate f = floorPlate(doc_->mesh());
+        auto at = [&](double x, double y) { return projectPoint({f.cx + x, f.cy + y, 0.0}, v); };
+        const QPolygonF plate{at(-f.half, -f.half), at(f.half, -f.half), at(f.half, f.half), at(-f.half, f.half)};
+        p.setPen(Qt::NoPen);
+        p.setBrush(theme::Wash);
+        p.drawPolygon(plate);
+        p.setPen(QPen(theme::Grid10mm, 1));
+        const int n = int(std::lround(2.0 * f.half / 10.0));
+        for (int i = 1; i < n; ++i) {
+            const double t = -f.half + 10.0 * i;
+            p.drawLine(at(t, -f.half), at(t, f.half));
+            p.drawLine(at(-f.half, t), at(f.half, t));
+        }
+        p.setPen(QPen(theme::Edge, 1));
+        p.setBrush(Qt::NoBrush);
+        p.drawPolygon(plate);
+        p.drawImage(0, 0, img_);
+        return;
+    }
     const auto& m = doc_->mesh();
     const double R = std::max({std::fabs(m.bboxMin.x), std::fabs(m.bboxMax.x), std::fabs(m.bboxMin.y), std::fabs(m.bboxMax.y)}) + 8;
     const double z0 = m.bboxMin.z - 6, z1 = m.bboxMax.z + 8;
@@ -160,9 +206,9 @@ View3DPane::View3DPane(QWidget* parent) : QWidget(parent) {
     auto* h = new QHBoxLayout(head);
     h->setContentsMargins(12, 0, 6, 0);
     h->setSpacing(4);
-    auto* t = new QLabel(QStringLiteral("<b>3D 유물</b> <span style='color:%1'>절단면 · 중심축</span>").arg(theme::hex(theme::Muted)), head);
-    t->setProperty("ph", true);
-    h->addWidget(t);
+    title_ = new QLabel(QStringLiteral("<b>3D 유물</b> <span style='color:%1'>절단면 · 중심축</span>").arg(theme::hex(theme::Muted)), head);
+    title_->setProperty("ph", true);
+    h->addWidget(title_);
     h->addStretch();
     auto mk = [&](const QString& s, const QString& tip) {
         auto* b = new QPushButton(s, head);
@@ -203,11 +249,19 @@ View3DPane::View3DPane(QWidget* parent) : QWidget(parent) {
 void View3DPane::refresh(const ArtifactDoc& doc, int slot) {
     canvas_->setDoc(&doc, slot);
     const QString mu = theme::hex(theme::Muted);
+    const bool base = doc.isLoaded() && !doc.poseConfirmed();
+    title_->setText(base ? QStringLiteral("<b>3D — 바닥판(실측판)에 올려놓기</b>")
+                         : QStringLiteral("<b>3D 유물</b> <span style='color:%1'>절단면 · 중심축</span>").arg(mu));
     info_->setText(QStringLiteral("<span style='color:%1; font-family:Malgun Gothic'>메시</span> <b>%2</b><span style='color:%1; font-family:Malgun Gothic'>면</span>")
                        .arg(mu, QLocale(QLocale::English).toString(qlonglong(doc.mesh().faces.size()))));
     info_->setToolTip(doc.scannerProfile());
-    info2_->setText(QStringLiteral("<span style='color:%1; font-family:Malgun Gothic'>중심축 오차</span> %2 mm")
-                        .arg(mu).arg(doc.axisRmse(), 0, 'f', 2));
+    if (base) {
+        info2_->setText(QStringLiteral("<span style='font-family:Malgun Gothic'>%1</span>").arg(doc.groundNote()));
+    } else {
+        // 사람이 확정한 자세(자동 세우기 없음)는 축 오차가 없다 → —
+        const QString rmse = doc.axisRmse() >= 0 ? QStringLiteral("%1 mm").arg(doc.axisRmse(), 0, 'f', 2) : QStringLiteral("—");
+        info2_->setText(QStringLiteral("<span style='color:%1; font-family:Malgun Gothic'>중심축 오차</span> %2").arg(mu, rmse));
+    }
 }
 
 }  // namespace studio
