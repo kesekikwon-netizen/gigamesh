@@ -66,7 +66,15 @@ static bool checkSpecies(const char* name, const SyntheticMesh& syn, bool expect
     return true;
 }
 
-int main() {
+static std::string outPath(int argc, char** argv, const char* name) {
+    std::string dir = (argc > 1 && argv[1] != nullptr) ? argv[1] : "";
+    if (!dir.empty() && dir.back() != '/' && dir.back() != '\\') {
+        dir += '/';
+    }
+    return dir + name; // argv[1] = output dir, else relative to CTest cwd (build folder)
+}
+
+int main(int argc, char** argv) {
     if (std::abs(RoundTenths(12.34) - 12.3) > 1e-12 || std::abs(RoundTenths(12.35) - 12.4) > 1e-12) {
         std::fprintf(stderr, "FAIL RoundTenths\n");
         return 1;
@@ -92,7 +100,7 @@ int main() {
     const auto sil = ExtractSilhouette(mesh, SilhouetteMode::MaxRadius, 0.25);
     const auto sec = ComposeSection(mesh);
     const auto dim = AnalyzeDimensions(mesh, sil);
-    const char* svgPath = "D:\\gigamesh\\karch_t6_cyl.svg";
+    const std::string svgPath = outPath(argc, argv, "karch_t6_cyl.svg");
     if (!WritePlateSvg(svgPath, sil.leftOutline, sec, dim)) {
         std::fprintf(stderr, "FAIL write svg\n");
         return 1;
@@ -105,7 +113,7 @@ int main() {
         std::fprintf(stderr, "FAIL svg labels\n");
         return 1;
     }
-    std::printf("svg %s bytes=%zu\n", svgPath, svg.size());
+    std::printf("svg %s bytes=%zu\n", svgPath.c_str(), svg.size());
 
     auto shifted = cyl.toMesh();
     for (auto& v : shifted.vertices) {
@@ -120,7 +128,7 @@ int main() {
                      dimShift.zMin, dimShift.zMax);
         return 1;
     }
-    const char* svgShift = "D:\\gigamesh\\karch_t6_aligned.svg";
+    const std::string svgShift = outPath(argc, argv, "karch_t6_aligned.svg");
     if (!WritePlateSvg(svgShift, silShift.leftOutline, secShift, dimShift)) {
         std::fprintf(stderr, "FAIL write aligned svg\n");
         return 1;

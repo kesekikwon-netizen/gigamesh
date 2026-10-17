@@ -31,14 +31,12 @@ static bool hasEntityDashed(const std::string& s) {
     return s.find("\n6\nDASHED\n", ent) != std::string::npos;
 }
 
-static std::string outPath(const char* name) {
-    const std::string preferred = std::string("D:\\gigamesh\\") + name;
-    std::ofstream probe(preferred.c_str(), std::ios::out | std::ios::app);
-    if (probe) {
-        probe.close();
-        return preferred;
+static std::string outPath(int argc, char** argv, const char* name) {
+    std::string dir = (argc > 1 && argv[1] != nullptr) ? argv[1] : "";
+    if (!dir.empty() && dir.back() != '/' && dir.back() != '\\') {
+        dir += '/';
     }
-    return name;
+    return dir + name; // argv[1] = output dir, else relative to CTest cwd (build folder)
 }
 
 static std::string slurp(const std::string& path) {
@@ -46,7 +44,7 @@ static std::string slurp(const std::string& path) {
     return std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
 }
 
-int main() {
+int main(int argc, char** argv) {
     SyntheticParams sp;
     sp.radialSeg = 180;
     sp.heightSeg = 20;
@@ -57,7 +55,7 @@ int main() {
     const auto sil = ExtractSilhouette(mesh, SilhouetteMode::MaxRadius, 0.25);
     const auto sec = ComposeSection(mesh);
     const auto dim = AnalyzeDimensions(mesh, sil);
-    const std::string dxfPath = outPath("karch_t8_cyl.dxf");
+    const std::string dxfPath = outPath(argc, argv, "karch_t8_cyl.dxf");
     if (!dim.ok || !WritePlateDxf(dxfPath, sil.leftOutline, sec, dim)) {
         std::fprintf(stderr, "FAIL write dxf\n");
         return 1;
@@ -96,7 +94,7 @@ int main() {
     const auto silF = ExtractSilhouette(fragMesh, SilhouetteMode::MaxRadius, 0.25);
     const auto secF = ComposeSection(fragMesh);
     const auto dimF = AnalyzeDimensions(fragMesh, silF);
-    const std::string fragPath = outPath("karch_t8_frag.dxf");
+    const std::string fragPath = outPath(argc, argv, "karch_t8_frag.dxf");
     if (!dimF.ok || !dimF.rimIsFragment || !WritePlateDxf(fragPath, silF.leftOutline, secF, dimF)) {
         std::fprintf(stderr, "FAIL frag dxf ok=%d frag=%d\n", static_cast<int>(dimF.ok),
                      static_cast<int>(dimF.rimIsFragment));
