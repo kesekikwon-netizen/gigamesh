@@ -1,0 +1,17 @@
+{
+  "id": "JOB-009",
+  "title": "큰 스캔(25만 면 초과)의 치수를 원본에서 계산 — LOD 치수 오류 고치기",
+  "request": "사용자 요구: Artec 스캔(실제 완형 스캔은 대개 25만 면 초과)으로 정확한 실측 도면·치수. JOB-008 명세 모의 실험·검토에서 발견: 34.6만 면 합성 예제에서 LOD 로 계산한 치수가 저경 5.2 mm·기벽 3.85 mm 로 틀림(실제 142·6.8). 사용자 \"전부 다되면 개발진행하라\".",
+  "status": "queued",
+  "branch": "factory/JOB-009",
+  "worktree": ".worktrees/JOB-009",
+  "base_sha": "a913448",
+  "depends_on": "JOB-008 (factory/JOB-008 @ a913448) — JOB-006·007·008 승인 전제",
+  "created": "2026-10-18T06:41:57+09:00",
+  "updated": "2026-10-18T06:41:57+09:00",
+  "history": [
+    { "at": "2026-10-18T06:41:57+09:00", "from": null, "to": "queued", "by": "factory", "note": "등록 — JOB-008 검토에서 재현된 큰 스캔 치수 오류, JOB-008 승인 대기 중 이어서 시작" }
+  ],
+  "reviews": { "code": "na", "correctness": "na", "security": "na", "ui": "na" },
+  "approvals": []
+}

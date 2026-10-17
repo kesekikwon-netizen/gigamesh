@@ -2,16 +2,67 @@
   "id": "JOB-008",
   "title": "단면·외곽선을 기준선에 맞추기 — 단면 곡선이 구연선·바닥선을 넘지 않게, 외곽선 끝 틈 메우기",
   "request": "사용자 요구: 실측 도면(단면·외곽선)이 국내 보고서 표준대로 기준선(중심선·구연선·바닥선) 위에 정확히 놓여 Illustrator 로 1:1 축척 출력. JOB-007 검토·완전성 점검에서 발견: 기본 Catmull-Rom 곡선이 단면 끝을 부풀려 예제 단면이 구연선 위 +3.1 mm·바닥선 아래 −3.7 mm 로 넘치고, 외면 외곽선 끝이 구연선·바닥선에 약 3 mm 못 미침(K-Arch 실루엣 꼭짓점 z 2·98 백분위). 사용자 \"전부 다되면 개발진행하라\".",
-  "status": "queued",
+  "status": "review",
   "branch": "factory/JOB-008",
   "worktree": ".worktrees/JOB-008",
   "base_sha": "89846ba",
   "depends_on": "JOB-007 (factory/JOB-007 @ 89846ba) — JOB-006·JOB-007 승인 전제",
   "created": "2026-10-18T04:08:56+09:00",
-  "updated": "2026-10-18T04:08:56+09:00",
+  "updated": "2026-10-18T06:41:16+09:00",
   "history": [
-    { "at": "2026-10-18T04:08:56+09:00", "from": null, "to": "queued", "by": "factory", "note": "등록 — JOB-007 검토에서 발견된 실측 정확성 문제, JOB-007 승인 대기 중 이어서 시작" }
+    {
+      "at": "2026-10-18T04:08:56+09:00",
+      "from": null,
+      "to": "queued",
+      "by": "factory",
+      "note": "등록 — JOB-007 검토에서 발견된 실측 정확성 문제, JOB-007 승인 대기 중 이어서 시작"
+    },
+    {
+      "at": "2026-10-18T06:41:16+09:00",
+      "from": "queued",
+      "to": "spec",
+      "by": "spec-writer",
+      "note": "spec.md — 실측 정확성·코드 비평 2명 18건 반영, 수용 기준 24개, 제품 ≈104(빈 줄·주석 제외 ≈80)"
+    },
+    {
+      "at": "2026-10-18T06:41:16+09:00",
+      "from": "spec",
+      "to": "build",
+      "by": "factory",
+      "note": "명세·구현·검증·검토를 한 워크플로로"
+    },
+    {
+      "at": "2026-10-18T06:41:16+09:00",
+      "from": "build",
+      "to": "verify",
+      "by": "builder",
+      "note": "커밋 a913448 (제품 빈 줄·주석 제외 +171/−41), 자체 ctest 18/18"
+    },
+    {
+      "at": "2026-10-18T06:41:16+09:00",
+      "from": "verify",
+      "to": "review",
+      "by": "test-runner",
+      "note": "PASS — 깨끗한 빌드, ctest 18/18, 경고 0, 수용 기준 24/24, PY-FIT OK, SHOTS OK"
+    }
   ],
-  "reviews": { "code": "na", "correctness": "na", "security": "na", "ui": "na" },
-  "approvals": []
+  "reviews": {
+    "code": "pass",
+    "correctness": "pass",
+    "security": "pass",
+    "ui": "pass"
+  },
+  "approvals": [],
+  "head": "a913448",
+  "review_summary": "검토 4/4 PASS, 차단 지적 0. 완전성 점검: 정본 R5 「그린 선은 간격의 절반 안」 반례(미스캔 간격 0.1 에서 0.0563 > 0.05), 기울어진 채 확정하면 새 외곽선이 자세 오류를 크게 드러냄, 비대칭 유물에서 각도마다 외곽선·도판 폭이 바뀜, 25만 면 초과 LOD 치수 오류(범위 밖)",
+  "human_review_required": [
+    "UI_RULES R5 「선 다듬기」 정본 줄과 그 반례",
+    "매끄럽게가 모서리에서 곧아짐",
+    "외곽선 정의 MaxRadius → 막과 수직인 실루엣 외면 반쪽",
+    "끝 틈(끌어 붙이지 않음)",
+    "기준선 폭 vs 윤곽 끝",
+    "최대 편차 표시",
+    "허용치 = 간격/2",
+    "25만 면 초과 치수(후속 JOB-009)"
+  ]
 }
