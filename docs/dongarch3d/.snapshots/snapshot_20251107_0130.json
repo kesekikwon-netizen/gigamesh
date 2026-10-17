@@ -1,0 +1,47 @@
+{
+  "timestamp": "2025-11-07T01:30:00Z",
+  "event": "compact_auto_save",
+  "project": "DongArch3D",
+  "phase": 0,
+  "phase_name": "프로젝트 리브랜딩",
+  "day": 1,
+  "current_task": "002",
+  "progress": {
+    "tasks_completed": 1,
+    "tasks_total": 71,
+    "percentage": 1.4,
+    "phase_0_progress": 20.0
+  },
+  "recent_activity": [
+    {
+      "task": "001",
+      "action": "completed",
+      "timestamp": "2025-11-07T00:45:00Z",
+      "commit": "3588d3f",
+      "files": [
+        "CMakeLists.txt",
+        "gui/CMakeLists.txt",
+        "gui/src/QGMMainWindow.cpp"
+      ]
+    },
+    {
+      "task": "002",
+      "action": "started",
+      "timestamp": "2025-11-07T01:30:00Z",
+      "status": "waiting_for_decision"
+    }
+  ],
+  "git_status": {
+    "branch": "feature/dongarch3d",
+    "last_commit": "3588d3f",
+    "uncommitted_changes": true
+  },
+  "next_actions": [
+    "Task 002: 로고 디자인 방법 선택",
+    "또는 Task 004로 건너뛰기 (색상 테마 코드 작업)"
+  ],
+  "context_size": {
+    "before_compact": "103000 tokens",
+    "after_compact": "estimated 50000 tokens"
+  }
+}

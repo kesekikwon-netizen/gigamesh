@@ -1,0 +1,93 @@
+\def\tabletscale{1}                 % default scale 1:1
+\newcommand{\tabletfnname}[1]{#1}   % prefix of the tablets filename
+
+\newcommand{\tabletfatcross}[4]{
+	% CDLI fat cross (6 Views)
+	% Parameter 1: Caption
+	% Parameter 2: Prefix filename
+	% Parameter 3: Scale
+	% Parameter 4: fig::id
+	\def\tabletscale{#3}
+	\renewcommand{\tabletfnname}[1]{VAT_11403_GM_orient_#2_color}
+	\begin{figure}
+		\begin{center}
+		\begin{tabular}{ccc}
+			&   % empty
+			\includegraphics[scale=\tabletscale]{#2_01_ha_top}        &
+			\\  % empty
+			\includegraphics[scale=\tabletscale]{#2_02_ha_left}       &
+			\includegraphics[scale=\tabletscale]{#2_03_ha_front}      &
+			\includegraphics[scale=\tabletscale]{#2_04_ha_right}      \\
+			&   % empty
+			\includegraphics[scale=\tabletscale]{#2_05_ha_bottom}     &
+			\\  % empty
+			&   % ignore: \includegraphics[scale=\tabletscale]{#2_06_ha_back_left}  &
+			\includegraphics[scale=\tabletscale]{#2_07_ha_back}       &
+			\\  % ignore: \includegraphics[scale=\tabletscale]{#2_08_ha_back_right} \\
+		\end{tabular}
+		\caption{#1}
+		\label{#4}
+		\end{center}
+	\end{figure}
+}
+
+\newcommand{\tabletfatcrossinv}[4]{
+	% CDLI fat cross (6 Views) INVERTED
+	% Parameter 1: Caption
+	% Parameter 2: Prefix filename
+	% Parameter 3: Scale
+	% Parameter 4: fig::id
+	\def\tabletscale{#3}
+	\renewcommand{\tabletfnname}[1]{VAT_11403_GM_orient_#2_color}
+	\begin{figure}
+		\begin{center}
+		\begin{tabular}{ccc}
+			&   % ignore: \includegraphics[scale=\tabletscale]{#2_02_ha_left}       &
+			\includegraphics[scale=\tabletscale]{#2_03_ha_front}      &
+			\\  % ignore: \includegraphics[scale=\tabletscale]{#2_04_ha_right}      \\
+			&   % empty
+			\includegraphics[scale=\tabletscale]{#2_05_ha_bottom}     &
+			\\  % empty
+			\includegraphics[scale=\tabletscale]{#2_06_ha_back_left}  &
+			\includegraphics[scale=\tabletscale]{#2_07_ha_back}       &
+			\includegraphics[scale=\tabletscale]{#2_08_ha_back_right} \\
+			&   % empty
+			\includegraphics[scale=\tabletscale]{#2_01_ha_top}        &
+			\\  % empty
+		\end{tabular}
+		\caption{#1}
+		\label{#4}
+		\end{center}
+	\end{figure}
+}
+
+\newcommand{\tabletpatfatcross}[4]{
+	% patriarchal fat cross (8 Views)
+	% Parameter 1: Caption
+	% Parameter 2: Prefix filename
+	% Parameter 3: Scale
+	% Parameter 4: fig::id
+	\def\tabletscale{#3}
+	\renewcommand{\tabletfnname}[1]{VAT_11403_GM_orient_#2_color}
+	\begin{figure}
+		\begin{center}
+		\begin{tabular}{ccc}
+			&   % empty
+			\includegraphics[scale=\tabletscale]{#2_01_ha_top}        &
+			\\  % empty
+			\includegraphics[scale=\tabletscale]{#2_02_ha_left}       &
+			\includegraphics[scale=\tabletscale]{#2_03_ha_front}      &
+			\includegraphics[scale=\tabletscale]{#2_04_ha_right}      \\
+			&   % empty
+			\includegraphics[scale=\tabletscale]{#2_05_ha_bottom}     &
+			\\  % empty
+			\includegraphics[scale=\tabletscale]{#2_06_ha_back_left}  &
+			\includegraphics[scale=\tabletscale]{#2_07_ha_back}       &
+			\includegraphics[scale=\tabletscale]{#2_08_ha_back_right} \\
+		\end{tabular}
+		\caption{#1}
+		\label{#4}
+		\end{center}
+	\end{figure}
+}
+

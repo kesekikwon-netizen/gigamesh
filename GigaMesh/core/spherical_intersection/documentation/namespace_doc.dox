@@ -1,0 +1,28 @@
+//! @namespace spherical_intersection
+//! @brief Contains the library.
+namespace spherical_intersesction {}
+
+namespace spherical_intersection {
+//! @namespace spherical_intersection::algorithm
+//! @brief Contains algorithms to compute graph features.
+namespace algorithm {}
+}
+
+namespace spherical_intersection {
+//! @namespace spherical_intersection::math3d
+//! @brief Contains objects for computations in the three dimensional real
+//! coordinate space.
+namespace math3d {}
+}
+
+namespace spherical_intersection {
+//! @namespace spherical_intersection::utility
+//! @brief Contains utility tools.
+namespace utility {}
+}
+
+namespace spherical_intersection {
+//! @namespace spherical_intersection::graph_visualization
+//! @brief Contains tools for graph visualization.
+namespace graph_visualization {}
+}

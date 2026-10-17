@@ -1,0 +1,231 @@
+%=============================================================================
+% IWR Technical Report, Phd, etc.
+% Author: Hubert Mara
+%------------------------------------------------------------------------------
+% Inspired by older LaTeX templates used for my master thesis at the 
+% Vienna University of Technology, CVL Group (former PRIP group) in Austria.
+%------------------------------------------------------------------------------
+% Date: 28.07.2011
+%=============================================================================
+
+\usepackage{a4}                         % formating
+\usepackage[noindentafter]{titlesec}    % formating 
+\usepackage{changepage}                 % formating the titlepage
+
+\usepackage{grffile}                    % filenames with colons, dots, etc.
+
+\usepackage{graphicx}                   % grafiken
+\usepackage{wallpaper}                  % grafiken im hintergrund (titelseite!)
+\usepackage[ansinew]{inputenc}          % direkteingabe von umlauten und fuer umlaute in deutschen referenzen
+\usepackage{nicefrac}                   % fuer 'huebsches' 2.5D
+\usepackage{graphicx}                   % use option [pdftex] ??
+\usepackage{natbib}                     % platz sparen bei den ref's
+\usepackage{setspace}                   % platz sparen bei den ref's and  e.g. for \doublespacing
+\usepackage{numprint}                   % formating of large numbers in text and math mode
+
+\usepackage{amssymb}                    % Math symbols, e.g. |N
+\usepackage{amsmath}                    % Math formatting, e.g. align environment
+\usepackage{stmaryrd}                   % Mathe Binary Operators e.g. \boxempty
+\usepackage[all]{xy}                    % Graphen (mit Tabellensyntax)
+
+% The Latin Modern fonts are enhanced versions of the Computer Modern fonts, which are the LaTeX default fonts. 
+% Latin Modern fonts have enhanced metrics and glyph coverage.
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+% === control structures for latex ============================================
+%\usepackage{ifthen}
+%\newboolean{someFlag}
+% --- flags for compilation ---------------------------------------------------
+%\setboolean{someFlag}{true}
+% =============================================================================
+
+% --- Acronyme ----------------------------------------------------------------
+% older packages require: \usepackage[printonlyused]{acronym}
+\usepackage[printonlyused,withpage]{acronym}
+\renewcommand*{\acsfont}[1]{\normalfont{\normalsize{#1}}}
+
+%------------------------------------------------------------------------------
+% Alter some LaTeX defaults for better treatment of figures:
+% See p.105 of "TeX Unbound" for suggested values.
+% See pp. 199-200 of Lamport's "LaTeX" book for details.
+%   General parameters, for ALL pages:
+\renewcommand{\topfraction}{0.9}	% max fraction of floats at top
+\renewcommand{\bottomfraction}{0.8}	% max fraction of floats at bottom
+%   Parameters for TEXT pages (not float pages):
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4} % 2 may work better
+\renewcommand{\dbltopfraction}{0.9}	% fit big float above 2-col. text
+\renewcommand{\textfraction}{0.07}	% allow minimal text w. figs
+%   Parameters for FLOAT pages (not text pages):
+\renewcommand{\floatpagefraction}{0.7}	% require fuller float pages
+% N.B.: floatpagefraction MUST be less than topfraction !!
+\renewcommand{\dblfloatpagefraction}{0.7}	% require fuller float pages
+% remember to use [htp] or [htpb] for placement
+%------------------------------------------------------------------------------
+
+% --- Logos -------------------------------------------------------------------
+\ifx\logoleft\undefined
+	\typeout{INFO: No logo on the left side.}
+	\newcommand{\logoleftgraphics}[0]{}
+\else
+	\newcommand{\logoleftgraphics}[0]{\includegraphics[height = 20mm]{\logoleft}}
+	\typeout{INFO: Using logo on the left side.}
+\fi
+\ifx\logoright\undefined
+	\typeout{INFO: Rightside logo undefined - using IWR with text!}
+	\def\logoright{logos/uni_hd_iwr_logo}
+\else
+	\typeout{INFO: Using alternate logo on the right side (right).}
+\fi
+%------------------------------------------------------------------------------
+
+% --- More formatting ---------------------------------------------------------
+\hoffset    -6mm
+\voffset    -6mm
+\textwidth  16cm
+\textheight 23cm
+% -- Title formatting ---------------------------------------------------------
+\titleformat{\paragraph}[hang]{\normalfont\bfseries}{}{0pt}{}
+\titlespacing{\paragraph}{0mm}{10pt}{3pt}
+%------------------------------------------------------------------------------
+
+% misc ----------------------------------------------------------------
+% personalize item symbols
+\renewcommand*{\acsfont}[1]{\normalfont{\normalsize{#1}}}
+\newenvironment{itemized}{\renewcommand\labelitemi{$\circ$}\begin{itemize}}{\end{itemize}}
+% formulas
+\newcommand*{\degr}{\,^\circ}                  % degree
+\newcommand*{\perc}	{\, \%}                    % percent
+% font
+\newcommand*{\super}[1]{\textsuperscript{#1}}  % superscript
+\newcommand*{\sub}[1]{$_{\textrm{#1}}$}        % subscript
+% text macro
+\newcommand*{\setB}	{\textsc{setB}}
+\newcommand*{\eg}{e.g.\;}
+\newcommand*{\etal}	{et~al.\;}
+%------------------------------------------------------------------------------
+
+% --- Colors (will be used by hyperref ---------------------------------------
+\usepackage{color}
+\definecolor{lightgray}{rgb}{0.95,0.95,0.95}
+\definecolor{darkblue}{rgb}{0,0,.5}
+\definecolor{darkgreen}{rgb}{0,.5,0}
+\definecolor{darkred}{rgb}{.5,0,0}
+%------------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+%	How to make LaTeX copy & paste-able for WORD (final spell checking):
+%	- uncomment the subsequent commands so that
+\ifx\wordcompat\undefined
+	\typeout{INFO: PDF with hyperrefs.}
+	% --- Hyperlinks --------------------------------------------------------------
+	\usepackage[pagebackref=true]{hyperref}  % Links und Verlinkerungen
+	\renewcommand*{\backref}[1]{cited p. #1} % Formatierung bei der BackRefs bei den Zitaten
+	\hypersetup{
+		pdftitle=\pdftitle,         % title
+		pdfauthor=\pdfauthor,       % author
+		pdfsubject=\pdfsubject,     % subject
+		pdfkeywords=\pdfkeywords,   % keywords 
+		unicode=false,              % non-Latin characters in Acrobat's bookmarks
+		pdftoolbar=true,            % show Acrobat's toolbar?
+		pdfmenubar=true,            % show Acrobat's menu?
+		pdffitwindow=false,         % page fit to window when opened
+		pdfnewwindow=true,          % links in new window
+		colorlinks=true,            % false: boxed links; true: colored links
+		linkcolor=darkred,          % color of internal links
+		citecolor=darkgreen,        % color of links to bibliography
+		%filecolor=black,           % color of file links
+		urlcolor=darkblue,          % color of external links
+		%pdfborderstyle={/S/U/W 1}, % underline hyperlinks
+		%urlbordercolor={0 0 0},    % ... color
+	}
+\else
+	% --- Word compatible (no hyperlinks, etc. ) ----------------------------------
+	%   fi and ff are correct symbols
+	%   use url instead of hyperref
+	%	- copy & paste the *.pdf text
+	% - In word: replace (ctrl+H) ^p with a whitespace
+	%   this removes paragraph breaks
+	\typeout{INFO: PDF will be Word compatible for copy and paste.}
+	\usepackage{url}
+	% - the subsequent commands surpress ligatures & page numbering
+	\usepackage{microtype}
+	\DisableLigatures{encoding = *, family = * }
+	\pagestyle{empty}
+	% defined \href - stripping the URL showing only the tag 
+	% => IMPORTANT: always use \HREF WITH TAGS!!
+	\newcommand\href[2]{#2}
+\fi
+% ----------------------------------------------------------------------------
+
+% --- Make Abstract ----------------------------------------------------------
+\newcommand*{\makeabstract}{
+	\noindent{\bfseries Abstract \medskip \\}
+	\@abstract
+}
+\long\def\abstract#1{\gdef\@abstract{#1}}
+% ----------------------------------------------------------------------------
+
+% --- Default Adress ----------------------------------------------------------
+\ifx\iwraddress\undefined
+	\def\iwraddress{
+	Interdisziplin\"{a}res Zentrum f\"{u}r Wissenschaftliches Rechnen \\
+	\iwrworkgroup \\
+	Ruprecht-Karls-Universit\"{a}t Heidelberg 
+	}
+\fi
+%------------------------------------------------------------------------------
+
+% -- Make TITLE PAGE  --------------------------------------------------------
+\newcommand*{\maketitlepage} {
+
+	\pagenumbering{Alph}
+	
+	\begin{titlepage}
+
+	% --- Logo on the left side -----------------------------------------------
+	\begin{minipage}{0.4\textwidth}
+	\begin{flushleft}
+	\hspace{-7.8mm} 	% there is a strange margin in here...
+	\logoleftgraphics
+	\end{flushleft}
+	\end{minipage}
+	% --- IWR and Uni HD --------------------------------------------------------
+	\begin{minipage}{0.555\textwidth}
+	\begin{flushright}
+	\includegraphics[height = 20mm]{\logoright}
+	\end{flushright}
+	\end{minipage}
+	
+	\vspace{5mm}
+	
+	% --- Optional Info (e.g. report nr, draft, etc.) ---------------------------
+	\begin{flushright}
+	\iwrdocinfo
+	\end{flushright}
+	
+	\vspace{2mm}
+	
+	% --- Title -----------------------------------------------------------------
+	\begin{center}
+		\doublespacing
+		{\rmfamily\bfseries\Huge \@title} \medskip
+		%{\sffamily\bfseries\Huge \@title} \medskip
+	\end{center}
+
+	% --- Affiliation -----------------------------------------------------------
+	\begin{center}
+	{\Large \@author} \bigskip \\
+	\iwraddress \medskip \\
+	\@date \\
+	\vspace{5mm}
+	\end{center}
+	
+	% --- Abstract --------------------------------------------------------------
+	\makeabstract
+
+	%\end{adjustwidth}
+	\end{titlepage}
+}

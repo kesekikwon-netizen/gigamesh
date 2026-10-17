@@ -1,0 +1,99 @@
+/*! @mainpage Usage
+@section algorithm_usage Using the algorithms
+Step 1: Create a spherical_intersection::Mesh using spherical_intersection::Mesh::Mesh.\n
+Step 2: Use the created spherical_intersection::Mesh's member functions spherical_intersection::Mesh::add_vertex and spherical_intersection::Mesh::add_triangle to build the desired mesh.\n
+Step 3: Generate a spherical_intersection::math3d::Sphere using spherical_intersection::math3d::Sphere::Sphere as a sphere for intersection with the mesh. The ball enclosed by the sphere has to contain at least one of the mesh's vertices.\n
+Step 4: Pass one of the mesh's vertices contained in the ball enclosed by the sphere and the sphere to spherical_intersection::Graph::Graph to generate a spherical_intersection::Graph that represents the mesh's intersection with the sphere.\n
+Step 5: Pass the generated spherical_intersection::Graph to one of the algorithms in spherical_intersection::algorithm.\n
+
+@section debug_usage Using the graph visualization tools
+After completing steps 1-4 in \ref algorithm_usage, the spherical_intersection::Graph can be passed to the free functions in spherical_intersection::graph_visualization (e.g. spherical_intersection::graph_visualization::to_string or spherical_intersection::graph_visualization::to_raw_mesh) to generate different visualizations of the graph.
+
+@section example Example
+@code 
+#include "spherical_intersection/include/algorithm/component_count.h"
+#include "spherical_intersection/include/algorithm/sphere_surface_msii.h"
+#include "spherical_intersection/include/algorithm/sphere_volume_msii.h"
+#include "spherical_intersection/include/graph.h"
+#include "spherical_intersection/include/graph_visualization.h"
+#include "spherical_intersection/include/mesh.h"
+
+using namespace spherical_intersection;
+
+int main() {
+
+	// create a spherical_intersection::Mesh
+	Mesh mesh;
+
+	// build a tetrahedron
+	{
+		// add the vertices
+		mesh.add_vertex(math3d::Vector{0, 0, 0});
+		mesh.add_vertex(math3d::Vector{1, 0, 0});
+		mesh.add_vertex(math3d::Vector{0, 1, 0});
+		mesh.add_vertex(math3d::Vector{0, 0, 1});
+
+		// get a random access container containing all vertices
+		auto &vertices = mesh.get_vertices();
+
+		// add the triangles
+		mesh.add_triangle(vertices[0], vertices[2], vertices[1]);
+		mesh.add_triangle(vertices[0], vertices[1], vertices[3]);
+		mesh.add_triangle(vertices[0], vertices[3], vertices[2]);
+		mesh.add_triangle(vertices[1], vertices[2], vertices[3]);
+	}
+
+	// create a sphere
+	math3d::Sphere sphere{math3d::Vector{0, 0, 0}, 0.1};
+
+	// generate a graph representing the tetrahedron's intersection with the
+	// sphere
+	spherical_intersection::Graph graph{mesh.get_vertices()[0], sphere};
+
+	// show the graph's string representation
+	std::cout << graph_visualization::to_string(graph) << "\n" << std::endl;
+
+	// create data of a mesh visualizing the graph
+	auto graph_as_mesh = graph_visualization::to_raw_mesh(graph, 16);
+
+	// compute the length of the sphere surface intersection
+	// represented by the graph
+	auto sphere_surface_length =
+	    algorithm::get_sphere_surface_length(graph);
+
+	std::cout << "length: " << sphere_surface_length << "\n" << std::endl;
+
+	// compute the area of the sphere volume intersection
+	// represented by the graph
+	auto sphere_volume_area =
+	    algorithm::get_sphere_volume_area(graph);
+
+	std::cout << "area: " << sphere_volume_area << "\n"
+		  << std::endl;
+
+	// recreate the graph
+	graph = spherical_intersection::Graph{mesh.get_vertices()[0], sphere};
+
+	// compute the number of components the graph has
+	auto component_count = algorithm::get_component_count(graph);
+
+	std::cout << "number of components: " << component_count << std::endl;
+}
+@endcode
+Example output:
+@code
+directed multigraph 0x613f857aab36 as successor lists:
+0 (3-0, 0): [0, 1, 3] 1
+1 (1-0, 0): [0, 2, 1] 2
+2 (0-2, 0): [0, 3, 2] 0
+
+length: 4.71239
+
+area: 0.125
+
+number of components: 1
+
+
+@endcode
+*/
+

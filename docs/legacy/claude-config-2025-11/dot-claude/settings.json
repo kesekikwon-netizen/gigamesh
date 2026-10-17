@@ -1,0 +1,29 @@
+{
+  "description": "DongArch3D Project Settings - Context Auto-Save & Restore (UserPromptSubmit disabled)",
+  "hooks": {
+    "PreCompact": [
+      {
+        "matcher": "auto|manual",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-compact.sh",
+            "description": "Save context snapshot before compact"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/post-compact.sh",
+            "description": "Restore context after compact"
+          }
+        ]
+      }
+    ]
+  }
+}

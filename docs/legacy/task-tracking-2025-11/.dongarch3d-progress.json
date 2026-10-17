@@ -1,0 +1,335 @@
+{
+  "metadata": {
+    "project": "DongArch3D - 동국문화재연구원 전용 실측 프로그램",
+    "project_name_en": "Dongguk Archaeological 3D Measurement System",
+    "base": "GigaMesh v1.0+ (GPL v3)",
+    "plan_version": "1.0.0",
+    "created": "2025-11-07T00:00:00Z",
+    "updated": "2025-11-08T12:30:00Z",
+    "total_phases": 5,
+    "total_tasks": 71,
+    "total_days": 22,
+    "total_hours": 176,
+    "priority": "★★★★☆ (Advanced)"
+  },
+  "current": {
+    "phase": 1,
+    "phase_name": "UI 전면 개편",
+    "day": 2,
+    "task_id": "106",
+    "status": "completed",
+    "phase_0_status": "completed",
+    "phase_1_status": "in_progress"
+  },
+  "phases": {
+    "0": {
+      "name": "프로젝트 리브랜딩",
+      "days": 1,
+      "hours": 8,
+      "goal": "GigaMesh를 DongArch3D로 리브랜딩",
+      "deliverables": [
+        "프로젝트명 변경",
+        "로고 및 아이콘",
+        "색상 테마",
+        "한글 폰트"
+      ],
+      "tasks": {
+        "001": {
+          "name": "프로젝트명 변경 및 기본 설정",
+          "description": "CMake 프로젝트명, 실행파일명, 윈도우 타이틀 변경",
+          "hours": 1,
+          "status": "completed",
+          "started": "2025-11-07T00:30:00Z",
+          "completed": "2025-11-07T00:45:00Z",
+          "files": [
+            "CMakeLists.txt",
+            "gui/CMakeLists.txt",
+            "gui/src/QGMMainWindow.cpp"
+          ],
+          "notes": [
+            "실제 소요 시간: 15분 (예상 1시간)",
+            "Git commit: 3588d3f"
+          ]
+        },
+        "002": {
+          "name": "로고 및 아이콘 디자인",
+          "description": "동국문화재연구원 CI를 반영한 로고 제작",
+          "hours": 2,
+          "status": "completed",
+          "started": "2025-11-07T01:30:00Z",
+          "completed": "2025-11-07T10:00:00Z",
+          "files": [
+            "gui/resources/images/logo_dongarch.png",
+            "gui/resources/icons/app_icon.ico",
+            "gui/resources/icons/app_icon.png"
+          ],
+          "notes": [
+            "Stratigraphic Precision 디자인 철학",
+            "512x512 로고, 256x256 아이콘",
+            "Git commit: via subagent"
+          ]
+        },
+        "003": {
+          "name": "고고학 전용 아이콘 셋 준비",
+          "description": "Material Design 기반 고고학 아이콘 64개",
+          "hours": 2,
+          "status": "completed",
+          "started": "2025-11-07T10:30:00Z",
+          "completed": "2025-11-07T11:15:00Z",
+          "files": [
+            "gui/resources/icons/archaeology/*.svg (64개)",
+            "gui/resources/icons/archaeology/archaeology_icons.qrc"
+          ],
+          "notes": [
+            "단면 도구 아이콘: 16개",
+            "석기 도구 아이콘: 16개",
+            "토기 도구 아이콘: 16개",
+            "측정 도구 아이콘: 16개",
+            "총 99KB, Material Design 2.0",
+            "Git commit: pending"
+          ]
+        },
+        "004": {
+          "name": "색상 테마 정의",
+          "description": "고고학 전용 색상 팔레트",
+          "hours": 1.5,
+          "status": "completed",
+          "started": "2025-11-07T08:00:00Z",
+          "completed": "2025-11-07T09:00:00Z",
+          "files": [
+            "gui/src/DongArchColors.h"
+          ],
+          "notes": [
+            "6가지 주요 색상 정의",
+            "Light/Dark 테마 프리셋",
+            "유틸리티 함수 포함",
+            "Git commit: e22de04"
+          ]
+        },
+        "005": {
+          "name": "한글 폰트 설정",
+          "description": "Noto Sans KR 폰트 임베딩",
+          "hours": 1.5,
+          "status": "completed",
+          "started": "2025-11-07T09:00:00Z",
+          "completed": "2025-11-07T10:00:00Z",
+          "files": [
+            "gui/resources/fonts/NotoSansKR-Regular.ttf",
+            "gui/resources/fonts/NotoSansKR-Bold.ttf",
+            "gui/resources.qrc",
+            "gui/src/QGMMainWindow.cpp"
+          ],
+          "notes": [
+            "Google Fonts Variable TTF",
+            "각 10MB (20MB 총)",
+            "QFontDatabase 자동 로딩",
+            "Git commit: e22de04"
+          ]
+        }
+      }
+    },
+    "1": {
+      "name": "UI 전면 개편",
+      "days": 3,
+      "hours": 24,
+      "goal": "완전히 새로운 한국어 UI/UX",
+      "deliverables": [
+        "모듈형 레이아웃",
+        "도구 팔레트",
+        "속성 패널",
+        "측정 결과 패널",
+        "한글 메뉴 바",
+        "다크 모드"
+      ],
+      "tasks": {
+        "101": {
+          "name": "메인 윈도우 레이아웃 재설계",
+          "description": "QDockWidget 기반 모듈형 레이아웃",
+          "hours": 2,
+          "status": "completed",
+          "started": "2025-11-08T11:00:00Z",
+          "completed": "2025-11-08T11:30:00Z",
+          "files": [
+            "gui/src/QGMMainWindow.cpp"
+          ],
+          "notes": [
+            "QDockWidget 3개 배치 (도구 팔레트, 속성 패널, 측정 결과)",
+            "한국어 타이틀 적용",
+            "드래그 앤 드롭 + 플로팅 윈도우 지원",
+            "QSettings 레이아웃 저장/복원",
+            "실제 소요 시간: 30분 (예상 2시간)",
+            "빌드 성공: DongArch3D.exe (26MB)"
+          ]
+        },
+        "102": {
+          "name": "도구 팔레트 패널",
+          "description": "20개 실측 도구를 아이콘 버튼으로 배치",
+          "hours": 3,
+          "status": "completed",
+          "started": "2025-11-08T11:00:00Z",
+          "completed": "2025-11-08T12:30:00Z",
+          "files": [
+            "gui/src/DongArchToolPalette.h",
+            "gui/src/DongArchToolPalette.cpp",
+            "gui/CMakeLists.txt"
+          ],
+          "notes": [
+            "20개 도구 버튼 (4×5 그리드)",
+            "한국어 툴팁 100% 적용",
+            "14개 고고학 아이콘 + 6개 Qt 표준 아이콘",
+            "toolSelected(int) 시그널 구현",
+            "실제 소요 시간: 1.5시간 (예상 3시간)",
+            "빌드 성공"
+          ]
+        },
+        "103": {
+          "name": "속성 패널",
+          "description": "선택된 객체의 속성 실시간 표시/편집",
+          "hours": 3,
+          "status": "completed",
+          "started": "2025-11-08T11:00:00Z",
+          "completed": "2025-11-08T12:30:00Z",
+          "files": [
+            "gui/src/DongArchPropertyPanel.h",
+            "gui/src/DongArchPropertyPanel.cpp",
+            "gui/src/QGMMainWindow.h",
+            "gui/src/QGMMainWindow.cpp",
+            "gui/CMakeLists.txt"
+          ],
+          "notes": [
+            "13개 속성 표시 (좌표 3개, 크기 5개, 메타데이터 5개)",
+            "3개 섹션 (좌표 정보, 크기 정보, 메타데이터)",
+            "한국어 라벨 100% 적용",
+            "샘플 데이터 자동 로드",
+            "QScrollArea + QFormLayout 기반 UI",
+            "실제 소요 시간: 1.5시간 (예상 3시간)",
+            "빌드 성공: DongArch3D.exe (26MB)"
+          ]
+        },
+        "104": {
+          "name": "측정 결과 패널",
+          "description": "측정 데이터 테이블 및 통계",
+          "hours": 2.5,
+          "status": "completed",
+          "started": "2025-11-08T13:00:00Z",
+          "completed": "2025-11-08T14:30:00Z",
+          "files": [
+            "gui/src/DongArchMeasurementPanel.h",
+            "gui/src/DongArchMeasurementPanel.cpp",
+            "gui/src/QGMMainWindow.cpp",
+            "gui/CMakeLists.txt"
+          ],
+          "notes": [
+            "QTableWidget 5개 컬럼 (번호, 타입, 값, 단위, 시간)",
+            "실시간 통계 계산 (평균, 표준편차, 최대/최소)",
+            "샘플 데이터 10개 로드",
+            "CSV 내보내기 버튼",
+            "빌드 성공"
+          ]
+        },
+        "105": {
+          "name": "메뉴 바 한국어 재구성",
+          "description": "완전히 새로운 한국어 메뉴 시스템",
+          "hours": 2,
+          "status": "completed",
+          "started": "2025-11-08T13:00:00Z",
+          "completed": "2025-11-08T14:30:00Z",
+          "files": [
+            "gui/src/QGMMainWindow.cpp",
+            "gui/src/QGMMainWindow.h"
+          ],
+          "notes": [
+            "6개 메뉴: 파일, 편집, 실측, 유물, 보기, 도움말",
+            "49개 메뉴 항목 100% 한국어",
+            "DongArchColors 스타일 적용",
+            "아이콘 및 단축키 설정",
+            "빌드 성공"
+          ]
+        },
+        "106": {
+          "name": "툴바 재설계",
+          "description": "자주 쓰는 기능 20개를 32x32 아이콘으로 배치",
+          "hours": 1.5,
+          "status": "completed",
+          "started": "2025-11-08T13:00:00Z",
+          "completed": "2025-11-08T14:30:00Z",
+          "files": [
+            "gui/src/QGMMainWindow.cpp"
+          ],
+          "notes": [
+            "20개 도구 버튼 (6개 그룹)",
+            "그룹: 파일(3), 편집(3), 측정(4), 보기(4), 렌더링(3), 유틸리티(3)",
+            "DongArchColors 스타일 적용",
+            "32x32 아이콘 크기",
+            "빌드 성공"
+          ]
+        },
+        "108": {
+          "name": "다크 모드 지원",
+          "description": "Light/Dark 테마 전환 시스템",
+          "hours": 2,
+          "status": "completed",
+          "started": "2025-11-08T00:00:00Z",
+          "completed": "2025-11-08T02:00:00Z",
+          "files": [
+            "gui/src/QGMDarkModeManager.cpp",
+            "gui/src/QGMDarkModeManager.h",
+            "gui/src/DongArchColors.h",
+            "gui/src/QGMMainWindow.cpp",
+            "gui/src/QGMMainWindow.h",
+            "gui/CMakeLists.txt"
+          ],
+          "notes": [
+            "Singleton pattern 다크 모드 매니저 구현",
+            "DongArchColors에 Light/Dark 테마 프리셋 정의",
+            "QSettings로 테마 환경설정 저장",
+            "보기 메뉴에 '다크 모드' 토글 추가 (Ctrl+D)",
+            "QPalette 및 QSS 스타일시트 동적 적용",
+            "모든 dock 위젯, 툴바, 메뉴 바 스타일 지원",
+            "빌드 성공: DongArch3D.exe (26MB)"
+          ]
+        }
+      }
+    }
+  },
+  "statistics": {
+    "tasks_total": 71,
+    "tasks_completed": 12,
+    "tasks_in_progress": 0,
+    "tasks_pending": 59,
+    "completion_percentage": 16.9,
+    "days_elapsed": 1,
+    "days_remaining": 21,
+    "hours_total": 176,
+    "hours_spent": 19.5,
+    "hours_remaining": 156.5,
+    "phase_0_progress": 100.0,
+    "phase_1_progress": 58.3
+  },
+  "recent_commits": [
+    {
+      "commit_id": "3588d3f",
+      "task": "001",
+      "message": "Phase 0, Task 001: 프로젝트명 변경 및 기본 설정",
+      "timestamp": "2025-11-07T00:45:00Z"
+    },
+    {
+      "commit_id": "e22de04",
+      "task": "002,004,005",
+      "message": "Phase 0: DongArch3D 리브랜딩 완료 (Tasks 001, 002, 004, 005)",
+      "timestamp": "2025-11-07T10:00:00Z"
+    },
+    {
+      "commit_id": "73cddb1",
+      "task": "github-actions",
+      "message": "GitHub Actions: Auto CI/CD 설정",
+      "timestamp": "2025-11-07T10:30:00Z"
+    },
+    {
+      "commit_id": "9d05840",
+      "task": "autocommit",
+      "message": "Auto-Commit Commander 구축 완료",
+      "timestamp": "2025-11-07T11:00:00Z"
+    }
+  ]
+}

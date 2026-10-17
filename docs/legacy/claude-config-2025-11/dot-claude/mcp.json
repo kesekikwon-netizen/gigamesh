@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "code-execution": {
+      "command": "node",
+      "args": [
+        "/media/kwon/새 볼륨/1105/.claude/mcp/code-execution/dist/src/index.js"
+      ],
+      "env": {},
+      "disabled": false
+    },
+    "js-executor": {
+      "command": "node",
+      "args": [
+        "/media/kwon/새 볼륨/1105/.claude/mcp/code-exec-simple/dist/index.js"
+      ],
+      "env": {},
+      "disabled": false
+    }
+  }
+}

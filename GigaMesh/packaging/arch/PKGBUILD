@@ -1,0 +1,62 @@
+# Maintainer: Hubert Mara <hubert.mara@iwr.uni-heidelberg.de>
+pkgname=gigamesh	
+pkgver=190311
+pkgrel=1
+epoch=
+pkgdesc="Software framework for displaying and processing large meshes"
+arch=("x86_64")
+url="http://gigamesh.eu"
+license=('unknown')
+groups=()
+depends=(
+ 'libtiff'
+ 'qt5-base'
+)
+makedepends=(
+ 'cmake'
+)
+checkdepends=()
+optdepends=(
+ 'inkscape'
+ 'texlive-bin'
+ 'evince'
+)
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+changelog="changelog.txt"
+source=()
+noextract=()
+md5sums=()
+validpgpkeys=()
+
+pkgver() {
+	git log -1 --format=%ci | cut -b3,4,6,7,9,10
+}
+
+package() {
+	mkdir -p $pkgdir/usr/share/gigamesh/scripts
+#       Sample data is nice, but the files in 3d_simple should not be published.
+#	cp -R 3d_simple $pkgdir/usr/share/gigamesh/3d_simple
+
+	mkdir -p $pkgdir/usr/bin
+	cp build/gui/gigamesh $pkgdir/usr/bin
+	cp build/cli/gigamesh-info $pkgdir/usr/bin
+	cp build/cli/gigamesh-clean $pkgdir/usr/bin
+	cp build/cli/gigamesh-tolegacy $pkgdir/usr/bin
+	cp build/cli/gigamesh-featurevectors $pkgdir/usr/bin
+	cp build/cli/gigamesh-borders $pkgdir/usr/bin
+	cp build/cli/spherical_intersection_cli/gigamesh-sphere-profiles $pkgdir/usr/bin
+	cp build/cli/spherical_intersection_cli/gigamesh-featurevectors-sl $pkgdir/usr/bin
+
+	mkdir -p $pkgdir/usr/share/pixmaps
+	cp gui/forms/gigamesh_logo.svg $pkgdir/usr/share/pixmaps
+	cp gui/forms/gigamesh_logo_terminal.svg $pkgdir/usr/share/pixmaps
+
+	mkdir -p $pkgdir/usr/share/applications
+	cp packaging/arch/gigamesh.desktop $pkgdir/usr/share/applications
+	cp packaging/arch/gigamesh_term.desktop $pkgdir/usr/share/applications
+}

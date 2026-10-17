@@ -1,0 +1,11 @@
+#!/bin/bash
+# Converts PLY/OBJ to ASCII PLY and strips extra-data added by GigaMesh
+for FILE in `find . -iname \*.ply ! -iname \*_ASCII.ply`; do
+	# -k enforces to overwrite exisiting files
+	gigamesh-toascii -f $FILE -k
+	if [ $? ]; then
+		echo Conversion of $FILE successful.
+	else
+		echo Conversion of $FILE FAILED.
+	fi
+done

@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QGMDockSideBar</class>
+ <widget class="QDockWidget" name="QGMDockSideBar">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>313</width>
+    <height>333</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>313</width>
+    <height>333</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>524287</width>
+    <height>524287</height>
+   </size>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
+  <property name="features">
+   <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+  </property>
+  <property name="allowedAreas">
+   <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+  </property>
+  <property name="windowTitle">
+   <string>Colormap</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QFormLayout" name="formLayout">
+    <property name="horizontalSpacing">
+     <number>4</number>
+    </property>
+    <property name="verticalSpacing">
+     <number>4</number>
+    </property>
+    <property name="leftMargin">
+     <number>6</number>
+    </property>
+    <property name="topMargin">
+     <number>6</number>
+    </property>
+    <property name="rightMargin">
+     <number>6</number>
+    </property>
+    <property name="bottomMargin">
+     <number>6</number>
+    </property>
+    <item row="0" column="0">
+     <widget class="QRadioButton" name="radioButtonSolidColor">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Solid Color</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">buttonGroup_colormap</string>
+      </attribute>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QRadioButton" name="radioButtonVertexTex">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Color per Vertex (Texture)</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">buttonGroup_colormap</string>
+      </attribute>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QRadioButton" name="radioButtonFuncValVertTex">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Function Value</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">buttonGroup_colormap</string>
+      </attribute>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QRadioButton" name="radioButtonVertexLabel">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Labels - Connected Comp.</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">buttonGroup_colormap</string>
+      </attribute>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="Line" name="line">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="0">
+     <widget class="QRadioButton" name="radioButtonWireframe">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Wireframe</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">buttonGroup_rendering</string>
+      </attribute>
+     </widget>
+    </item>
+    <item row="10" column="0">
+     <widget class="QRadioButton" name="radioButtonPointcloud">
+      <property name="text">
+       <string>Pointcloud</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">buttonGroup_rendering</string>
+      </attribute>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QRadioButton" name="radioButton_Solid">
+      <property name="text">
+       <string>Solid</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">buttonGroup_rendering</string>
+      </attribute>
+     </widget>
+    </item>
+    <item row="6" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Rendering</string>
+      </property>
+     </widget>
+    </item>
+    <item row="11" column="0">
+     <widget class="QRadioButton" name="radioButtonNPRendering">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Non-Photorealistic Rendering</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">buttonGroup_rendering</string>
+      </attribute>
+     </widget>
+    </item>
+    <item row="8" column="0">
+     <widget class="QRadioButton" name="radioButtonTransparency">
+      <property name="text">
+       <string>Solid, transparent</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">buttonGroup_rendering</string>
+      </attribute>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <widget class="QPushButton" name="pushButton_transparent">
+      <property name="maximumSize">
+       <size>
+        <width>32</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="11" column="1">
+     <widget class="QPushButton" name="pushButton_NPR">
+      <property name="maximumSize">
+       <size>
+        <width>32</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="0">
+     <widget class="QRadioButton" name="radioButtonTextured">
+      <property name="text">
+       <string>Textured</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">buttonGroup_rendering</string>
+      </attribute>
+     </widget>
+    </item>
+    <item row="13" column="0" colspan="2">
+     <widget class="QCheckBox" name="checkBoxArchaeologyMode">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>고고학 실측 모드 활성화 (45도 조명 및 해칭)</string>
+      </property>
+      <property name="text">
+       <string>고고학 모드</string>
+      </property>
+     </widget>
+    </item>
+    <item row="14" column="0" colspan="2">
+     <widget class="QCheckBox" name="checkBoxCortexRendering">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>피질 십자 해칭 렌더링 활성화 (Raczynski-Henk 2017 Section 2.7)</string>
+      </property>
+      <property name="text">
+       <string>피질 십자 해칭</string>
+      </property>
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="15" column="0">
+     <widget class="QPushButton" name="pushButtonSelectCortex">
+      <property name="toolTip">
+       <string>3D 메시에서 피질 정점을 선택하려면 클릭하세요</string>
+      </property>
+      <property name="text">
+       <string>피질 선택</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="15" column="1">
+     <widget class="QPushButton" name="pushButtonClearCortex">
+      <property name="toolTip">
+       <string>모든 피질 정점 선택 지우기</string>
+      </property>
+      <property name="text">
+       <string>선택 지우기</string>
+      </property>
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup_colormap"/>
+  <buttongroup name="buttonGroup_rendering"/>
+ </buttongroups>
+</ui>

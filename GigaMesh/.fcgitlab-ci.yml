@@ -1,0 +1,112 @@
+stages:
+  - build
+  - test
+
+ubuntu bionic:
+  variables:
+    SECURE_FILES_DOWNLOAD_PATH: './gui/src/'
+  # Use ubuntu 18.04 LTS
+  image: ubuntu:bionic
+  stage: build
+  # install the necessary build tools when needed
+  before_script:
+   - apt update && apt -y install make autoconf g++ git cmake unzip
+   - apt -y install qtbase5-dev libtiff5-dev g++-8 sudo
+   - apt -y install curl 
+   #add file with google analytics key 
+   - curl -s "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
+   
+  script:
+    - echo "test" 
+
+    # Make sure g++-8, gcc-8 is default
+    - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 10
+    - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 10
+    - export QT_SELECT=qt5
+
+    # build gigamesh
+    - mkdir build
+    - cd build
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -G"Unix Makefiles"
+    - make -j
+    - strip gui/gigamesh
+    - strip cli/gigamesh-featurevectors
+    - strip cli/gigamesh-tolegacy
+    - strip cli/gigamesh-clean
+    - strip cli/gigamesh-info
+    - strip cli/gigamesh-borders
+    - strip cli/spherical_intersection_cli/gigamesh-featurevectors-sl
+    - strip cli/spherical_intersection_cli/gigamesh-sphere-profiles
+
+  artifacts:
+    name: "gigamesh_bionic"
+    paths:
+      - build/gui/gigamesh
+      - build/cli/gigamesh-featurevectors
+      - build/cli/gigamesh-tolegacy
+      - build/cli/gigamesh-clean
+      - build/cli/gigamesh-info
+      - build/cli/gigamesh-borders
+      - build/cli/spherical_intersection_cli/gigamesh-featurevectors-sl
+      - build/cli/spherical_intersection_cli/gigamesh-sphere-profiles
+    expire_in: 4 hours
+
+manjaro arch:
+  variables:
+    SECURE_FILES_DOWNLOAD_PATH: './gui/src/'
+  # Use latest manjaro release
+  image: archlinux/base
+  stage: build
+  # install the necessary build tools when needed
+  before_script:
+   - pacman -Sy
+   - pacman -S gcc glibc cmake boost unzip qtcreator make git libffi qtcreator-devel qt5-base --noconfirm
+  script:
+    #add file with google analytics key 
+    - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
+
+    - export QT_SELECT=5
+
+    # build gigamesh
+    - mkdir build
+    - cd build
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -G"Unix Makefiles"
+    - make -j
+    - strip gui/gigamesh
+    - strip cli/gigamesh-featurevectors
+    - strip cli/gigamesh-tolegacy
+    - strip cli/gigamesh-clean
+    - strip cli/gigamesh-info
+    - strip cli/gigamesh-borders
+    - strip cli/spherical_intersection_cli/gigamesh-featurevectors-sl
+    - strip cli/spherical_intersection_cli/gigamesh-sphere-profiles
+
+  artifacts:
+    name: "gigamesh_arch_manjaro"
+    paths:
+      - build/gui/gigamesh
+      - build/cli/gigamesh-featurevectors
+      - build/cli/gigamesh-tolegacy
+      - build/cli/gigamesh-clean
+      - build/cli/gigamesh-info
+      - build/cli/gigamesh-borders
+      - build/cli/spherical_intersection_cli/gigamesh-featurevectors-sl
+      - build/cli/spherical_intersection_cli/gigamesh-sphere-profiles
+      - build/tests/gigameshCore_tests
+    expire_in: 4 hours
+
+manjaro arch test:
+  # Use latest manjaro release
+  image: archlinux/base
+  stage: test
+  dependencies:
+    - manjaro arch
+
+  script:
+    - build/tests/gigameshCore_tests -o report.xml -r junit
+
+  artifacts:
+    reports:
+      junit: report.xml
+
+    expire_in: 4 hours

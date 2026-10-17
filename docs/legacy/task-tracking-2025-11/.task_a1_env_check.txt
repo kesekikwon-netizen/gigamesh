@@ -1,0 +1,7 @@
+=== ENV SUMMARY ===
+QMake version 3.1
+Using Qt version 5.15.13 in /usr/lib/x86_64-linux-gnu
+cmake version 3.28.3
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+gcc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0

@@ -1,0 +1,144 @@
+\documentclass[%
+a4paper,						% alle weiteren Papierformat einstellbar
+%landscape,						% Querformat
+12pt,							% Schriftgre (12pt, 11pt (Standard))
+%BCOR1cm,						% Bindekorrektur, bspw. 1 cm
+%DIVcalc,						% fhrt die Satzspiegelberechnung neu aus, s. scrguide 2.4									
+%twoside,						% Doppelseiten
+%twocolumn,						% zweispaltiger Satz
+parskip=half*, 					% Absatzformatierung s. scrguide 3.1
+headsepline,					% Trennline zum Seitenkopf	
+%footsepline,					% Trennline zum Seitenfu
+%titlepage,						% Titelei auf eigener Seite
+headings=small,					% berschriften etwas kleiner (smallheadings)
+%index = totoc,					% Index im Inhaltsverzeichnis
+%listof = totoc,				% Abb.- und Tab.verzeichnis im Inhalt
+%bibliography= totoc			% Literaturverzeichnis im Inhalt
+%bibtotoc = true,
+%bibtotocnumbered = true,
+%bibliography=totocnumbered,
+%draft								% berlangen Zeilen in Ausgabe gekennzeichnet
+]
+{scrartcl}
+
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+
+%\usepackage{ucs}
+\usepackage[utf8]{inputenc}	
+\usepackage[babel]{csquotes}
+\usepackage{url}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{footnote}
+\usepackage[onehalfspacing]{setspace}
+\usepackage[bottom,hang]{footmisc}
+\setlength{\footnotemargin}{1pt}
+\deffootnote%
+{1em}% Einzug des Funotentextes; bei dreistelligen Funoten evtl.vergrern
+{1em}% zustzlicher Absatzeinzug in der Funote
+{%
+\makebox[1.5em]% Raum fr Funotenzeichen: ebenso gro wie Einzug des FN-Textes
+[c]% Ausrichtung des Funotenzeichens: [r]echts, [l]inks
+{\textsuperscript{\thefootnotemark}}% Funotenzeichen
+}
+
+
+% Title Page
+\title{HowTo:\\ Port GigaMesh\\ to MacOs Lion}
+\author{Christian Seitz}
+\definecolor{lightgrey}{rgb}{0.95,0.95,0.95}
+
+\lstset{ %
+  backgroundcolor=\color{lightgrey},  % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+  basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+  frame=single,
+  literate={~} {$\sim$}{1}
+  }
+
+\begin{document}
+\maketitle
+\vspace{5cm}
+\tableofcontents
+\newpage
+
+\section{Vorbereitung}
+\subsection{XQuartz}
+Da leider der native X-Server unter MacOs einige Funktionen nicht bietet, muss der alternative X-Server \glqq XQuartz\grqq ~installiert werden (download hier: \url{http://xquartz.macosforge.org})
+
+Nach der Installation muss man sich ab- und wieder anmelden, um den neuen X-Server in Betrieb zu nehmen.
+
+\subsection{Xcode}
+Für die Benutzung der Apple-Programmierumgebung auf die Homebrew aufbaut, muss Xcode installiert sein. Über den Appstore kann es kostenlos heruntergeladen werden, man benötigt allerdings eine Apple-ID.
+
+Zusätzlich muss man, sobald Xcode installiert ist, es starten und über die Einstellungen (im Menü oben auf Xcode $\rightarrow$ Preferences) im Reiter \verb Downloads ~die \glqq Command Line Tools\grqq ~installieren.
+
+\subsection{Homebrew}
+Um einige der Linuxlibraries benutzen zu können, braucht man \glqq Homebrew\grqq, das dies möglich macht:
+
+Zuerst ein Terminal öffnen (\texttt{Programme $\rightarrow$ Dienstprogramme $\rightarrow$ Terminal} -- alternativ in Spotlight (die Lupe oben rechts in der Ecke des Monitors) \glqq \verb terminal \grqq ~eintippen)
+
+Hier folgenden Code einfügen:
+\begin{lstlisting}
+ruby -e "$(curl -fsSkL raw.github.com/mxcl/homebrew/go)"
+\end{lstlisting} 
+Es wird im Verlauf der Installation nach einer Bestätigung gefragt, dies bitte mit \texttt{Enter} durchführen.
+
+Nun folgen einige Modifikationen an den Umgebungsdateien, damit beim Erstellen (kompilieren) des Programms zuerst die mit Homebrew installierten Libraries verwendet werden.
+
+Dazu muss jetzt die Datei \verb /private/etc/paths ~verändert werden\footnote{Quelle: \url{https://gist.github.com/1669348}}. Im Terminal gibt man dazu ein:
+\begin{lstlisting}
+nano /private/etc/paths
+\end{lstlisting}
+und bestätigt mit Enter.
+
+Der Inhalt der Datei sollte folgendermaßen aussehen:
+\begin{lstlisting}
+/usr/bin
+/bin
+/usr/sbin
+/sbin
+/usr/local/bin
+\end{lstlisting}
+
+sie muss korrigiert werden, so dass die Zeile \verb /usr/local/bin ~vor \verb /usr/bin ~liegt, also folgendermaßen:
+
+\begin{lstlisting}
+/usr/local/bin
+/usr/bin
+/bin
+/usr/sbin
+/sbin
+\end{lstlisting}
+Mit \verb STRG+X ~wird die Datei geschlossen und die Frage, ob gespeichert werden soll, mit \verb y ~beantwortet. 
+
+\section{Die Installation}
+Nun können die Pakete mit Homebrew installiert werden. Im Terminal gibt man dazu folgendes ein:
+\begin{lstlisting}
+brew install git glew libtiff qt cairo
+\end{lstlisting}
+Nun werden die Libraries heruntergeladen und kompiliert, das kann eine ganze Weile dauern.
+
+Ist der Vorgang abgeschlossen, kann man sich GigaMesh klonen\footnote{Git wurde über Homebrew mit installiert. Hat gitte Ihren Public-Key für SSH installiert, so müssen Sie noch die Datei \tt{id\_rsa} in den Ordner \tt{$\sim$/.ssh/} kopieren, damit git richtig funktioniert. Für Fragen zu git wenden Sie sich an ?}.
+Dazu wechselt man zunächst im Terminal in den Ordner in den man GigaMesh klonen möchte, hier beispielsweise den Desktop:
+\begin{lstlisting}
+cd ~/Desktop/
+\end{lstlisting}
+
+Mit folgendem Befehl wird ein Ordner GigMesh auf dem Desktop angelegt und die Daten vom git-Server geholt:
+\begin{lstlisting}
+git clone gitosis@gitte.iwr.uni-heidelberg.de:GigaMesh
+\end{lstlisting}
+
+Nach Abschluss wechselt man in das GigaMesh-Verzeichnis (\texttt{cd GigaMesh}) und führt dort folgende Befehle aus:
+\begin{lstlisting}
+qmake && make
+\end{lstlisting}
+ 
+Nun wird Gigamesh kompiliert. Nach dem kompilieren kann gigamesh mit \verb ./gigamesh ~gestartet werden.
+ 
+\section{Bemerkungen}
+Nachdem ein \verb .ply ~geladen wurde, kann es vorkommen, dass es nicht gleich korrekt angezeigt wird. Dann nur das Mausrad drehen oder mit der linken Maustaste das Objekt drehen.
+
+VORABVERSION -- ZUM TESTEN!
+\end{document}

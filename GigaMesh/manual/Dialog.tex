@@ -1,0 +1,466 @@
+\chapter{Detailed Dialog}
+\label{detdia}
+
+The following sections give an overview of the possibilities you have to edit, analyze and visualize the surface of your 3D object. Since the program is still work in progress, the names may slightly differ, new entries might occur or gain in functionality and other might disappear. Therefore each section starts with a brief introduction what can be found within this pull-down menu item. 
+Menu items in gray (in this manual, black in the program menu) are disabled as long as necessary data is missing. Separators given in the program do not appear in this brief description.
+A dot \textbullet\  in front of an item shows the selected option of multiple possible options, a check mark \checkmark (hooklet or cross) indicates the activation of a toggling option.
+
+The following abbreviations are used to shorten lengthy texts:
+
+\vspace*{0.5cm}
+
+\hspace*{4.0cm}\begin{minipage}{10.0cm}
+\em\small
+\begin{itemize}
+\item[\tt Polyline] Polygonal line
+\item[\tt FuncVal] Value of the active function in a primitive, e.g.~the distance of a vertex to a plane or the area of a face\item[\tt SelPrim] Selected primitive
+\item[\tt SelVert] Selected primitive, which has to be a vertex
+\item[\tt SelFace] Selected primitive, which has to be a face
+\item[\tt SelMVerts] Selection of multiple vertices
+\item[\tt SelMFaces] Selection of multiple faces
+\item[\tt SelPolyline] Selected polygonal line
+\end{itemize}
+\end{minipage}
+
+\vspace*{0.5cm}
+
+{\bf Remark:} The {\tt FuncVal} is saved as 'quality' entry/field per vertex within a PLY file. It is also read from a PLY file, if present. The 'quality' entry/field is also used for multiple purposes by software packages like {\em Meshlab} or {\em OptoCAT}. 
+
+
+%\textopenbullet
+%\Checkedbox 
+
+\section{The file dialog}\label{file}
+This is the usual file dialog with additional possibilities to unload and (re-)import feature vectors once computed with the program {\tt meshgeneratorfeaturevectors25d\_threads} (see chapter \ref{feature}). The user can as well create image stacks for a video moving the camera on a circular orbit around the object. Or he can create spherical stacks with rotating the camera or the lightsources. Or even more simple the display can be exported as screenshot.
+{\tt
+\begin{itemize}
+\item[] \fbox{File}
+ \begin{itemize}
+ \item[$\rightarrow$] Open\qquad\ \Ctrl+\keystroke{O}
+ \item[$\rightarrow$] Reload\quad\ \Ctrl+\keystroke{R}
+ \item[$\rightarrow$] Save As\quad \Ctrl+\keystroke{S}
+ \item[$\rightarrow$] Import Texture Maps
+ \item[$\rightarrow$] Import Feature Vectors
+ \color{gray}
+ \item[$\rightarrow$] Export Polylines (ASCII)
+ \item[$\rightarrow$] Export Polylines Projected (ASCII) 
+ \color{black}
+ \item[$\rightarrow$] Export FunctVals
+ \item[$\rightarrow$] Export Face Normal Angles
+ \item[$\rightarrow$] Export Image Stack 
+  \begin{itemize}
+  \item[$\rightarrow$] 360° Circular Orbit Horizontal Axis
+  \item[$\rightarrow$] 360° Circular Orbit Vertical Axis
+  \item[$\rightarrow$] 360° Circular Orbit Normal of SelPrim
+  \item[$\rightarrow$] 360° Circular Orbit Normal of Plane
+  \item[$\rightarrow$] Spherical Stack Lightsource Orbiting
+  \item[$\rightarrow$] Spherical Stack Camera Orbiting
+  \item[$\rightarrow$] \textbullet\ Camera on Longitudinal Orbit
+  \item[$\rightarrow$] \textopenbullet\ Camera on  Altitudinal Orbit
+  \item[$\rightarrow$] Spherical Stack State No.
+  \end{itemize}
+   \item[$\rightarrow$] Export Screenshots
+  \begin{itemize}
+ \item[$\rightarrow$] Screenshot (TIFF/PNG)
+ \item[$\rightarrow$] Screenshot (SVG + PNG)
+ \item[$\rightarrow$] Screenshot Views
+ \item[$\rightarrow$] Screenshot Ruler
+ \item[$\rightarrow$]  \checkmark\ Screenshot Cropping
+ \item[$\rightarrow$] Video Frame Size (Set)
+ \item[$\rightarrow$] Video Frame Size (Fix)
+  \end{itemize}
+ \item[$\rightarrow$] Unload Feature Vectors
+ \item[$\rightarrow$] Unload 3D
+ \item[$\rightarrow$] Quit\qquad \Ctrl+\keystroke{Q}
+ \end{itemize}
+ \end{itemize}
+ }
+
+ 
+\section{View on the displayed object}\label{view} 
+The object can be displayed in various manner, as mesh, with or without faces, monochrome or textured, with additional bounding box and camera position.
+The view on the object can be transformed as well with keys (see appendix \ref{keyboard}) and follow the convention of roll, pitch and yaw, known from (airplane) navigation.\footnote{\tt http://en.wikipedia.org/wiki/File:Rollpitchyawplain.png}
+{\tt
+\begin{itemize}
+\item[] \fbox{View}
+  \begin{itemize}
+ \item[$\rightarrow$] 3D Data
+ \item[$\rightarrow$] Show Camera Position
+ \item[$\rightarrow$] Set Camera Position
+ \item[$\rightarrow$] Bounding Box\quad \keystroke{F1} 
+ \item[$\rightarrow$] Graticules\qquad \keystroke{F2} 
+ \item[$\rightarrow$] Vertices
+   \begin{itemize}
+   \item[$\rightarrow$] Texture
+   \item[$\rightarrow$] Texture Inverted
+   \item[$\rightarrow$] Monochrome
+   \item[$\rightarrow$] Solo
+   \item[$\rightarrow$] Border
+   \item[$\rightarrow$] Singular
+   \item[$\rightarrow$] Non-Manifold
+   \item[$\rightarrow$] Local Minima
+   \item[$\rightarrow$] Local Maxima
+   \end{itemize}
+ \item[$\rightarrow$]  \checkmark\ Faces
+ \item[$\rightarrow$] Edges
+ \item[$\rightarrow$] Mesh Plane
+ \item[$\rightarrow$] Mesh Plane Flip 
+ \item[$\rightarrow$] \checkmark\ Mesh Plane as Clipping Plane\quad\,\keystroke{F3} 
+ \item[$\rightarrow$] Clipping thru SelPrim\qquad\qquad\qquad \keystroke{Shift}+\keystroke{F3}
+ \item[$\rightarrow$] Normals - Vertex
+ \item[$\rightarrow$] Normals - Face
+ \color{gray}
+ \item[$\rightarrow$] Normals - Polyline
+ \item[$\rightarrow$] Normals - Polyline Mean
+ \item[$\rightarrow$] Polylines
+ \item[$\rightarrow$] Polylines w.~Curvature
+ \item[$\rightarrow$] Polyline - Set Curvature Scale
+ \color{black}
+ \item[$\rightarrow$] Spheres
+ \item[$\rightarrow$] Boxes
+ \item[$\rightarrow$] Default View and Light\qquad\qquad\keystroke{F12}
+ \item[$\rightarrow$] Default View, Light and Zoom\quad \keystroke{Shift}+\keystroke{F12}
+ \item[$\rightarrow$] Rotate - Yaw (L/R)
+ \item[$\rightarrow$] Rotate - Pitch (U/D)
+ \item[$\rightarrow$] Rotate - Roll
+ \item[$\rightarrow$] Rotate - Ortho to Plane\qquad \keystroke{F8}
+ \item[$\rightarrow$] SelPrim to View Reference\quad \keystroke{F4}
+ \item[$\rightarrow$] Current View to Default\qquad \keystroke{F6}
+  \end{itemize}
+ \end{itemize}
+ }
+ 
+ 
+ \section{Selection of primitives}\label{select}
+ With this menu the user is able to select primitives and auxiliary surfaces like for instance a plane to be set with three points and which then is given in Hessian Normla Form (HNF). Once these primitives or surfaces have been selected, they can be edited or analyzed within the next menu items (see in the sections \ref{edit} and \ref{analyze}).
+{\tt
+\begin{itemize}
+\item[] \fbox{Select}
+ \begin{itemize}
+ \item[$\rightarrow$]  Vertices - SelMVerts - Show Indices
+ \item[$\rightarrow$] 	Vertices - SelMVerts - Enter Indices
+ \item[$\rightarrow$]  \textopenbullet\ Vertices - SelMVerts - GUI
+ \item[$\rightarrow$] 	 \textbullet\ Primitive - Vertex - SelVert/SelPrim
+ \item[$\rightarrow$] 	 \textopenbullet\ Primitive - Face - SelVert/SelFace
+ \item[$\rightarrow$] 	 \textopenbullet\ Cone
+ \item[$\rightarrow$] 	 \textopenbullet\ Sphere
+ \item[$\rightarrow$] 	\textopenbullet\ Plane - 3 Points
+ \item[$\rightarrow$] 	Plane - Set VPos
+ \item[$\rightarrow$] 	Plane - Set HNF
+ \item[$\rightarrow$] 	Plane - Show VPos
+ \item[$\rightarrow$] 	Plane - Show HNF
+ \item[$\rightarrow$]  Vertices - None
+ \item[$\rightarrow$] 	Vertices - FuncVal <
+ \item[$\rightarrow$] 	Vertices - FuncVal >
+ \item[$\rightarrow$] Vertices - FuncVal Local Minimum
+ \item[$\rightarrow$] Vertices - FuncVal Local Maximum
+ \item[$\rightarrow$] Vertices - Solo
+ \item[$\rightarrow$] Vertices - Non-manifold
+ \item[$\rightarrow$] Vertices - Singular
+ \item[$\rightarrow$] Vertices - Labelarea < Abs
+ \item[$\rightarrow$] Vertices - Labelarea < \%
+ \item[$\rightarrow$] Vertices - Border
+ \item[$\rightarrow$] Vertices - Face Minimum Angle <
+ \item[$\rightarrow$] Vertices - Face Maximum Angle >
+ \item[$\rightarrow$] Vertices - Label No.
+ \item[$\rightarrow$] Faces - None
+ \item[$\rightarrow$] Faces - Sticky
+ \item[$\rightarrow$] Faces - Non-manifold
+ \item[$\rightarrow$] Faces - Zero Area
+ \item[$\rightarrow$] Faces - In Sphere
+ \item[$\rightarrow$] Faces - Random
+ \item[$\rightarrow$] Polylines - Not Labeled
+ \item[$\rightarrow$] Polylines - Run Length >
+ \item[$\rightarrow$] Polylines - Run Length <
+ \item[$\rightarrow$] Polyline - Longest 
+ \end{itemize}
+ \end{itemize}
+ }
+
+
+\section{Editing the mesh}\label{edit} 
+Any kind of editing the mesh or the function value, or the cone or sphere for unrolling, can be done within this menu. An often used item is the removing of unclean parts of the mesh as measurements often have outliers, small disjointed areas, or the like. These parts of the mesh may cause poor images or time consuming computations at unnecessary, complicated long borders of the mesh. The item {\tt Remove - Unclean/Small}
+therefore combines repeated steps of the previous section \ref{select} with its selecting possibilities, and this editing section. Nevertheless, the skilled user can select only those vertices or faces disturbing the mesh and remove them step by step (see section \ref{GMOCFP}). The algorithm for a simple and therefore fast filling of small holes can also be found here. It invokes the external libraby {\tt libpsalm} written by Bastian Rieck.
+{\tt
+\begin{itemize}
+\item[] \fbox{Edit}
+ \begin{itemize}
+ \item[$\rightarrow$] Remove - Unclean/Small
+ \item[$\rightarrow$] Remove - SelMVerts
+ \item[$\rightarrow$] Remove - SelMFaces
+ \item[$\rightarrow$] Remove - SelMPolylines
+  \color{gray}
+ \item[$\rightarrow$] Remove - All Polylines
+ \color{black}
+ \item[$\rightarrow$] Fill Holes (PSALM)   
+ \item[$\rightarrow$] Feature Elements cut-off SelVert
+ \color{gray}
+ \item[$\rightarrow$] Feature Elements cut-off SelFace 
+ \color{black}
+ \item[$\rightarrow$] FuncVal - Set
+ \item[$\rightarrow$] FuncVal - Cut-off
+ \item[$\rightarrow$] FuncVal - Normalize
+ \item[$\rightarrow$] FuncVal - Absolute
+ \item[$\rightarrow$] FuncVal - Add
+ \item[$\rightarrow$] Split by Plane
+ \item[$\rightarrow$] Split by Iso Value
+ \item[$\rightarrow$] Cone - Set Cone Data
+ \item[$\rightarrow$] Cone - Center Mesh around
+ \item[$\rightarrow$] Cone - Unroll Mesh
+ \item[$\rightarrow$] Sphere - Center Mesh around
+ \item[$\rightarrow$] Sphere - Unroll Mesh
+ \item[$\rightarrow$] Set Prime Meridian for Rollouts
+ \item[$\rightarrow$] Apply 4x4 Matrix - All Vertices
+ \item[$\rightarrow$] Apply  4x4 Matrix - SelMVerts
+ \item[$\rightarrow$] Melting Sphere - All Vertices
+ \end{itemize}
+ \end{itemize}
+ }
+
+ 
+
+\section{Visualize certain properties along the surface}\label{functions} 
+A property of the surface like a distance (Euklidian or Manhattan distance) to a selected vertex or plane, or the center of gravity (COG) of a primitive can be computed as a function of each of the vertices or faces. This menu invokes the computation and then  visualizes the values by coloring the surface accordingly. The user first has to select and sometimes edit his selection, and second go to one of the following options. Some of these options require feature vectors to be present, others just work on geometric data.
+{\tt
+\begin{itemize}
+\item[] \fbox{Functions}
+  \begin{itemize}
+  \item[$\rightarrow$] Feature Vector Length (Euklid)
+  \item[$\rightarrow$] Feature Vector Length (Man)
+  \color{gray}
+  \item[$\rightarrow$] Feature Distance to SelVert (Euklid)
+  \item[$\rightarrow$] Feature Distance to SelVert (Man)
+  \item[$\rightarrow$] Feature Correlation to SelVert
+  \color{black}
+  \item[$\rightarrow$] Feature Auto Correlation
+  \color{gray}  
+  \item[$\rightarrow$] Feature Auto + Correlation to SelVert
+  \color{black}  
+  \item[$\rightarrow$] Feature Element
+  \item[$\rightarrow$] Distance to Plane
+  \item[$\rightarrow$] Distance to Line (Pos, Dir)
+  \item[$\rightarrow$] Distance to SelPrim (COG) 
+  \item[$\rightarrow$] Distance to Cone 
+  \item[$\rightarrow$] Vertex - Indices
+  \item[$\rightarrow$] Vertex - 1-Ring Area
+  \item[$\rightarrow$] Vertex - 1-Ring Sum Angles
+  \item[$\rightarrow$] Vertex - Octree
+  \item[$\rightarrow$] Vertex - Sphere Angle Maximum to Faces
+  \item[$\rightarrow$] Vertex - Sphere MeanNorm Angle Max
+  \item[$\rightarrow$] Faces - Sort Index
+  \item[$\rightarrow$] Faces - Sphere Marching Front Indices
+  \item[$\rightarrow$] Color - Hue to FuncVal  
+  \end{itemize}
+\end{itemize}
+}
+
+
+\section{Labeling}\label{labeling}
+This pull-down menu provides methods to compute local neighborhoods and labeled areas of interest. 
+{\tt
+\begin{itemize}
+\item[] \fbox{Labeling}
+%kurze Erläuterung zum Analysemenü und zum Labeling
+  \begin{itemize}
+  \item[$\rightarrow$] Label - All Vertices / SelMVerts
+  \item[$\rightarrow$] Label - SelMVerts to Seeds
+  \item[$\rightarrow$] Label - SelMVerts
+  \item[$\rightarrow$] Label - Vertices w.~Equal FuncVal
+  \item[$\rightarrow$] Label + Remove Small Areas  
+  \item[$\rightarrow$] Label Borders to Polyline(s)
+  \color{gray}
+  \item[$\rightarrow$] Label Polylines - Advance to Threshold
+  \color{black}
+  \item[$\rightarrow$] Label FuncVal Minima
+  \item[$\rightarrow$] Label FuncVal Maxima
+  \end{itemize}
+ \end{itemize}
+ }
+ 
+
+\section{Analyze the surface}\label{analyze} 
+This pull-down menu provides methods to analyze the surface, e.g.~the compution of geodesic distances to selected points of interest.
+{\tt
+\begin{itemize}
+\item[] \fbox{Analyze}
+  \begin{itemize}
+  \item[$\rightarrow$] MSII Feature Vectors - SelVert
+  \item[$\rightarrow$] Mesh Borders to Polylines
+  \item[$\rightarrow$] SelMVerts to Polylines
+  \item[$\rightarrow$] Iso Lines to Polylines
+  \item[$\rightarrow$] Iso Value - Set
+  \color{gray}
+  \item[$\rightarrow$] Polyline Extrema
+  \item[$\rightarrow$] Polylines w.~Absolute Curvature
+  \color{black}
+  \item[$\rightarrow$] Set Length for Smoothing
+  \item[$\rightarrow$] Geodesic Distance to SelVert
+  \item[$\rightarrow$] Geodesic Distance to SelMVerts
+  \item[$\rightarrow$] Sphere Intersect
+  \item[$\rightarrow$] Fit Ellipse
+  \item[$\rightarrow$] Compute Volume (dx, dy, dz)
+  \item[$\rightarrow$] Compute Volume (Plane)
+  \item[$\rightarrow$] Estimate Bounding Box
+  \item[$\rightarrow$] Feature Vector Wavelet decomp.
+  \end{itemize}
+ \end{itemize}
+ }
+
+
+\section{2D plots of statistics}\label{histogram} 
+In case of the presence of {\tt libqwt}, some statistics can be computed and then are shown as 2D plots in separate windows. This helps to understand the properties and qualities of the meshes.
+{\tt
+\begin{itemize}
+\item[] \fbox{Histogram}
+ \begin{itemize}
+ \item[$\rightarrow$] FuncVal
+ \item[$\rightarrow$] Label (Vertex) Areas
+ \item[$\rightarrow$] Faces Minimum Angle
+ \item[$\rightarrow$] Faces Maximum Angle
+ \item[$\rightarrow$] Edge Length
+ \item[$\rightarrow$] Polyline Length (Absolute)
+ \color{gray}
+ \item[$\rightarrow$] Vertex Feature Element
+ \item[$\rightarrow$] Face Feature Element 
+ \color{black}
+ \item[$\rightarrow$] Vertex Feature Auto-Correlation
+ \item[$\rightarrow$] Logarithmic 
+ \color{gray}
+ \item[$\rightarrow$] Feature Vector - SelVert
+ \color{black}
+ \end{itemize}
+ \end{itemize}
+ }
+
+
+\section{Coloring the surface}\label{color}
+The Colorramp menu assigns different color maps to the vertices according to their function values. From minimum to maximum value {\tt Hot} means a map from black over red and orange to white. This is the default color map. {\tt HSV} means a usual color circle from red (R), yellow (Y), green (G), cyan (C), blue (B), magenta (M) and back to red ({\tt HSV (full)}) or not ({\tt HSV (part)}). Grayscale are shades of gray from black to white, {\tt Traffic light} is from R over Y to G, {\tt Hypsometric tint} is inspired by geography\footnote{\tt http://colorbrewer2.org/} and goes from dark green (low areas) over yellow to brown and finally white (top of the icy mountains). {\tt RdGy} stands for red over white to black, the {\tt Spectral} color map goes from R over Y to B, and the {\tt RdYeGn} is from R over Y to G. Of course, all these maps can be inverted which means, that the maximum value gets assigned to the beginning of the ramp. See for example \cite{mara03a} and \cite{brewer03a}.
+
+The {\tt Waves} color map is a bit different. It is a repeated sinusoidal black and white change, and a {\tt Wavelength} has to be set to get proper results (default value is 1.0 in terms of the selected function). It reveals its evidence when assigned to a function value like {\tt Distance to vertex (selected)}. Then it results in a target pattern centered in the selected vertex.
+
+{\tt 
+\begin{itemize}
+\item[] \fbox{Colorramp}
+  \begin{itemize}  
+  \item[$\rightarrow$] Hot
+  \item[$\rightarrow$] HSV (full)
+  \item[$\rightarrow$] HSV (part)
+  \item[$\rightarrow$] Grayscale
+  \item[$\rightarrow$] Traffic Light
+  \item[$\rightarrow$] Hypsometric Tint
+  \item[$\rightarrow$] RdGy
+  \item[$\rightarrow$] Spectral
+  \item[$\rightarrow$] RdYlGn
+  \item[$\rightarrow$] Waves
+  \item[$\rightarrow$] Auto Min/Max
+  \item[$\rightarrow$] Quantile
+  \item[$\rightarrow$] Quantile Min
+  \item[$\rightarrow$] Quantile Max
+  \item[$\rightarrow$] Fixed Min/Max
+  \item[$\rightarrow$] Fixed Min/Max Settings
+  \item[$\rightarrow$] Invert
+  \item[$\rightarrow$] Logarithmic
+  \item[$\rightarrow$] Equalized
+  \item[$\rightarrow$] Show Labels Only
+  \item[$\rightarrow$] Overlay Label Color
+  \item[$\rightarrow$] Wavelength
+  \end{itemize}
+ \end{itemize}
+ }
+
+
+\section{Texturing the surface}\label{texture} 
+Within this menu the storing of the current visualization (that is its current function value at each vertex expressed as an RGB value per vertex) can be done. These RGB values then get saved when saving the mesh to a file again, This enables to use this visualization within other software packages (e.g.~{\tt blender}).
+{\tt
+\begin{itemize}
+\item[] \fbox{Texture Map}
+ \begin{itemize}
+ \item[$\rightarrow$] Store Current per Vertex
+ \item[$\rightarrow$] Stretch Contrast per Vertex
+ \color{gray}
+ \item[$\rightarrow$] Traffic Light
+ \item[$\rightarrow$] Black White Black
+ \item[$\rightarrow$] White Black White
+ \item[$\rightarrow$] Black - White
+ \item[$\rightarrow$] White - Black
+ \color{black}
+ \end{itemize}
+ \end{itemize}
+ }
+
+
+\section{Some settings}\label{settings} 
+General settings concerning not only the view but more general concepts like switching between perspective or orthographic projection or the general settings of light in combination with material can be changed in this menu.
+{\tt
+\begin{itemize}
+\item[] \fbox{Settings}
+ \begin{itemize}
+ \item[$\rightarrow$]  Perspective - Set Field of View
+ \item[$\rightarrow$] 	\textopenbullet\ Perspective View
+ \item[$\rightarrow$] 	\textbullet\ Orthographic View
+ \item[$\rightarrow$]  \checkmark Ortho Grid (Show Metric)\quad \keystroke{F7}
+ \item[$\rightarrow$] Ortho Scale (Set DPI)\keystroke{Shift}\!+\!\keystroke{F7}
+ \item[$\rightarrow$] \checkmark Lighting\qquad\qquad\qquad\qquad\quad \keystroke{0}
+ \item[$\rightarrow$] Light 1 (Headlight)\qquad\quad\quad\ \!\keystroke{1}
+ \item[$\rightarrow$] Light 2 (Object, Spot)\quad\quad\ \ \!\keystroke{2}
+ \item[$\rightarrow$] Light 3 (Object, Parallel)\quad \!\keystroke{3}
+ \item[$\rightarrow$] Light 4 (Camera, Spot) \quad\quad\ \!\keystroke{4}
+ \item[$\rightarrow$] Light 5 (Camera, Parallel)\quad\!\keystroke{5}
+ \item[$\rightarrow$] Ambient Amount\qquad\qquad\qquad\quad\!\keystroke{9}
+ \color{gray}
+ \item[$\rightarrow$] Ambient - Set Amount
+ \color{black}
+ \item[$\rightarrow$] Light Position - Set w.~Mouse\quad\!\keystroke{P}
+ \color{gray}
+ \item[$\rightarrow$] Material - Shininess
+ \item[$\rightarrow$] Material - Specular
+ \color{black}
+ \item[$\rightarrow$] \checkmark Smooth Shading
+ \item[$\rightarrow$] \checkmark Faces - Backface Culling\quad\keystroke{F5}
+ \item[$\rightarrow$] Fog
+ \item[$\rightarrow$] \checkmark Screen Info
+ \item[$\rightarrow$] Datum - Sphere Transp.
+ \end{itemize}
+ \end{itemize}
+ }
+
+
+\section{Coloring the appearance}\label{displaycolor} 
+Some elements of the appearance of \GigaMesh have default colors. The user can change the default coloring e.g.~the color of the background or the color of the backfaces of a mesh (which has  some kind of brown as default value).
+{\tt
+\begin{itemize}
+\item[] \fbox{Colors}
+  \begin{itemize}
+ \item[$\rightarrow$] Background Color
+ \item[$\rightarrow$] Solid Color
+ \item[$\rightarrow$] Backface Color
+ \item[$\rightarrow$] Vertex Color
+ \item[$\rightarrow$] Edge Color
+ \item[$\rightarrow$] Polyline Color
+ \item[$\rightarrow$] No Label Color
+ \item[$\rightarrow$] Labels Mono Color
+ \item[$\rightarrow$] Labels Mono
+ \item[$\rightarrow$] Transparency SelMVerts
+  \end{itemize}
+ \end{itemize}
+ }
+
+\section{Some extras}\label{extras} 
+In order to transform the six side view into a PDF-file the model ID and the model material have to be set. Then a window will open with \LaTeX-code ready to be copied from the clipboard. Finally an {\em About} box pops up showing contacts and references.
+{\tt
+\begin{itemize}
+\item[] \fbox{Extra}
+  \begin{itemize}
+  \item[$\rightarrow$] Cuneiform Figure LaTeX Info
+  \item[$\rightarrow$] SelMFaces Normals Matlab
+  \end{itemize}
+\end{itemize}
+}
+{\tt
+\begin{itemize}
+\item[] \fbox{?}
+  \begin{itemize}
+  \item[$\rightarrow$] About
+  \end{itemize}
+\end{itemize}
+}

@@ -1,0 +1,25 @@
+# YAML 1.2
+---
+abstract: |
+    "The GigaMesh Software Framework is a modular software for display, editing and visualization of 3D-data
+    typically acquired with structured light scanning (SLS) or structure from motion (SfM).
+    It provides numerous functions for analysis of archaeological objects like cuneiform tablets, ceramics or converted LiDAR data.
+    Typically applications are unwrappings (or rollouts), profile cuts (or cross sections) as well as visualizations of distances and curvature,
+    which can be exported as raster graphics or vector graphics.
+    The retrieval of text in 3D like damaged cuneiform tablets or weathered medieval headstones using Multi Scale Integral Invariant (MSII) filtering,
+    which is a core function of the software. Furthermore small or faint surface details like fingerprints can be visualized.
+    The polygonal meshes of the 3D-models can be inspected, cleaned and repaired to provide optimal filtering results.
+    The repaired datasets are suitable for 3D printing and for digital publishing in a dataverse."
+authors: 
+  -
+    family-names: Mara
+    given-names: Hubert
+    orcid: "https://orcid.org/0000-0002-2004-4153"
+cff-version: "1.1.0"
+date-released: 2023-03-02
+license: GPL
+message: "If you use this software, please cite it using these metadata."
+repository-code: "https://gitlab.com/fcgl/GigaMesh/"
+title: "GigaMesh Software Framework"
+version: 230302
+...

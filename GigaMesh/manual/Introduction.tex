@@ -1,0 +1,56 @@
+%==============================================================================
+%==============================================================================
+\chapter{Introduction}
+\label{chap:intro}
+
+\GigaMesh is a software framework for displaying, processing and visualizing large meshes representing 2D surfaces typically acquired with 3D scanning techniques.  
+
+Its core piece mainly base on the {\em Multi Scale Integral Invariant} (MSII) filtering technique~\cite{mara12b}.
+Integral invariants~\cite{pottmann09a,huang06a} using volume and surface descriptors can be computed for feature detection in large triangular meshes.
+Results of the computations are stored in the so-called feature vectors. 
+Visualizations of these feature vectors use standard metrics known from image processing like auto-correlation or distance measures.
+These metrics can be visualized by false-coloring the 3D models using various colorramps.
+
+\GigaMesh can be operated with or without a graphical user interface (GUI). 
+It is based on OpenGL and Trolltech Qt, and features the possibility of a fast and easy display of large 3D models. 
+The mesh can be polished  removing measurement errors like solo vertices, singularities and holes, resulting in an oriented filled and perfect mesh of the quality of a 2D manifold. 
+The resulting mesh can be saved and afterwards imported by other software tools. Identified features can be extracted as points or polygonal lines.
+\GigaMesh offers the possibilities to create orthographic or perspective normalized viewings, 
+true to scale screenshots, to prepare image sequences for videos and interactive Adobe Flash and Apple QuickTime output, 
+and to export polygonal lines as vector graphics in {\tt *.svg}~\cite{eisenberg02a} format.
+There exist several editors for this vector format such as the \emph{Inkscape}\footnote{\url{http://inkscape.org} -- last visited on 7.August 2013.}, 
+which is highly recommended as it supports {\tt *.svg} natively and it is freely available for all major operating systems.
+
+\newpage
+%==============================================================================
+\section{Operating system}
+\GigaMesh is currently running mainly on Linux. 
+The version for windows is expected to be released, when Qt 5.1 becomes available. 
+An unstable Macintosh binary exists missing some of the functions.
+%If you work on windows systems ask for a boot CD with a  standalone executable.
+
+
+%==============================================================================
+\section{Mesh formats}
+\GigaMesh supports the by now most established 3D formats for mesh data used in metrology. 
+They can be opened within the graphical user interface. 
+A file browser and appropriate filter masks then show the following data due to their filename extensions:
+\begin{itemize}
+	\item Stanford PLY -- ASCII and binary with big and little endianness\footnote{Byte order.}
+	\item Wavefront OBJ -- ASCII 
+	\item Pointclouds written in ASCII having file extension {\tt *.txt} or {\tt *.xyz}
+\end{itemize}
+
+Reading and writing of these formats is due to filename extension. 
+Stanford PLY file format is highly recommended. 
+Meta information stored when saving PLY-files with \GigaMesh are displayed when using these files later on with \GigaMesh. 
+Other programs skip these headers.
+
+There are also two types of proprietary formats (ASCII): 
+It is possible to (re-)import texture maps as {\tt *.tex} and feature vectors as {\tt *.mat} files which have been generated in previous runs of the program.
+
+\paragraph{Pitfall:} due to new Operating system libraries reading and writing {\bf ASCII} files is prone to errors
+due to different characters for floating point values.
+Many regional settings use a dot (''{\tt .}'') for the {\bf decimal point}, 
+while Operating system having e.g.~a German localization use a comma (''{\tt ,}'').
+This affects also import/export from/to software packages\!

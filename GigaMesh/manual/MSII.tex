@@ -1,0 +1,31 @@
+\chapter{Compute Feature Vectors (MSII)}
+\label{feature}
+In order to use the full functionality of \GigaMesh 
+a batch program has to be run for generating feature vectors. These vectors contain additional information per vertex concerning surface and volume of a set of spheres intersecting the mesh. See \cite{Mara10c} for more background information on the {\em Multi Scale Integral Invariant }(MSII) filtering technique. This operation is rather time consuming (it takes hours or even days of computing time) and therefore better runs without graphical user interface. Although generating feature vectors is quite robust against solo vertices, singularities, non-manifolds and  holes, you should first clean up your mesh data to get a proper result. So switch to the advanced task of polishing your mesh in section \ref{GMOCFP} and return to this section when you have got a cleaned mesh. If you do not want to manipulate your mesh you may continue directly.
+
+
+Open a terminal and type and change to the mesh-folder by typing {\tt cd GigaMesh/mesh} (note that {\tt GigaMesh} stands for the \GigaMesh installation folder). Then start the program 
+\begin{center} 
+{\small{\texttt{nohup ./meshgeneratorfeaturevectors25d\_threads -f <path-to-filename> [-r 2] \&} }}
+\end{center}
+and use {\tt nohup} at the beginning of the command and {\texttt{\&}} at the end to ensure that the job runs in the background. This is because this step can take several hours and you do not want to block the terminal. 
+
+For \texttt{path-to-filename} the (relative or absolute) path to the folder of the data file and the name of the data file to be visualized has to be given. The parameter given behind the option {\tt -r}  displays the radius of the maximal sphere for the MSII filter. The default value has been set to the unit $1.0$.  It  can be changed into some other appropriate number depending on the size of the features to be detected. An educated guess is the maximum size of the feature width. Smaller values will only detect noise and bigger values lose the fine tuning when operating with the feature vectors in \GigaMesh\!\!.
+
+Note again that depending on the filesize of the object this step can take several hours. 
+Every time when having processed 5000 vertices the program approximates the estimated time of finishing. This is written to the standard output device which is the terminal. Multithreading is active. The estimation gets better and better when each thread has processed several 5000 vertices.
+
+Finally there should have appeared six additional files adjacent to the data file. In the listing below the gray font indicates that some of these files might be empty or even do not exist at all depending on the version of the program.
+
+\hspace*{4.0cm}{\tt <filename>\_r2.00\_n4\_v256.info.txt} \\
+\hspace*{4.0cm}{\tt <filename>\_r2.00\_n4\_v256.normal.mat} \\
+\hspace*{4.0cm}{\tt <filename>\_r2.00\_n4\_v256.ply} \\
+\color{gray}
+\hspace*{4.0cm}{\tt <filename>\_r2.00\_n4\_v256.surface.mat} \\
+\hspace*{4.0cm}{\tt <filename>\_r2.00\_n4\_v256.volume.mat} \\
+\hspace*{4.0cm}{\tt <filename>\_r2.00\_n4\_v256.vs.mat} \\
+\color{black}
+
+The naming convention added the radius {\tt \_r2.0}, the number of scales in power of two e.g.~{\tt \_r2.0} means $2^4=16$ equidistant radii in the interval $[r, 0]$, and a rasterization of the volume with e.g.~{\tt \_v256} means 256 voxels along the diameter of the biggest sphere.  One of the files is a short text file containing information on the process itself (with the suffix {\tt info.txt}), four of them store the feature vectors separated in only volume  or only surface or both, or store the normals. They have the suffix {\tt *.mat}, where the wildcard * stands for {\tt surface, volume, vs} or {\tt normal}. These files can be used to re-import feature vectors if they have been discarded when saving other information important for a certain visualization. The sixth data file is a {\tt *.ply}-file which also contains the feature vectors and can be processed by the graphical user interface of \GigaMesh for visualization purposes. In case that some of these files are missing something went wrong during the computation (see \ref{FAQ} for further information).
+
+

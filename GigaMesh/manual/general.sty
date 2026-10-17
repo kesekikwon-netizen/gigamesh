@@ -1,0 +1,258 @@
+% packages used
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{a4wide}
+\usepackage[dvips]{graphicx}
+\usepackage{textcomp}
+\usepackage{color} 
+\usepackage{hhline}
+\usepackage{geometry}
+\usepackage{fancyhdr,delarray}
+\usepackage{makeidx}
+\usepackage[all]{xy}
+\usepackage{gensymb}
+%\usepackage{times}
+%\usepackage{cite}
+\usepackage{changepage}                 % formating the titlepage
+\usepackage{grffile}                    % filenames with colons, dots, etc.
+\usepackage{wallpaper}                  % background on titlepage
+\usepackage{nicefrac}                   
+\usepackage{setspace}                   
+\usepackage{numprint}                   % formating of large numbers in text and math mode
+\usepackage{stmaryrd}                   % Mathe Binary Operators e.g. \boxempty
+\usepackage[printonlyused,withpage]{acronym}
+\usepackage{keystroke}
+\usepackage{tablets}
+
+\newcommand{\GigaMesh}{{\em GigaMesh\ }}
+\renewcommand*{\acsfont}[1]{\normalfont{\normalsize{#1}}}
+
+\let\SavedRightarrow=\Rightarrow
+  \usepackage{marvosym}
+\let\Rightarrow=\SavedRightarrow
+
+%% color names
+\include{rgb}
+
+%pagestyle
+\geometry{left = 2.75 cm, right = 2.75 cm, top = 2.75cm, bottom=2.75cm}
+%\renewcommand{\baselinestretch}{1.5}		Standard is 1x
+\setlength{\textheight}{240mm}
+\setlength{\textwidth}{160mm}
+\setlength{\parskip}{7pt} % distance between sections
+\setlength{\headwidth}{\textwidth}
+%\fancyheadoffset{80mm}
+%\fancyhead[EL]{\bfseries\leftmark}
+%\fancyhead[OR]{\bfseries\leftmark}
+%\renewcommand{\headrulewidth}{0.4pt}
+%\fancyfoot[C]{\thepage}
+\setlength{\parindent}{0pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%% renewed headings
+\setlength{\headheight}{15pt}
+ 
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{\markboth{%
+\ifnum \c@secnumdepth >\m@ne \@chapapp\ \thechapter.\ \ %
+%    \ifnum \c@secnumdepth >\m@ne %
+    \fi
+#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{%
+    \ifnum \c@secnumdepth >\m@ne \thesection\ \ %
+    \fi
+#1}{}}
+ 
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[RE]{\bfseries{\nouppercase{\leftmark}}}
+\fancyhead[LO]{{\nouppercase{\rightmark}}}
+%\fancyfoot[C]{\thepage}
+ 
+\fancypagestyle{plain}{ %
+\fancyhf{} % remove everything
+\renewcommand{\headrulewidth}{0pt} % remove lines as well
+\renewcommand{\footrulewidth}{0pt}}
+
+% suppresses warnings (underfull \hbox)
+%\sloppy 
+\hbadness=10100
+
+
+%\setcounter{}
+
+%% \insertindex needs 2 parameters:
+%% first parameter is the appearing text, second parameter is index format 
+%% Examples:
+
+%% \index{hello} hello, 1 Plain entry
+%% \index{hello!Peter} Peter, 3 Subentry under  hello
+%% \index{Sam@\textsl{Sam}} Sam, 2 Formatted entry
+%% \index{Lin@\textbf{Lin}} Lin, 7 Same as above
+%% \index{Jenny|textbf} Jenny, 3 Formatted page number
+%% \index{Joe|textit} Joe, 5 Same as above
+\newcommand{\insertindex}[2]{#1\index{#2}}
+
+
+%\setcounter{secnumdepth}{5}
+
+%all of the following code is thanks to Hubert Mara.
+
+%------------------------------------------------------------------------------
+% Alter some LaTeX defaults for better treatment of figures:
+% See p.105 of "TeX Unbound" for suggested values.
+% See pp. 199-200 of Lamport's "LaTeX" book for details.
+%   General parameters, for ALL pages:
+\renewcommand{\topfraction}{0.9}	% max fraction of floats at top
+\renewcommand{\bottomfraction}{0.8}	% max fraction of floats at bottom
+%   Parameters for TEXT pages (not float pages):
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4} % 2 may work better
+\renewcommand{\dbltopfraction}{0.9}	% fit big float above 2-col. text
+\renewcommand{\textfraction}{0.07}	% allow minimal text w. figs
+%   Parameters for FLOAT pages (not text pages):
+\renewcommand{\floatpagefraction}{0.7}	% require fuller float pages
+% N.B.: floatpagefraction MUST be less than topfraction !!
+\renewcommand{\dblfloatpagefraction}{0.7}	% require fuller float pages
+% remember to use [htp] or [htpb] for placement
+%------------------------------------------------------------------------------
+
+% --- Logos -------------------------------------------------------------------
+\ifx\logoleft\undefined
+	\typeout{INFO: Leftside logo undefined - using IWR with text!}
+	\def\logoleft{logos/iwr_logo_text}
+\else
+	\typeout{INFO: Using alternate logo on the left side.}
+\fi
+\ifx\logoright\undefined
+	\typeout{INFO: Rightside logo undefined - using Heidelberg Universitaet!}
+	\def\logoright{logos/uni_hd_logo}
+\else
+	\typeout{INFO: Using alternate logo on the right side.}
+\fi
+%------------------------------------------------------------------------------
+
+% --- Additional information for the titlepage -------------------------------
+\def\iwrworkgroup{Visualization and Numerical Geometry Group}
+%\def\iwrworkgroup{Visualisierung und Numerische Geometrie Gruppe}
+% --- Type of the docment - show on the front page on the top right ----------
+% --- properties used to create a pdf - used only for nice PDFs with hyperrefs
+\def\pdftitle{GigaMesh Manual}
+\def\pdfsubject{\pdftitle}
+\def\pdfauthor{Anja Schaefer, IWR - Heidelberg University, Germany}
+\def\pdfkeywords{Keilschrift; Assyriologie; 3D-Scanner; cuneiform tablets; assyriology; GigaMesh}
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+
+% --- Default Adress ----------------------------------------------------------
+\ifx\iwraddress\undefined
+	\def\iwraddress{
+	Interdisziplin\"{a}res Zentrum f\"{u}r Wissenschaftliches Rechnen \\
+	\iwrworkgroup \\
+	Ruprecht-Karls-Universit\"{a}t Heidelberg 
+	}
+\fi
+%------------------------------------------------------------------------------
+
+% --- Alternate address - e.g. IWR and HAW ------------------------------------
+\def\iwraddress{
+	Interdisciplinary Center for Scientific Computing \\
+	\iwrworkgroup \\
+%	Ruprecht-Karls-Universit\"{a}t Heidelberg
+         Heidelberg University, Germany
+}
+%------------------------------------------------------------------------------
+
+% --- Tables and Figures -----------------------------------------------
+
+\long\def\@makecaption#1#2{%
+   \vskip 10\p@
+   \setbox\@tempboxa\hbox{#1. #2}%
+   \ifdim \wd\@tempboxa >\hsize
+       #1. #2\par
+     \else
+       \hbox to\hsize{\hfil\box\@tempboxa\hfil}%
+   \fi
+   }
+
+%\def\thefigure{\@arabic\c@figure}
+
+\def\fps@figure{tbp}
+\def\ftype@figure{1}
+\def\ext@figure{lof}
+\def\fnum@figure{\footnotesize \bf \figurename~\thefigure}
+\def\figure{\@float{figure}}
+\let\endfigure\end@float
+\@namedef{figure*}{\@dblfloat{figure}}
+\@namedef{endfigure*}{\end@dblfloat}
+
+%\def\thetable{\@arabic\c@table}
+
+\def\fps@table{tbp}
+\def\ftype@table{2}
+\def\ext@table{lot}
+\def\fnum@table{\footnotesize \bf \tablename~\thetable}
+\def\table{\@float{table}}
+\let\endtable\end@float
+\@namedef{table*}{\@dblfloat{table}}
+\@namedef{endtable*}{\end@dblfloat}
+
+% -----------------------------------------------------------------------------
+
+
+% -----------------------------------------------------------------------------
+%	How to make LaTeX copy & paste-able for WORD (final spell checking):
+%	- uncomment the subsequent commands so that
+\ifx\wordcompat\undefined
+	\typeout{INFO: PDF with hyperrefs.}
+	% --- Hyperlinks --------------------------------------------------------------
+	\usepackage[pagebackref=true]{hyperref}  % Links und Verlinkerungen
+	\renewcommand*{\backref}[1]{cited p. #1} % Formatierung bei der BackRefs bei den Zitaten
+	\hypersetup{
+		pdftitle=\pdftitle,         % title
+		pdfauthor=\pdfauthor,       % author
+		pdfsubject=\pdfsubject,     % subject
+		pdfkeywords=\pdfkeywords,   % keywords 
+		unicode=false,              % non-Latin characters in Acrobat's bookmarks
+		pdftoolbar=true,            % show Acrobat's toolbar?
+		pdfmenubar=true,            % show Acrobat's menu?
+		pdffitwindow=false,         % page fit to window when opened
+		pdfnewwindow=true,          % links in new window
+		colorlinks=true,            % false: boxed links; true: colored links
+		linkcolor=DarkRed,          % color of internal links
+		citecolor=DarkGreen,        % color of links to bibliography
+		%filecolor=black,           % color of file links
+		urlcolor=DarkBlue,          % color of external links
+		%pdfborderstyle={/S/U/W 1}, % underline hyperlinks
+		%urlbordercolor={0 0 0},    % ... color
+	}
+\else
+	% --- Word compatible (no hyperlinks, etc. ) ----------------------------------
+	%   fi and ff are correct symbols
+	%   use url instead of hyperref
+	%	- copy & paste the *.pdf text
+	% - In word: replace (ctrl+H) ^p with a whitespace
+	%   this removes paragraph breaks
+	\typeout{INFO: PDF will be Word compatible for copy and paste.}
+	\usepackage{url}
+	% - the subsequent commands surpress ligatures & page numbering
+	\usepackage{microtype}
+	\DisableLigatures{encoding = *, family = * }
+	\pagestyle{empty}
+	% defined \href - stripping the URL showing only the tag 
+	% => IMPORTANT: always use \HREF WITH TAGS!!
+	\newcommand\href[2]{#2}
+\fi
+% ----------------------------------------------------------------------------
+
+% Set fixed dates, to keep timestamps of older versions
+\usepackage{datetime}
+\usdate % dateformat as used by LaTeX by default
+
+% Nicer handling of figures:
+\usepackage{subfig}

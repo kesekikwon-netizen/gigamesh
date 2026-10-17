@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>DongArch3D — 조용한 도판(Strata) 유물 실측 UI 목업</title>
+<style>
+:root {
+  --ground: #FAF9F5;
+  --surface: #FFFFFF;
+  --wash: #F5F4ED;
+  --desk: #F0EEE6;
+  --press: #E8E6DC;
+  --oat: #E3DACC;
+  --ink: #141413;
+  --hand: #30302E;
+  --ink2: #3D3D3A;
+  --muted: #5E5D59;
+  --faint: #73726C;
+  --line: #DEDCD1;
+  --edge: #C2C0B6;
+  --ring: #B0AEA5;
+  --check: #87867F;
+  --action: #B5573A;
+  --actionHover: #A44D32;
+  --clay: #D97757;
+  --clayText: #9C4A2F;
+  --caution: #7A5A00;
+  --done: #3F6B31;
+  --cut: #FF0000;
+  --level: #E5E3D8;
+  --level5: #CFCCBF;
+  --levelMajor: #9C9A92;
+  --sans: "Malgun Gothic", "Noto Sans KR", sans-serif;
+  --serif: "Noto Serif KR", "Batang", Georgia, serif;
+  --mono: Consolas, "JetBrains Mono", monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font: 13px/20px var(--sans); color: var(--ink); background: #E4E2DA; padding: 14px; }
+.mono { font-family: var(--mono); }
+.serif { font-family: var(--serif); font-weight: 600; }
+.muted { color: var(--muted); }
+.faint { color: var(--faint); }
+
+/* 목업 전환 바 */
+.ProtoBar {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+  background: var(--hand); color: var(--ground); padding: 8px 14px; border-radius: 10px;
+}
+.ProtoBar .title { font-weight: 700; font-size: 13px; margin-right: 8px; }
+.ProtoBtn {
+  height: 30px; padding: 0 12px; border-radius: 6px; border: 1px solid #5E5D59;
+  background: transparent; color: #FAF9F5; cursor: pointer; font: 12px var(--sans);
+}
+.ProtoBtn.active { background: var(--action); border-color: var(--action); font-weight: 700; }
+.ProtoBtn:hover:not(.active) { background: #454542; }
+
+/* 앱 프레임 (D:\desca 동일 구조) */
+.win {
+  position: relative; background: var(--ground); border: 1px solid var(--edge);
+  border-radius: 8px; overflow: hidden; box-shadow: 0 12px 32px rgba(20,20,19,0.14);
+  min-height: 760px; display: flex; flex-direction: column;
+}
+.titlebar {
+  height: 30px; display: flex; align-items: center; gap: 8px; padding: 0 12px;
+  background: var(--surface); border-bottom: 1px solid var(--line); font-size: 12px;
+}
+.titlebar .logo { width: 14px; height: 14px; border-radius: 3px; background: var(--action); }
+.titlebar .sp { flex: 1; }
+
+/* 탭 & 리본 */
+.tabs {
+  display: flex; align-items: center; height: 34px; padding: 0 12px;
+  background: var(--surface); border-bottom: 1px solid var(--line); gap: 2px;
+}
+.tab {
+  padding: 0 14px; height: 34px; line-height: 34px; color: var(--ink2); cursor: pointer;
+}
+.tab.on { color: var(--ink); font-weight: 700; box-shadow: inset 0 -2px 0 var(--ink); }
+.tabs .sp { flex: 1; }
+.undo-btn {
+  height: 24px; padding: 0 8px; border: 1px solid var(--edge); border-radius: 6px;
+  background: var(--surface); font-size: 12px; color: var(--ink2); cursor: pointer; margin-left: 4px;
+}
+
+.ribbon {
+  display: flex; padding: 6px 8px 6px; background: var(--surface);
+  border-bottom: 1px solid var(--line); min-height: 98px; overflow-x: auto;
+}
+.grp {
+  display: flex; flex-direction: column; padding: 0 10px; border-right: 1px solid var(--line);
+}
+.grp:last-child { border-right: 0; }
+.grp .gname { font-size: 11px; font-weight: 700; color: var(--muted); height: 16px; margin-bottom: 2px; }
+.grp .row { display: flex; gap: 6px; align-items: flex-start; flex: 1; }
+
+.tile {
+  width: 56px; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font-size: 12px; color: var(--ink); cursor: pointer; user-select: none;
+}
+.tile .sq {
+  width: 48px; height: 48px; border-radius: 8px; background: var(--desk);
+  border: 1px solid transparent; display: flex; align-items: center; justify-content: center;
+}
+.tile:hover .sq { background: var(--wash); border-color: var(--edge); }
+.tile.hand .sq { background: var(--hand); border-color: var(--hand); color: #FAF9F5; }
+.tile.hand .sq svg { stroke: #FAF9F5; }
+.tile.on .sq { background: var(--oat); border-color: var(--ring); }
+.tile.primary .sq { background: var(--action); border-color: var(--action); }
+.tile.primary .sq svg { stroke: #FFFFFF; }
+.tile.hand span, .tile.primary span { font-weight: 700; }
+.tile svg { width: 24px; height: 24px; fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.small-col { display: flex; flex-direction: column; gap: 4px; justify-content: center; }
+.sbtn {
+  height: 23px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 0 8px; border: 1px solid var(--edge); border-radius: 6px; background: var(--surface);
+  font-size: 12px; white-space: nowrap; cursor: pointer;
+}
+.sbtn.on { background: var(--oat); border-color: var(--ring); font-weight: 600; }
+.kbd {
+  font: 11px/15px var(--mono); border: 1px solid var(--edge); border-bottom-width: 2px;
+  border-radius: 4px; padding: 0 4px; background: var(--surface); color: var(--ink2);
+}
+.chips { display: flex; }
+.chip {
+  height: 23px; padding: 0 8px; border: 1px solid var(--edge); margin-left: -1px;
+  background: var(--surface); font: 12px/21px var(--mono); cursor: pointer;
+}
+.chip:first-child { border-radius: 6px 0 0 6px; margin-left: 0; }
+.chip:last-child { border-radius: 0 6px 6px 0; }
+.chip.on { background: var(--oat); border-color: var(--ink); font-weight: 700; position: relative; z-index: 1; }
+
+/* 지금 도구 줄 (ctxBar) */
+.ctx {
+  height: 36px; display: flex; align-items: center; gap: 10px; padding: 0 12px;
+  background: var(--wash); border-bottom: 1px solid var(--line); font-size: 12px;
+}
+.ctx .tool-badge {
+  height: 24px; display: flex; align-items: center; gap: 6px; padding: 0 10px;
+  border-radius: 6px; background: var(--hand); color: #FAF9F5; font-weight: 700;
+}
+.vsep { width: 1px; height: 18px; background: var(--line); }
+
+/* 메인 작업 영역 (도면 극대화 레이아웃) */
+.workspace { flex: 1; display: flex; min-height: 560px; background: var(--ground); }
+
+/* 초슬림 도면 슬롯 목록 (접기 가능) */
+.slot-panel {
+  width: 176px; background: var(--surface); border-right: 1px solid var(--line);
+  display: flex; flex-direction: column;
+}
+.slot-panel.collapsed { display: none; }
+.ph {
+  height: 32px; display: flex; align-items: center; padding: 0 10px;
+  font-weight: 700; border-bottom: 1px solid var(--line); font-size: 12px;
+}
+.ph .sp { flex: 1; }
+.slot-item {
+  padding: 8px 10px; border-bottom: 1px solid var(--line); cursor: pointer;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.slot-item:hover { background: var(--wash); }
+.slot-item.sel { background: var(--oat); border-left: 3px solid var(--ink); padding-left: 7px; }
+.slot-item .sname { font-weight: 700; font-size: 12px; }
+.slot-item .smeta { font: 11px var(--mono); color: var(--muted); }
+
+/* 좌측 보조 3D 기준 뷰 (26% 폭, 접기 가능) */
+.view-3d {
+  width: 27%; min-width: 240px; background: var(--surface); border-right: 1px solid var(--line);
+  display: flex; flex-direction: column;
+}
+.view-3d.collapsed { display: none; }
+
+/* 우측 주인공: 유물 실측 도판 뷰 (73%~100% 대화면!) */
+.view-sheet {
+  flex: 1; background: var(--surface); display: flex; flex-direction: column;
+}
+
+.vhead {
+  height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px;
+  background: var(--surface); border-bottom: 1px solid var(--line);
+}
+.vhead.active { border-bottom: 2px solid var(--ink); }
+.vhead .sp { flex: 1; }
+.badge {
+  height: 22px; padding: 0 8px; border-radius: 4px; border: 1px solid var(--edge);
+  background: var(--wash); font-size: 12px; display: inline-flex; align-items: center; gap: 4px;
+}
+.badge.ok { border-color: #87867F; color: var(--ink); }
+.badge.warn { background: #FFFFFF; border-color: var(--caution); color: var(--caution); font-weight: 600; }
+.icon-btn {
+  width: 24px; height: 24px; border: 1px solid transparent; border-radius: 4px;
+  background: transparent; cursor: pointer; font-size: 12px; color: var(--ink2);
+}
+.icon-btn:hover { background: var(--wash); border-color: var(--edge); }
+
+/* 치수 대장 정보 띠 (infoStrip) */
+.infostrip {
+  height: 28px; display: flex; align-items: center; gap: 12px; padding: 0 12px;
+  background: var(--wash); border-bottom: 1px solid var(--line); font-size: 12px; color: var(--ink2);
+}
+.infostrip .sp { flex: 1; }
+.infostrip b { color: var(--ink); font-family: var(--mono); }
+
+/* 캔버스 영역 */
+.canvas-wrap {
+  flex: 1; position: relative; background: var(--surface); display: flex;
+  align-items: center; justify-content: center; overflow: hidden;
+}
+.canvas-3d-bg { background: #F7F5EE; }
+
+/* 하단 상태줄 & 좌표줄 */
+.statusbar {
+  height: 30px; display: flex; align-items: center; gap: 12px; padding: 0 12px;
+  background: var(--surface); border-top: 1px solid var(--line); font-size: 12px;
+}
+.statusbar .sp { flex: 1; }
+.dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; background: var(--clay); margin-right: 4px; }
+
+/* 화면 전환용 섹션 */
+.screen { display: none; flex: 1; flex-direction: column; }
+.screen.active { display: flex; }
+
+/* 모달(내보내기 미리보기 창) */
+.modal-backdrop {
+  flex: 1; background: #8E8C84; display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.dialog-L {
+  width: 900px; background: var(--ground); border: 1px solid var(--edge); border-radius: 12px;
+  box-shadow: 0 18px 48px rgba(20,20,19,0.25); overflow: hidden; display: flex; flex-direction: column;
+}
+.dlg-head {
+  height: 44px; background: var(--surface); border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; padding: 0 20px; gap: 10px;
+}
+.dlg-body { display: flex; min-height: 480px; }
+.dlg-preview { flex: 1.35; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.dlg-side {
+  flex: 1; background: var(--wash); border-left: 1px solid var(--line);
+  padding: 18px 20px; display: flex; flex-direction: column; gap: 12px;
+}
+.dlg-foot {
+  height: 54px; background: var(--surface); border-top: 1px solid var(--line);
+  display: flex; align-items: center; padding: 0 20px; gap: 8px;
+}
+.btn {
+  height: 32px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--edge);
+  background: var(--surface); font-size: 13px; color: var(--ink); cursor: pointer;
+}
+.btn.primary { background: var(--action); border-color: var(--action); color: #FFF; font-weight: 700; }
+.btn.quiet { border-color: transparent; background: transparent; color: var(--muted); }
+.form-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; }
+.form-sec { font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 3px; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<!-- 상단 목업 화면 전환 컨트롤 -->
+<div class="ProtoBar">
+  <span class="title">🏺 DongArch3D 「조용한 도판」 디자인 설계 목업</span>
+  <button class="ProtoBtn active" onclick="showScreen('s1', this)">① 주 화면: 토기 실측 도판 (좌단면·우외곽 대화면)</button>
+  <button class="ProtoBtn" onclick="showScreen('s2', this)">② 석기·기와 4면 전개 실측 도판</button>
+  <button class="ProtoBtn" onclick="showScreen('s3', this)">③ 도면·일러스트(SVG) 내보내기 창</button>
+  <button class="ProtoBtn" onclick="showScreen('s4', this)">④ 시작(홈) 화면</button>
+  <span style="flex:1"></span>
+  <button class="ProtoBtn" onclick="toggle3D()" title="3D 보조 창을 접어 실측 도면을 100% 전체화면으로 봅니다">📐 도면 100% 최대화 토글</button>
+</div>
+
+<div class="win">
+  <!-- 윈도우 타이틀바 -->
+  <div class="titlebar">
+    <div class="logo"></div>
+    <span><b>경주_월성_무문토기_01호.ply</b> — 동국유물실측 (DongArch3D) 1.0</span>
+    <div class="sp"></div>
+    <span class="faint mono">ㅡ  □  ✕</span>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- 화면 1: 주 화면 (유물 중심 대화면 실측 도판) -->
+  <!-- ==================================================================== -->
+  <div id="s1" class="screen active">
+    <div class="tabs">
+      <div class="tab">파일</div>
+      <div class="tab on">홈</div>
+      <div class="tab">정위치·중심축</div>
+      <div class="tab">측정·탁본</div>
+      <div class="tab">내보내기</div>
+      <div class="sp"></div>
+      <button class="undo-btn">↶ 되돌리기</button>
+      <button class="undo-btn">↷ 다시</button>
+    </div>
+
+    <div class="ribbon">
+      <div class="grp">
+        <div class="gname">파일</div>
+        <div class="row">
+          <div class="tile"><div class="sq"><svg viewBox="0 0 24 24"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg></div><span>열기</span></div>
+          <div class="tile"><div class="sq"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><span>최근 ▾</span></div>
+        </div>
+      </div>
+
+      <div class="grp">
+        <div class="gname">유물 정위치 · 중심축</div>
+        <div class="row">
+          <div class="tile"><div class="sq"><svg viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="22"/><path d="M5 19h14"/><path d="M8 7h8"/></svg></div><span>중심축 맞춤</span></div>
+          <div class="small-col">
+            <div class="sbtn"><span>바닥 수평 맞춤</span><span class="kbd">B</span></div>
+            <div class="sbtn"><span>구연부 수평 맞춤</span><span class="kbd">T</span></div>
+            <div class="sbtn"><span>정면 회전 ±1°</span><span class="kbd">, .</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grp">
+        <div class="gname">실측선 추출</div>
+        <div class="row">
+          <div class="tile hand"><div class="sq"><svg viewBox="0 0 24 24"><circle cx="5" cy="19" r="2"/><circle cx="19" cy="5" r="2"/><line x1="6.5" y1="17.5" x2="17.5" y2="6.5"/></svg></div><span>단면선</span></div>
+          <div class="tile on"><div class="sq"><svg viewBox="0 0 24 24"><path d="M7 3h10l3 7-5 11H9L4 10z"/></svg></div><span>외곽선</span></div>
+          <div class="small-col">
+            <div class="sbtn on"><span>좌단면·우외곽 결합 (토기 표준)</span></div>
+            <div class="sbtn"><span>절단 위치 이동 (1 mm)</span><span class="kbd">[ ]</span></div>
+            <div class="sbtn"><span>단면 추가 (횡단면)</span><span class="kbd">N</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grp">
+        <div class="gname">선 다듬기 · 간략화</div>
+        <div class="row">
+          <div class="small-col">
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;">
+              <span class="muted">간격</span>
+              <div class="chips">
+                <div class="chip">0.1</div>
+                <div class="chip">0.3</div>
+                <div class="chip on">0.5 mm</div>
+                <div class="chip">1.0</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;">
+              <span class="muted">곡선</span>
+              <div class="chips">
+                <div class="chip">원본</div>
+                <div class="chip on">매끄럽게 (Catmull)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grp">
+        <div class="gname">도판 표시 (겹침)</div>
+        <div class="row">
+          <div class="tile on"><div class="sq"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div><span>유물 음영</span></div>
+          <div class="tile on"><div class="sq"><svg viewBox="0 0 24 24"><path d="M4 17c4-8 12-8 16 0" stroke="#FF0000"/></svg></div><span>단면·외곽</span></div>
+          <div class="tile on"><div class="sq"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div><span>방안 눈금</span></div>
+          <div class="small-col">
+            <div class="sbtn on"><span>음영: 디지털 탁본 (D-Tak)</span></div>
+            <div class="sbtn"><span>눈금 1 mm / 숫자 10 mm</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grp">
+        <div class="gname">내보내기</div>
+        <div class="row">
+          <div class="tile primary" onclick="showScreen('s3', document.querySelectorAll('.ProtoBtn')[2])">
+            <div class="sq"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <span>도면</span>
+          </div>
+          <div class="tile"><div class="sq"><svg viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg></div><span>SVG 일러스트</span></div>
+          <div class="tile"><div class="sq"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8"/></svg></div><span>DXF</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 지금 도구 줄 -->
+    <div class="ctx">
+      <div class="tool-badge">✂ 단면·외곽선 편집 중</div>
+      <span>3D 뷰에서 절단면 <b>A–A′</b> 각도를 돌리거나 도판에서 슬롯을 저장합니다.</span>
+      <div class="vsep"></div>
+      <span class="kbd">[ ]</span><span>절단면 1 mm 이동</span>
+      <span class="kbd">R</span><span>좌·우 단면 반전</span>
+      <span class="kbd">1~5</span><span>슬롯 저장</span>
+      <div style="flex:1"></div>
+      <span class="mono">절단 각도 <b>0.0° (정면 중심축)</b> · 점 1,420 → <b>186개</b> (0.5mm 간략화)</span>
+    </div>
+
+    <!-- 메인 워크스페이스 (유물 도판이 전체의 73%~100% 차지!) -->
+    <div class="workspace">
+      <!-- 좌측 초슬림 도면 슬롯 판 -->
+      <div id="slotPanel" class="slot-panel">
+        <div class="ph"><span>실측 도면 목록 <span class="muted">4</span></span><div class="sp"></div><span class="kbd">+ 추가</span></div>
+        <div class="slot-item sel">
+          <div class="sname">A–A′ 정면 실측도</div>
+          <div class="smeta">좌단면·우외곽 · 184.5 mm</div>
+          <div class="faint" style="font-size:11px;">보고서 주 도판 (1:1)</div>
+        </div>
+        <div class="slot-item">
+          <div class="sname">B–B′ 구연부 횡단면</div>
+          <div class="smeta">높이 H 165.0 mm 수평절단</div>
+          <div class="faint" style="font-size:11px;">구연부 두께 확인용</div>
+        </div>
+        <div class="slot-item">
+          <div class="sname">C–C′ 동체부 횡단면</div>
+          <div class="smeta">높이 H 95.0 mm (최대복경)</div>
+          <div class="faint" style="font-size:11px;">외경 165.2 mm</div>
+        </div>
+        <div class="slot-item">
+          <div class="sname">저부(바닥) 평면·단면</div>
+          <div class="smeta">높이 H 0.0 mm · 저경 68.5</div>
+          <div class="faint" style="font-size:11px;">바닥 굽 접지면</div>
+        </div>
+        <div style="flex:1"></div>
+        <div style="padding:10px;font-size:11px;color:var(--muted);border-top:1px solid var(--line);">
+          누르면 해당 도판으로 전환 · <br>끌어서 보고서 도판 순서 변경
+        </div>
+      </div>
+
+      <!-- 좌측 보조: 3D 유물 및 절단 평면 보기 -->
+      <div id="view3D" class="view-3d">
+        <div class="vhead">
+          <span><b>3D 유물</b> <span class="muted">절단면 · 중심축</span></span>
+          <div class="sp"></div>
+          <button class="icon-btn" title="정면">정면</button>
+          <button class="icon-btn" title="위">위</button>
+          <button class="icon-btn" onclick="toggle3D()" title="3D 창 접기">◀</button>
+        </div>
+        <div class="infostrip">
+          <span>메시 <b>251,420</b>면</span>
+          <div class="sp"></div>
+          <span class="muted">중심축 오차 0.08 mm</span>
+        </div>
+        <div class="canvas-wrap canvas-3d-bg">
+          <!-- 3D 토기 + 절단 평면 A-A' 및 중심축 시각화 SVG -->
+          <svg width="260" height="440" viewBox="0 0 260 440">
+            <!-- 절단 평면 반투명 사각형 -->
+            <polygon points="35,40 225,20 225,390 35,410" fill="rgba(255,0,0,0.06)" stroke="#FF0000" stroke-width="1" stroke-dasharray="4,3"/>
+            <!-- 3D 토기 음영 입체 표현 -->
+            <defs>
+              <radialGradient id="pot3d" cx="38%" cy="40%" r="65%">
+                <stop offset="0%" stop-color="#D8B894"/>
+                <stop offset="55%" stop-color="#A8825A"/>
+                <stop offset="100%" stop-color="#6B4E31"/>
+              </radialGradient>
+            </defs>
+            <path d="M 68,75 C 58,95 82,115 74,145 C 52,195 48,255 68,315 C 78,345 86,368 88,378 L 172,378 C 174,368 182,345 192,315 C 212,255 208,195 186,145 C 178,115 202,95 192,75 Z" fill="url(#pot3d)" stroke="#3D3D3A" stroke-width="1.2"/>
+            <!-- 토기 입구 타원 -->
+            <ellipse cx="130" cy="75" rx="62" ry="14" fill="#5A4028" stroke="#3D3D3A" stroke-width="1.2"/>
+            <!-- 회전 중심축 (파선) -->
+            <line x1="130" y1="25" x2="130" y2="410" stroke="#141413" stroke-width="1.2" stroke-dasharray="6,3"/>
+            <!-- 빨간 단면 교차선 (흰 테두리 Halo + 순수 빨강) -->
+            <path d="M 68,75 C 58,95 82,115 74,145 C 52,195 48,255 68,315 C 78,345 86,368 88,378 L 172,378" fill="none" stroke="#FFFFFF" stroke-width="5"/>
+            <path d="M 68,75 C 58,95 82,115 74,145 C 52,195 48,255 68,315 C 78,345 86,368 88,378 L 172,378" fill="none" stroke="#FF0000" stroke-width="2.5"/>
+            <!-- A / A' 배지 -->
+            <rect x="116" y="12" width="28" height="18" rx="4" fill="#FFFFFF" stroke="#C2C0B6"/>
+            <text x="130" y="25" text-anchor="middle" font-family="Consolas" font-size="11" font-weight="bold" fill="#FF0000">A</text>
+            <rect x="116" y="405" width="28" height="18" rx="4" fill="#FFFFFF" stroke="#C2C0B6"/>
+            <text x="130" y="418" text-anchor="middle" font-family="Consolas" font-size="11" font-weight="bold" fill="#FF0000">A′</text>
+            <!-- 수평 단면 보조선 B-B', C-C' -->
+            <line x1="40" y1="225" x2="220" y2="225" stroke="#7A5A00" stroke-width="1" stroke-dasharray="3,3"/>
+            <text x="44" y="220" font-family="Consolas" font-size="10" fill="#7A5A00">C–C′ (H 95mm)</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 우측 주인공: 유물 실측 도판 (가장 큰 영역!) -->
+      <div class="view-sheet">
+        <div class="vhead active">
+          <span class="serif" style="font-size:18px;">A–A′ 정면 실측도</span>
+          <span class="muted" style="font-size:12px;">좌측 종단면 · 우측 외곽 및 디지털 탁본</span>
+          <div class="sp"></div>
+          <span class="badge ok">✓ 기준: 바닥 수평(0 mm) · 회전 중심축 정렬됨</span>
+          <button class="icon-btn" title="1:1 실제 크기">1:1</button>
+          <button class="icon-btn" title="화면 맞춤">맞춤</button>
+          <button class="icon-btn" onclick="toggle3D()" title="도판 최대화">□</button>
+        </div>
+
+        <!-- 수치 대장 띠: 유물 실측 시 가장 필요한 5대 계측값 상시 표시 -->
+        <div class="infostrip">
+          <span>기고(높이) <b>184.5 mm</b></span>
+          <span>·</span>
+          <span>구경(입지름) <b>142.0 mm</b></span>
+          <span>·</span>
+          <span>최대복경 <b>165.2 mm</b> <span class="muted">(H 95.0)</span></span>
+          <span>·</span>
+          <span>저경(바닥) <b>68.5 mm</b></span>
+          <span>·</span>
+          <span>평균 기벽두께 <b>6.4 mm</b></span>
+          <div class="sp"></div>
+          <span class="muted">그리는 순서: 방안눈금 → 탁본음영 → 외곽선(먹) → 단면선(빨강)</span>
+        </div>
+
+        <!-- 대화면 유물 실측 도판 캔버스 -->
+        <div class="canvas-wrap">
+          <svg width="100%" height="100%" viewBox="0 0 860 500" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <!-- 10mm(1cm) 보조 눈금 및 50mm(5cm) 주 눈금 패턴 -->
+              <pattern id="mmGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#EDEBE2" stroke-width="0.75"/>
+              </pattern>
+              <pattern id="cmGrid" width="100" height="100" patternUnits="userSpaceOnUse">
+                <rect width="100" height="100" fill="url(#mmGrid)"/>
+                <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#D5D2C6" stroke-width="1"/>
+              </pattern>
+              <!-- 우측 절반 디지털 탁본(D-Tak) 질감 그라데이션 -->
+              <linearGradient id="dtak" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#D9D4C7"/>
+                <stop offset="65%" stop-color="#B8B2A2"/>
+                <stop offset="100%" stop-color="#8A8475"/>
+              </linearGradient>
+            </defs>
+
+            <!-- 1. 맨 뒤: 방안 눈금선 (배경) -->
+            <rect x="70" y="30" width="720" height="420" fill="url(#cmGrid)" stroke="#9C9A92" stroke-width="1"/>
+
+            <!-- 좌/우 높이(H) 눈금 숫자 (0 mm ~ 200 mm, 모노 글꼴) -->
+            <g font-family="Consolas, monospace" font-size="11" fill="#3D3D3A">
+              <!-- H = 0 mm 바닥 기준선 -->
+              <line x1="70" y1="410" x2="790" y2="410" stroke="#141413" stroke-width="1.2"/>
+              <text x="62" y="414" text-anchor="end">0</text>
+              <text x="798" y="414">0 mm (바닥 기준)</text>
+
+              <line x1="70" y1="310" x2="790" y2="310" stroke="#9C9A92" stroke-width="0.9"/>
+              <text x="62" y="314" text-anchor="end">50</text>
+              <text x="798" y="314">50</text>
+
+              <line x1="70" y1="210" x2="790" y2="210" stroke="#9C9A92" stroke-width="0.9"/>
+              <text x="62" y="214" text-anchor="end">100</text>
+              <text x="798" y="214">100</text>
+
+              <line x1="70" y1="110" x2="790" y2="110" stroke="#9C9A92" stroke-width="0.9"/>
+              <text x="62" y="114" text-anchor="end">150</text>
+              <text x="798" y="114">150</text>
+
+              <!-- 구연부 최상단 H = 184.5 mm 기준 보조선 -->
+              <line x1="190" y1="41" x2="670" y2="41" stroke="#7A5A00" stroke-width="1" stroke-dasharray="4,3"/>
+              <rect x="76" y="31" width="108" height="18" rx="3" fill="#FFFFFF" stroke="#C2C0B6"/>
+              <text x="82" y="44" font-size="11" fill="#141413">기고 H 184.5 mm</text>
+            </g>
+
+            <!-- 하단 중심축 기준 좌/우 반경 눈금 (mm) -->
+            <g font-family="Consolas, monospace" font-size="11" fill="#3D3D3A" text-anchor="middle">
+              <text x="230" y="468">100</text>
+              <text x="330" y="468">50</text>
+              <text x="430" y="468" font-weight="bold" fill="#141413">0 (중심축)</text>
+              <text x="530" y="468">50</text>
+              <text x="630" y="468">100 mm</text>
+            </g>
+
+            <!-- 2. 정중앙 회전 중심선 (고고학 실측도 표준 중심축) -->
+            <line x1="430" y1="25" x2="430" y2="430" stroke="#141413" stroke-width="1.4"/>
+
+            <!-- 3. 우측 절반: 외곽선 + 유물 표면 음영(디지털 탁본 D-Tak) + 문양 -->
+            <path d="M 430,41 L 572,41 C 584,65 556,92 568,128 C 602,190 606,272 562,350 C 542,382 504,402 498,410 L 430,410 Z"
+                  fill="url(#dtak)" opacity="0.65"/>
+            <!-- 우측 표면 격자 타날문(문양) 디지털 탁본 표현 -->
+            <g stroke="#5E5D59" stroke-width="0.8" opacity="0.55">
+              <path d="M 450,150 L 575,180 M 450,165 L 580,195 M 450,180 L 585,210 M 450,195 L 585,225 M 450,210 L 582,240 M 450,225 L 578,255"/>
+              <path d="M 565,145 L 460,235 M 575,160 L 470,250 M 582,175 L 480,265 M 585,195 L 495,280"/>
+            </g>
+            <!-- 우측 외곽선 (먹색 2px, 고고학 제도 규격) -->
+            <path d="M 430,41 L 572,41 C 584,65 556,92 568,128 C 602,190 606,272 562,350 C 542,382 504,402 498,410 L 430,410"
+                  fill="none" stroke="#141413" stroke-width="2.2"/>
+
+            <!-- 4. 좌측 절반: 내면 물레 흔적 보조선 + 기벽 단면선 (순수 빨강 #FF0000) -->
+            <!-- 좌측 외면~바닥~내면 닫힌 기벽 단면 폴리곤 (연한 단면 채움 + 순수 빨강 단면선 2.2px) -->
+            <path d="M 288,41 C 276,65 304,92 292,128 C 258,190 254,272 298,350 C 318,382 356,402 362,410 L 430,410 L 430,394 L 372,394 C 356,386 328,366 312,338 C 272,268 276,192 308,132 C 320,96 294,68 302,41 Z"
+                  fill="rgba(255,0,0,0.12)" stroke="#FF0000" stroke-width="2.2" stroke-linejoin="round"/>
+            <!-- 구연부 상단 수평 연결선 (단면→중심축) -->
+            <line x1="302" y1="41" x2="430" y2="41" stroke="#141413" stroke-width="1.5"/>
+
+            <!-- 구경(142.0 mm) 치수 화살표 -->
+            <line x1="288" y1="22" x2="572" y2="22" stroke="#141413" stroke-width="1"/>
+            <rect x="372" y="12" width="116" height="18" rx="3" fill="#FAF9F5" stroke="#C2C0B6"/>
+            <text x="430" y="25" text-anchor="middle" font-family="Consolas" font-size="11" font-weight="bold" fill="#141413">구경 ⌀ 142.0 mm</text>
+
+            <!-- 커서 측정 풍선 (D:\desca 스타일) -->
+            <line x1="264" y1="220" x2="280" y2="220" stroke="#141413" stroke-width="1.5"/>
+            <circle cx="272" cy="220" r="3" fill="#FF0000"/>
+            <rect x="105" y="198" width="152" height="44" rx="6" fill="#FFFFFF" stroke="#C2C0B6"/>
+            <text x="115" y="216" font-family="Consolas" font-size="12" font-weight="bold" fill="#141413">기벽 두께 6.8 mm</text>
+            <text x="115" y="233" font-family="Consolas" font-size="11" fill="#5E5D59">높이 H 95.0 · 외경 165.2</text>
+
+            <!-- 우측 하단 50 mm (5 cm) 축척 막대 -->
+            <g transform="translate(650, 422)">
+              <rect x="0" y="0" width="50" height="6" fill="#141413"/>
+              <rect x="50" y="0" width="50" height="6" fill="#FFFFFF" stroke="#141413"/>
+              <text x="0" y="18" font-family="Consolas" font-size="10" fill="#141413">0</text>
+              <text x="50" y="18" font-family="Consolas" font-size="10" fill="#141413" text-anchor="middle">25</text>
+              <text x="100" y="18" font-family="Consolas" font-size="10" fill="#141413" text-anchor="end">50 mm (1:1)</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- 하단 상태줄 (D:\desca 동일 구조) -->
+    <div class="statusbar">
+      <span>실측선이 완성되었습니다 — 다음: <span class="kbd">Ctrl+P</span> 「도면」으로 보고서 도판을 만들거나 「SVG 일러스트」로 내보내세요.</span>
+      <div class="sp"></div>
+      <span class="mono"><span class="muted">반경 R</span> -82.6 mm &nbsp;<span class="muted">높이 H</span> 95.0 mm &nbsp;<span class="muted">두께</span> 6.8 mm</span>
+      <div class="vsep"></div>
+      <span>축척 <span class="kbd">1:1 (실제크기) ▾</span></span>
+      <div class="vsep"></div>
+      <span>단위 <b>mm</b> · 정위치 <b>바닥수평·중심축</b></span>
+      <div class="vsep"></div>
+      <span><i class="dot"></i>도면 4건 저장 안 됨</span>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- 화면 2: 석기·기와 4면 전개 실측 도판 (비대칭 유물 전용 대화면) -->
+  <!-- ==================================================================== -->
+  <div id="s2" class="screen">
+    <div class="tabs">
+      <div class="tab">파일</div>
+      <div class="tab on">홈</div>
+      <div class="tab">정위치·중심축</div>
+      <div class="tab">측정·탁본</div>
+      <div class="tab">내보내기</div>
+      <div class="sp"></div>
+      <span class="badge ok" style="margin-right:8px;">석기·비대칭 유물 4면 전개 모드</span>
+    </div>
+
+    <div class="infostrip" style="height:34px;">
+      <span class="serif" style="font-size:16px;color:var(--ink);margin-right:8px;">구석기_주먹도끼_04호 — 4면 전개 실측도 (정면 · 우측면 · 배면 · 종/횡단면)</span>
+      <span>길이 <b>156.4 mm</b> · 최대폭 <b>94.2 mm</b> · 최대두께 <b>52.8 mm</b> · 무게중심 정렬됨</span>
+      <div class="sp"></div>
+      <button class="btn primary" style="height:26px;font-size:12px;" onclick="showScreen('s3', document.querySelectorAll('.ProtoBtn')[2])">도면 / SVG 내보내기</button>
+    </div>
+
+    <div class="canvas-wrap" style="padding:16px;">
+      <svg width="100%" height="100%" viewBox="0 0 1100 540" preserveAspectRatio="xMidYMid meet">
+        <rect x="20" y="15" width="1060" height="510" fill="url(#cmGrid)" stroke="#9C9A92" stroke-width="1"/>
+        <!-- 전개 연결 기준선 (상단·하단·중앙 횡단면 기준선) -->
+        <line x1="60" y1="80" x2="1040" y2="80" stroke="#9C9A92" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="60" y1="420" x2="1040" y2="420" stroke="#9C9A92" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="60" y1="265" x2="1040" y2="265" stroke="#FF0000" stroke-width="1" stroke-dasharray="5,3"/>
+        <text x="68" y="258" font-family="Consolas" font-size="11" fill="#FF0000" font-weight="bold">B–B′ 횡단면 기준선 (H 72.0 mm)</text>
+
+        <!-- 1. 정면도 (Front + 능선 Ridge 강조) -->
+        <g transform="translate(140, 80)">
+          <text x="80" y="-16" text-anchor="middle" font-family="Noto Serif KR" font-size="15" font-weight="bold">정면도 (Front)</text>
+          <path d="M 80,0 C 125,55 150,145 142,235 C 134,305 108,340 80,340 C 48,340 22,300 16,230 C 10,140 38,55 80,0 Z"
+                fill="#EAE6DC" stroke="#141413" stroke-width="2.2"/>
+          <!-- 박리 능선(Ridge) 자동 추출선 -->
+          <path d="M 80,0 L 76,120 L 42,185 M 76,120 L 118,195 M 76,120 L 82,255 L 48,315 M 82,255 L 115,310"
+                fill="none" stroke="#3D3D3A" stroke-width="1.3"/>
+        </g>
+
+        <!-- 2. 우측면도 + 종단면 (Side + Red Section) -->
+        <g transform="translate(410, 80)">
+          <text x="55" y="-16" text-anchor="middle" font-family="Noto Serif KR" font-size="15" font-weight="bold">우측면 · 종단면</text>
+          <path d="M 55,0 C 78,65 92,155 86,240 C 80,305 68,340 55,340 C 38,340 26,295 24,230 C 22,145 36,60 55,0 Z"
+                fill="rgba(255,0,0,0.10)" stroke="#FF0000" stroke-width="2.2"/>
+          <line x1="55" y1="-10" x2="55" y2="355" stroke="#141413" stroke-width="1" stroke-dasharray="5,3"/>
+        </g>
+
+        <!-- 3. 배면도 (Back) -->
+        <g transform="translate(620, 80)">
+          <text x="80" y="-16" text-anchor="middle" font-family="Noto Serif KR" font-size="15" font-weight="bold">배면도 (Back)</text>
+          <path d="M 80,0 C 122,55 148,145 144,230 C 138,300 112,340 80,340 C 52,340 26,305 18,235 C 10,145 35,55 80,0 Z"
+                fill="#EAE6DC" stroke="#141413" stroke-width="2.2"/>
+          <path d="M 80,15 L 88,160 L 35,240 M 88,160 L 128,250" fill="none" stroke="#3D3D3A" stroke-width="1.2"/>
+        </g>
+
+        <!-- 4. B-B' 횡단면 (우측 배치) -->
+        <g transform="translate(880, 225)">
+          <text x="70" y="-18" text-anchor="middle" font-family="Noto Serif KR" font-size="15" font-weight="bold" fill="#FF0000">B–B′ 횡단면</text>
+          <path d="M 10,40 C 25,12 115,12 130,40 C 118,68 22,68 10,40 Z"
+                fill="rgba(255,0,0,0.15)" stroke="#FF0000" stroke-width="2.4"/>
+          <text x="70" y="92" text-anchor="middle" font-family="Consolas" font-size="12" fill="#141413">폭 94.2 × 두께 52.8 mm</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="statusbar">
+      <span>6방향 외곽선과 박리 능선(Ridge)이 자동 배치되었습니다 — 각 도면을 끌어 간격을 조정하거나 SVG 레이어별로 내보낼 수 있습니다.</span>
+      <div class="sp"></div>
+      <span class="mono">축척 <b>1:1</b> · 레이어 분리: <b>외곽선 / 능선 / 단면선 / 눈금</b></span>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- 화면 3: 도면 · SVG 내보내기 미리보기 창 (D:\desca L 860 규격 그대로) -->
+  <!-- ==================================================================== -->
+  <div id="s3" class="screen">
+    <div class="modal-backdrop">
+      <div class="dialog-L">
+        <div class="dlg-head">
+          <span class="serif" style="font-size:18px;">유물 실측 도면 내보내기</span>
+          <span class="muted">경주_월성_무문토기_01호 · 슬롯 4개 중 1번째</span>
+          <div style="flex:1"></div>
+          <button class="btn quiet" onclick="showScreen('s1', document.querySelectorAll('.ProtoBtn')[0])">✕</button>
+        </div>
+
+        <div class="dlg-body">
+          <!-- 왼쪽: 실제 용지 비율 미리보기 -->
+          <div class="dlg-preview">
+            <div class="muted" style="font-size:12px;">미리보기 · <b>A4 세로 (보고서 도판 규격) · 축척 1:1 (실제 크기 mm)</b></div>
+            <div style="flex:1;background:#FFFFFF;border:1px solid var(--ink);padding:16px;display:flex;flex-direction:column;justify-content:space-between;">
+              <svg width="100%" height="290" viewBox="0 0 460 280">
+                <rect x="20" y="10" width="420" height="250" fill="url(#mmGrid)" stroke="#9C9A92"/>
+                <line x1="230" y1="10" x2="230" y2="260" stroke="#141413" stroke-width="1.2"/>
+                <path d="M 230,30 L 320,30 C 328,48 310,68 318,90 C 340,130 342,185 314,230 L 230,230" fill="#E3DACC" opacity="0.6" stroke="#141413" stroke-width="2"/>
+                <path d="M 140,30 C 132,48 150,68 142,90 C 120,130 118,185 146,230 L 230,230 L 230,220 L 154,220 C 130,180 132,130 152,90 C 160,68 142,48 150,30 Z" fill="rgba(255,0,0,0.14)" stroke="#FF0000" stroke-width="2"/>
+                <line x1="150" y1="30" x2="230" y2="30" stroke="#141413" stroke-width="1.2"/>
+              </svg>
+              <!-- 하단 표제란 (고고학 보고서 도판 규격) -->
+              <div style="display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid var(--ink);padding-top:8px;font-size:11px;">
+                <div class="mono">축척 1:1 (실제 크기) · 단위 mm<br>0 ────── 25 ────── 50 mm</div>
+                <div style="border:1px solid var(--ink);padding:4px 10px;">
+                  <b>도면 1. 경주 월성 무문토기 01호</b><br>
+                  <span class="mono" style="font-size:10px;">기고 184.5 · 구경 142.0 · 저경 68.5 mm</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 용지 안내 박스 (D:\desca 동일 문법) -->
+            <div style="background:#FFFFFF;border:1px solid var(--edge);border-radius:8px;padding:8px 12px;font-size:12px;">
+              <span style="color:var(--done);font-weight:bold;">✓</span> <b>1:1 축척</b>에서 유물 크기(165.2 × 184.5 mm)가 <b>A4 세로 한 장</b>에 여유 있게 들어갑니다.<br>
+              <span style="color:var(--clayText);font-weight:bold;">팁</span> 대형 항아리(300 mm 초과)는 <b>1:2 축척</b>이나 <b>A3 용지</b>를 자동으로 추천합니다.
+            </div>
+          </div>
+
+          <!-- 오른쪽: 내보내기 설정 -->
+          <div class="dlg-side">
+            <div class="form-sec">도면 · 축척</div>
+            <div class="form-row"><span>유물 도면명</span><input value="도면 1. 경주 월성 무문토기 01호" style="width:210px;height:26px;padding:0 6px;border:1px solid var(--edge);border-radius:4px;"></div>
+            <div class="form-row"><span>용지 규격</span><span class="kbd">A4 세로 (210 × 297 mm) ▾</span></div>
+            <div class="form-row">
+              <span>실측 축척</span>
+              <div class="chips">
+                <div class="chip">2:1</div>
+                <div class="chip on">1:1 (실제크기)</div>
+                <div class="chip">1:2</div>
+                <div class="chip">1:3</div>
+                <div class="chip">1:4</div>
+              </div>
+            </div>
+
+            <div class="form-sec">포함할 레이어 (위에서 아래로 그리는 순서)</div>
+            <div class="form-row"><label><input type="checkbox" checked> <b>단면선 Layer</b> (맨 위 · 순수 빨강 #FF0000 · 0.35 mm)</label></div>
+            <div class="form-row"><label><input type="checkbox" checked> <b>외곽선·중심선 Layer</b> (먹색 #141413 · 0.50 mm)</label></div>
+            <div class="form-row"><label><input type="checkbox" checked> <b>유물 음영·디지털 탁본</b> (우측 300 DPI 이미지)</label></div>
+            <div class="form-row"><label><input type="checkbox" checked> <b>방안 눈금 (1mm/10mm) · 치수 대장 · 축척 막대</b></label></div>
+
+            <div class="form-sec">파일 형식</div>
+            <div class="form-row">
+              <span>형식 선택</span>
+              <div class="chips">
+                <div class="chip on">SVG (일러스트 1:1)</div>
+                <div class="chip">PDF (보고서 도판)</div>
+                <div class="chip">DXF (CAD)</div>
+                <div class="chip">PNG</div>
+              </div>
+            </div>
+            <div class="muted" style="font-size:11px;line-height:1.5;">
+              • <b>SVG 선택 시</b>: Adobe Illustrator에서 열었을 때 단면선·외곽선·중심축·눈금이 각각 <b>독립된 레이어</b>로 분리되며 <b>1:1 mm 치수</b>가 정확히 유지됩니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="dlg-foot">
+          <button class="btn quiet">이 설정을 기본으로</button>
+          <div style="flex:1"></div>
+          <button class="btn primary">SVG / 도면 저장</button>
+          <button class="btn">인쇄…</button>
+          <button class="btn" onclick="showScreen('s1', document.querySelectorAll('.ProtoBtn')[0])">취소</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- 화면 4: 시작(홈) 화면 (D:\desca mockup_start_empty.png 양식 그대로) -->
+  <!-- ==================================================================== -->
+  <div id="s4" class="screen">
+    <div style="padding:36px 48px;display:flex;gap:32px;flex:1;">
+      <div style="flex:2;display:flex;flex-direction:column;gap:20px;">
+        <div>
+          <span class="serif" style="font-size:28px;">동국유물실측 (DongArch3D)</span>
+          <span class="muted" style="margin-left:8px;">3D 스캔 유물에서 1:1 보고서 실측 도판·일러스트(SVG)까지</span>
+          <p class="muted" style="margin-top:4px;">작업하던 유물을 이어서 열거나, 새 3D 유물 파일(PLY · OBJ · STL)을 여세요.</p>
+        </div>
+
+        <!-- 이어서 작업 카드 -->
+        <div style="background:var(--surface);border:1px solid var(--edge);border-radius:10px;display:flex;overflow:hidden;">
+          <div style="flex:1;padding:20px 24px;">
+            <div class="muted" style="font-size:12px;">이어서 작업</div>
+            <div class="serif" style="font-size:32px;margin:6px 0;">경주_월성_무문토기_01호</div>
+            <div class="mono faint" style="margin-bottom:14px;">D:\유물스캔\2026_월성\토기\경주_월성_무문토기_01호.ply</div>
+            <div style="border-top:1px solid var(--line);padding-top:12px;display:flex;gap:36px;font-size:12px;">
+              <div><span class="muted">마지막 작업</span><br><b>오늘 09:12</b></div>
+              <div><span class="muted">실측 슬롯</span><br><b>A–A′ 정면도 외 3개</b></div>
+              <div><span class="muted">유물 치수</span><br><b class="mono">기고 184.5 · 구경 142.0 mm</b></div>
+              <div><span class="muted">정위치 기준</span><br><b>✓ 바닥수평 · 중심축 완료</b></div>
+            </div>
+          </div>
+          <div style="width:240px;border-left:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:8px;">
+            <button class="btn primary" style="width:180px;height:40px;" onclick="showScreen('s1', document.querySelectorAll('.ProtoBtn')[0])">이어서 열기 →</button>
+            <span class="muted" style="font-size:11px;">중심축·단면 슬롯을 그대로 되살립니다</span>
+          </div>
+        </div>
+
+        <!-- 최근 유물 삼선표 -->
+        <div>
+          <div style="font-weight:700;margin-bottom:6px;">최근 실측 유물 <span class="muted">3</span></div>
+          <div style="background:var(--surface);border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);">
+            <div style="display:flex;padding:6px 12px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted);">
+              <span style="flex:2">유물 모델</span><span style="flex:1.5">정위치 · 유형</span><span style="width:80px">실측 슬롯</span><span style="width:90px">크기</span><span style="width:100px;text-align:right">마지막 작업</span>
+            </div>
+            <div style="display:flex;padding:10px 12px;border-bottom:1px solid var(--line);align-items:center;cursor:pointer;" onclick="showScreen('s1', document.querySelectorAll('.ProtoBtn')[0])">
+              <div style="flex:2"><b>경주_월성_무문토기_01호</b><br><span class="mono faint" style="font-size:11px;">...\토기\경주_월성_무문토기_01호.ply</span></div>
+              <div style="flex:1.5">회전체(토기) · ✓ 중심축 정렬됨</div>
+              <div class="mono" style="width:80px">4</div>
+              <div class="mono" style="width:90px">48.2 MB</div>
+              <div class="mono" style="width:100px;text-align:right">오늘 09:12</div>
+            </div>
+            <div style="display:flex;padding:10px 12px;border-bottom:1px solid var(--line);align-items:center;cursor:pointer;" onclick="showScreen('s2', document.querySelectorAll('.ProtoBtn')[1])">
+              <div style="flex:2"><b>구석기_주먹도끼_04호</b><br><span class="mono faint" style="font-size:11px;">...\석기\구석기_주먹도끼_04호.obj</span></div>
+              <div style="flex:1.5">비대칭(석기) · 4면 전개 완료</div>
+              <div class="mono" style="width:80px">5</div>
+              <div class="mono" style="width:90px">31.5 MB</div>
+              <div class="mono" style="width:100px;text-align:right">어제 17:40</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 파일 끌어놓기 영역 -->
+        <div style="background:var(--wash);border:1px dashed var(--ring);border-radius:10px;padding:22px;text-align:center;color:var(--muted);">
+          📂 <b>3D 유물 파일(PLY · OBJ · STL)</b>을 여기에 끌어 놓으세요 &nbsp;또는&nbsp; <button class="btn" style="height:28px;">파일 열기 <span class="kbd">Ctrl+O</span></button>
+        </div>
+      </div>
+
+      <!-- 우측: 세 걸음 안내 & 단축키 -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:16px;">
+        <div style="background:var(--surface);border:1px solid var(--edge);border-radius:10px;padding:18px;">
+          <div style="font-weight:700;margin-bottom:12px;">세 걸음으로 유물 실측도 완성</div>
+          <div style="display:flex;flex-direction:column;gap:12px;font-size:12px;">
+            <div><b>① 유물 열기 & 정위치 맞춤</b> <span class="kbd">B</span><br><span class="muted">바닥면이나 구연부를 수평으로 맞추고 회전 중심축을 자동으로 잡습니다.</span></div>
+            <div><b>② 단면선·외곽선 자동 추출</b> <span class="kbd">S</span><br><span class="muted">좌측 종단면(빨강)과 우측 외곽선·디지털 탁본이 1:1 도판 위에 즉시 결합됩니다.</span></div>
+            <div><b>③ 보고서 도판 · 일러스트(SVG) 저장</b> <span class="kbd">Ctrl+P</span><br><span class="muted">1:1 실제 크기(mm) 레이어 분리 SVG로 내보내 일러스트레이터에서 바로 마감합니다.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showScreen(id, btn) {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (btn) {
+    document.querySelectorAll('.ProtoBtn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+}
+function toggle3D() {
+  document.getElementById('view3D').classList.toggle('collapsed');
+  document.getElementById('slotPanel').classList.toggle('collapsed');
+}
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const sc = params.get('screen');
+  const btns = document.querySelectorAll('.ProtoBtn');
+  if (sc === 's1max') {
+    showScreen('s1', btns[0]);
+    toggle3D();
+  } else if (sc === 's2') {
+    showScreen('s2', btns[1]);
+  } else if (sc === 's3') {
+    showScreen('s3', btns[2]);
+  } else if (sc === 's4') {
+    showScreen('s4', btns[3]);
+  }
+});
+</script>
+</body>
+</html>

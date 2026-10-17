@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RCC>
+    <qresource prefix="/icons/archaeology">
+        <!-- Section Tools (단면 도구) -->
+        <file>section_top.svg</file>
+        <file>section_front.svg</file>
+        <file>section_side.svg</file>
+        <file>section_free.svg</file>
+        <file>section_multiple.svg</file>
+        <file>section_intersection.svg</file>
+        <file>section_plane.svg</file>
+        <file>section_view.svg</file>
+        <file>section_edit.svg</file>
+        <file>section_delete.svg</file>
+        <file>section_save.svg</file>
+        <file>section_load.svg</file>
+        <file>section_export.svg</file>
+        <file>section_measure.svg</file>
+        <file>section_annotate.svg</file>
+        <file>section_profile.svg</file>
+        
+        <!-- Lithic Tools (석기 도구) -->
+        <file>lithic_tool.svg</file>
+        <file>lithic_cortex.svg</file>
+        <file>lithic_ridge.svg</file>
+        <file>lithic_flake_scar.svg</file>
+        <file>lithic_platform.svg</file>
+        <file>lithic_bulb.svg</file>
+        <file>lithic_edge.svg</file>
+        <file>lithic_retouch.svg</file>
+        <file>lithic_use_wear.svg</file>
+        <file>lithic_measure_length.svg</file>
+        <file>lithic_measure_width.svg</file>
+        <file>lithic_measure_thickness.svg</file>
+        <file>lithic_angle.svg</file>
+        <file>lithic_orient.svg</file>
+        <file>lithic_annotate.svg</file>
+        <file>lithic_export.svg</file>
+        
+        <!-- Ceramic Tools (토기 도구) -->
+        <file>ceramic_profile.svg</file>
+        <file>ceramic_rim.svg</file>
+        <file>ceramic_body.svg</file>
+        <file>ceramic_base.svg</file>
+        <file>ceramic_handle.svg</file>
+        <file>ceramic_spout.svg</file>
+        <file>ceramic_pattern.svg</file>
+        <file>ceramic_incise.svg</file>
+        <file>ceramic_applique.svg</file>
+        <file>ceramic_thickness.svg</file>
+        <file>ceramic_diameter.svg</file>
+        <file>ceramic_reconstruct.svg</file>
+        <file>ceramic_orient.svg</file>
+        <file>ceramic_annotate.svg</file>
+        <file>ceramic_color.svg</file>
+        <file>ceramic_export.svg</file>
+        
+        <!-- Measurement Tools (측정 도구) -->
+        <file>measure_distance.svg</file>
+        <file>measure_angle.svg</file>
+        <file>measure_area.svg</file>
+        <file>measure_volume.svg</file>
+        <file>measure_radius.svg</file>
+        <file>measure_diameter.svg</file>
+        <file>measure_height.svg</file>
+        <file>measure_depth.svg</file>
+        <file>measure_thickness.svg</file>
+        <file>measure_curvature.svg</file>
+        <file>grid_show.svg</file>
+        <file>grid_hide.svg</file>
+        <file>scale_bar.svg</file>
+        <file>coordinate.svg</file>
+        <file>calibrate.svg</file>
+        <file>measure_export.svg</file>
+    </qresource>
+</RCC>

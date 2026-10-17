@@ -1,0 +1,11 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/styles">
+        <file>resources/styles/modern_dark.qss</file>
+        <file>resources/styles/modern_light.qss</file>
+    </qresource>
+    <qresource prefix="/fonts">
+        <file>resources/fonts/NotoSansKR-Regular.ttf</file>
+        <file>resources/fonts/NotoSansKR-Bold.ttf</file>
+    </qresource>
+</RCC>

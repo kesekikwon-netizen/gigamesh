@@ -1,0 +1,4958 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>818</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>400</width>
+    <height>300</height>
+   </size>
+  </property>
+  <property name="cursor">
+   <cursorShape>ArrowCursor</cursorShape>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="gigamesh.qrc">
+    <normaloff>:/GMGeneric/GigaMesh_Logo_150px.png</normaloff>:/GMGeneric/GigaMesh_Logo_150px.png</iconset>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout_2"/>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1200</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <property name="toolTipsVisible">
+     <bool>true</bool>
+    </property>
+    <widget class="QMenu" name="menuExportImageStack">
+     <property name="title">
+      <string>Export I&amp;mage Stack</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionSaveStillImages360HLR"/>
+     <addaction name="actionSaveStillImages360VUp"/>
+     <addaction name="actionSaveStillImages360PrimN"/>
+     <addaction name="actionSaveStillImages360PlaneN"/>
+     <addaction name="separator"/>
+     <addaction name="actionSaveStillImages360DurationSlow"/>
+     <addaction name="separator"/>
+     <addaction name="actionSphericalImagesLight"/>
+     <addaction name="actionSphericalImagesLightDirectory"/>
+     <addaction name="separator"/>
+     <addaction name="actionSphericalImages"/>
+     <addaction name="actionSphericalImagesVertical"/>
+     <addaction name="actionSphericalImagesHorizontal"/>
+     <addaction name="separator"/>
+     <addaction name="actionSphericalImagesStateNr"/>
+     <addaction name="separator"/>
+    </widget>
+    <widget class="QMenu" name="menuExportScreenshots">
+     <property name="title">
+      <string>Export Screens&amp;hots</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionScreenshot"/>
+     <addaction name="actionScreenshotSVG"/>
+     <addaction name="actionScreenshotPDF"/>
+     <addaction name="separator"/>
+     <addaction name="actionScreenshotViews"/>
+     <addaction name="actionScreenshotViewsPDF"/>
+     <addaction name="separator"/>
+     <addaction name="actionScreenshotRuler"/>
+     <addaction name="separator"/>
+     <addaction name="actionScreenshotsCrop"/>
+     <addaction name="separator"/>
+     <addaction name="actionVideoFrameSizeSet"/>
+     <addaction name="actionVideoFrameSize"/>
+     <addaction name="separator"/>
+     <addaction name="actionExportSVGDashedAxis"/>
+     <addaction name="actionScreenshotDPISuffix"/>
+     <addaction name="actionExportScreenShotsViewsSix"/>
+     <addaction name="actionReplaceTransparencyBgColor"/>
+    </widget>
+    <widget class="QMenu" name="menuFileRecent">
+     <property name="title">
+      <string>Open Recent &amp;Files</string>
+     </property>
+    </widget>
+    <widget class="QMenu" name="menuImport">
+     <property name="title">
+      <string>Import</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionImportFeatureVectors"/>
+     <addaction name="actionImportFunctionValues"/>
+     <addaction name="separator"/>
+     <addaction name="actionImportNormals"/>
+     <addaction name="actionImportTexMap"/>
+     <addaction name="separator"/>
+     <addaction name="actionImportVertexCoordinatesFromCSV"/>
+     <addaction name="actionImportPolylines"/>
+     <addaction name="actionImportLabels"/>
+     <addaction name="actionImport_and_apply_transformation_matrices"/>
+    </widget>
+    <widget class="QMenu" name="menuExport">
+     <property name="title">
+      <string>Export</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionExportFeatureVectors"/>
+     <addaction name="actionExportFuncVals"/>
+     <addaction name="separator"/>
+     <addaction name="actionExportCoordinatesOfAllVerticesAsCSV"/>
+     <addaction name="actionExportCoordinatesOfSelectedVerticesAsCSV"/>
+     <addaction name="actionExportCoordinatesOfSelectedPrimitivesAsCSV"/>
+     <addaction name="separator"/>
+     <addaction name="actionExportFaceNormalAngles"/>
+     <addaction name="actionExport_Normal_Sphere_Data"/>
+     <addaction name="separator"/>
+     <addaction name="actionExportPolylines"/>
+     <addaction name="actionExportPolylinesProjected"/>
+     <addaction name="actionExportPolylinesFuncVals"/>
+    </widget>
+    <widget class="QMenu" name="menuExport_Meta_Data">
+     <property name="title">
+      <string>Export Meta-Data</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionExportMetaDataHTML"/>
+     <addaction name="actionExportMetaDataTTL"/>
+     <addaction name="actionExportMetaDataJSON"/>
+     <addaction name="actionExportMetaDataXML"/>
+     <addaction name="separator"/>
+     <addaction name="actionExportMetaDataAll"/>
+    </widget>
+    <addaction name="actionFileOpen"/>
+    <addaction name="menuFileRecent"/>
+    <addaction name="actionFileReload"/>
+    <addaction name="actionFileSaveAs"/>
+    <addaction name="actionSaveLabelsSeparated"/>
+    <addaction name="actionFileExportAsLegacy"/>
+    <addaction name="actionSaveFlagBinary"/>
+    <addaction name="actionSaveFlagTextureExport"/>
+    <addaction name="separator"/>
+    <addaction name="menuImport"/>
+    <addaction name="menuExport"/>
+    <addaction name="separator"/>
+    <addaction name="actionExportPlaneIntersectSVG"/>
+    <addaction name="separator"/>
+    <addaction name="menuExportScreenshots"/>
+    <addaction name="menuExportImageStack"/>
+    <addaction name="separator"/>
+    <addaction name="actionScreenshotViewsDirectory"/>
+    <addaction name="actionDirectoryFuncValToRGB"/>
+    <addaction name="separator"/>
+    <addaction name="menuExport_Meta_Data"/>
+    <addaction name="separator"/>
+    <addaction name="actionUnloadFeatureVectors"/>
+    <addaction name="actionUnload3D"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuLabeling">
+    <property name="title">
+     <string>&amp;Labeling</string>
+    </property>
+    <property name="toolTipsVisible">
+     <bool>true</bool>
+    </property>
+    <addaction name="actionLabelVertices"/>
+    <addaction name="actionLabelSelectionToSeeds"/>
+    <addaction name="actionLabelSelMVerts"/>
+    <addaction name="actionLabelVertEqualFV"/>
+    <addaction name="actionLabelVertEqualRGB"/>
+    <addaction name="actionLabelSelMVertsBackground"/>
+    <addaction name="actionLabelFaces"/>
+    <addaction name="separator"/>
+    <addaction name="actionLabelbordersToPolylines"/>
+    <addaction name="actionAdvancePolyThres"/>
+    <addaction name="separator"/>
+    <addaction name="actionLabelFuncValMinima"/>
+    <addaction name="actionLabelFuncValMaxima"/>
+    <addaction name="separator"/>
+    <addaction name="actionLabelColorShift"/>
+    <addaction name="separator"/>
+    <addaction name="actionLabelKMeansVertPos"/>
+   </widget>
+   <widget class="QMenu" name="menuFunctions">
+    <property name="title">
+     <string>F&amp;unctions</string>
+    </property>
+    <property name="toolTipsVisible">
+     <bool>true</bool>
+    </property>
+    <widget class="QMenu" name="menuVertex_Properties">
+     <property name="title">
+      <string>&amp;Vertex - Properties</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionVisVertIndex"/>
+     <addaction name="actionVisVert1RArea"/>
+     <addaction name="actionVisVert1RSumAngles"/>
+     <addaction name="actionFuncVert1RingRMin"/>
+     <addaction name="actionFuncVert1RingVolInt"/>
+     <addaction name="actionFuncValAdjacentFaceCount"/>
+     <addaction name="actionVisVertOctree"/>
+     <addaction name="actionVisVertFaceSphereAngleMax"/>
+     <addaction name="actionVisVertFaceSphereMeanAngleMax"/>
+     <addaction name="actionFuncVertDistancesMax"/>
+    </widget>
+    <widget class="QMenu" name="menuFeatureVectorsExtraFunctions1">
+     <property name="title">
+      <string>Feature Vectors - Extra Functions (2)</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normalon>:/GMToolBar/gigamesh_icon_feature_vector_generic.svg</normalon>
+      </iconset>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionFuncValFeatureVecElementsStdDev"/>
+     <addaction name="separator"/>
+     <addaction name="actionFeatBVFunc"/>
+     <addaction name="actionFeatTVSeqn"/>
+     <addaction name="separator"/>
+     <addaction name="actionFeatDistSelTanimoto"/>
+     <addaction name="actionFeatDistSelCosSim"/>
+     <addaction name="separator"/>
+     <addaction name="actionFeatAutoCorrelationVert"/>
+     <addaction name="actionFeatAutoSelectedVertCorr"/>
+     <addaction name="separator"/>
+     <addaction name="actionFuncValFeatureVecPNorm"/>
+     <addaction name="actionFuncValFeatureVecMahalanobis"/>
+     <addaction name="separator"/>
+     <addaction name="actionFuncValToFeatureVector"/>
+    </widget>
+    <widget class="QMenu" name="menuColorPerVertexToFunctionValue">
+     <property name="title">
+      <string>Color per Vertex to Function Value</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionHueToFuncVal"/>
+     <addaction name="actionColorRGBAvgToFuncVal"/>
+     <addaction name="actionColorRGBAvgWeigthToFuncVal"/>
+     <addaction name="actionColorRGBSaturationRemovalToFuncVal"/>
+     <addaction name="actionColorHSVComponentToFuncVal"/>
+    </widget>
+    <widget class="QMenu" name="menuAngles_to_Axis">
+     <property name="title">
+      <string>Angles to Axis</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionAngleConeAxis"/>
+     <addaction name="separator"/>
+     <addaction name="actionFuncValAngleToRadial"/>
+     <addaction name="actionFuncValAxisAngleToRadial"/>
+     <addaction name="actionFuncValOrthogonalAxisAngleToRaial"/>
+    </widget>
+    <widget class="QMenu" name="menuSpherical_Intersection">
+     <property name="title">
+      <string>Spherical Intersection</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionSphereSurfaceLength"/>
+     <addaction name="actionSphereVolumeArea"/>
+     <addaction name="actionSphereSurfaceNumberOfComponents"/>
+    </widget>
+    <widget class="QMenu" name="menuFeature_Vectors_Extra_Functions_1">
+     <property name="title">
+      <string>Feature Vectors - Extra Functions (1)</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normalon>:/GMToolBar/gigamesh_icon_feature_vector_generic.svg</normalon>
+      </iconset>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionFeatDistSelMan"/>
+     <addaction name="actionFeatDistSelEuc"/>
+     <addaction name="actionFeatDistSelEucNorm"/>
+     <addaction name="separator"/>
+     <addaction name="actionFeatCorrelationSelectedVert"/>
+     <addaction name="actionFuncValFeatureVecCorrelateWith"/>
+    </widget>
+    <addaction name="actionFeatLengthMan"/>
+    <addaction name="actionFeatLengthEuc"/>
+    <addaction name="separator"/>
+    <addaction name="actionFeatElement"/>
+    <addaction name="actionFuncValFeatureVecMin"/>
+    <addaction name="actionFuncValFeatureVecMax"/>
+    <addaction name="actionFuncValFeatureVecMinSigned"/>
+    <addaction name="actionFuncValFeatureVecMaxSigned"/>
+    <addaction name="separator"/>
+    <addaction name="menuFeature_Vectors_Extra_Functions_1"/>
+    <addaction name="menuFeatureVectorsExtraFunctions1"/>
+    <addaction name="separator"/>
+    <addaction name="actionFuncValPlaneAngle"/>
+    <addaction name="actionDistanceToPlane"/>
+    <addaction name="actionDistanceToPrimSelCOG"/>
+    <addaction name="actionDistanceToLineDir"/>
+    <addaction name="actionDistanceToAxis"/>
+    <addaction name="menuAngles_to_Axis"/>
+    <addaction name="actionDistanceToCone"/>
+    <addaction name="actionDistanceToSphere"/>
+    <addaction name="separator"/>
+    <addaction name="menuVertex_Properties"/>
+    <addaction name="separator"/>
+    <addaction name="actionVisFaceSortIndex"/>
+    <addaction name="actionVisFaceMarchSphereIndex"/>
+    <addaction name="separator"/>
+    <addaction name="menuColorPerVertexToFunctionValue"/>
+    <addaction name="separator"/>
+    <addaction name="actionAmbientOcclusion"/>
+    <addaction name="menuSpherical_Intersection"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <property name="toolTipsVisible">
+     <bool>true</bool>
+    </property>
+    <widget class="QMenu" name="menuFunctionsValueExtra">
+     <property name="title">
+      <string>Function Value - Extra</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionFuncValSet"/>
+     <addaction name="actionFuncValueCutOff"/>
+     <addaction name="actionFuncValsNormalize"/>
+     <addaction name="actionFuncValsAbs"/>
+     <addaction name="actionFuncValSetToOrder"/>
+     <addaction name="separator"/>
+     <addaction name="actionFuncValMeanOneRingRepeat"/>
+     <addaction name="actionFuncValMedianOneRingRepeat"/>
+    </widget>
+    <widget class="QMenu" name="menuConeCylinderExtra">
+     <property name="title">
+      <string>Cone / Cylinder - Extra</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionSetConeAxisCentralPixel"/>
+     <addaction name="actionSetConeData"/>
+     <addaction name="actionMakeConeCoverMesh"/>
+     <addaction name="actionCenterAroundCone"/>
+     <addaction name="separator"/>
+     <addaction name="actionCylinderSetRadius"/>
+     <addaction name="actionUnrollMeshAroundCylinder"/>
+    </widget>
+    <widget class="QMenu" name="menuMoreExtra">
+     <property name="title">
+      <string>More / Extra</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionCutOffFeatureVertex"/>
+     <addaction name="actionFeatureVecMeanOneRingRepeat"/>
+     <addaction name="separator"/>
+     <addaction name="actionDatumAddSphere"/>
+     <addaction name="separator"/>
+     <addaction name="actionEditVerticesAdd"/>
+     <addaction name="separator"/>
+     <addaction name="actionExtrudePolylines"/>
+    </widget>
+    <widget class="QMenu" name="menuTransform_Extra">
+     <property name="title">
+      <string>Transform - Extra</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionApplyMatrix4D"/>
+     <addaction name="actionApplyMatrix4DVertSel"/>
+     <addaction name="separator"/>
+     <addaction name="actionApplyMeltingSphere"/>
+     <addaction name="separator"/>
+     <addaction name="actionAutomatic_Mesh_Alignment"/>
+     <addaction name="actionDirectoryAutomaticMeshAlignment"/>
+    </widget>
+    <addaction name="actionEditMeshPolish"/>
+    <addaction name="separator"/>
+    <addaction name="actionRemoveUncleanSmall"/>
+    <addaction name="separator"/>
+    <addaction name="actionRemoveFacesZeroArea"/>
+    <addaction name="actionEditRemoveFacesBorderErosion"/>
+    <addaction name="separator"/>
+    <addaction name="actionRemoveVerticesSelected"/>
+    <addaction name="actionRemoveFacesSelected"/>
+    <addaction name="actionRemovePolylinesSelected"/>
+    <addaction name="separator"/>
+    <addaction name="actionRemovePolylinesAll"/>
+    <addaction name="separator"/>
+    <addaction name="actionEditRemoveSeededSynthComp"/>
+    <addaction name="actionFillHoles"/>
+    <addaction name="separator"/>
+    <addaction name="actionFacesInvertOrientation"/>
+    <addaction name="separator"/>
+    <addaction name="actionFuncValsAdd"/>
+    <addaction name="actionFuncValScalarMultiply"/>
+    <addaction name="menuFunctionsValueExtra"/>
+    <addaction name="separator"/>
+    <addaction name="actionTransformFunctionValuesToRGB"/>
+    <addaction name="separator"/>
+    <addaction name="actionDownscaleTexture"/>
+    <addaction name="separator"/>
+    <addaction name="actionMultiplyColorValuesWithFunctionValues"/>
+    <addaction name="actionNormalizeFunctionValues"/>
+    <addaction name="separator"/>
+    <addaction name="actionSplitByPlane"/>
+    <addaction name="actionSplitByPlaneAdvanced"/>
+    <addaction name="actionSplitByIsoValue"/>
+    <addaction name="separator"/>
+    <addaction name="actionUnrollMeshAroundCone"/>
+    <addaction name="menuConeCylinderExtra"/>
+    <addaction name="separator"/>
+    <addaction name="actionUnrollAroundSphere"/>
+    <addaction name="actionCenterAroundSphere"/>
+    <addaction name="separator"/>
+    <addaction name="actionSetMeridianPrime"/>
+    <addaction name="actionSetMeridianPrimeSelPrim"/>
+    <addaction name="actionSetMeridianCutSelPrim"/>
+    <addaction name="separator"/>
+    <addaction name="actionApplyMatrix4DScale"/>
+    <addaction name="menuTransform_Extra"/>
+    <addaction name="separator"/>
+    <addaction name="actionEditRecomputeVertexNormals"/>
+    <addaction name="actionSet_Vertex_Alpha"/>
+    <addaction name="separator"/>
+    <addaction name="menuMoreExtra"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <property name="toolTipsVisible">
+     <bool>true</bool>
+    </property>
+    <widget class="QMenu" name="menuVertices">
+     <property name="title">
+      <string>&amp;Vertices</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionViewVerticesNone"/>
+     <addaction name="separator"/>
+     <addaction name="separator"/>
+     <addaction name="actionViewVerticesSelected"/>
+     <addaction name="separator"/>
+     <addaction name="actionViewVerticesSolo"/>
+     <addaction name="actionViewVerticesBorder"/>
+     <addaction name="actionViewVerticesSingular"/>
+     <addaction name="actionViewVerticesNonManifold"/>
+     <addaction name="actionViewVerticesSynthetic"/>
+     <addaction name="separator"/>
+     <addaction name="actionViewVerticesLocalMinima"/>
+     <addaction name="actionViewVerticesLocalMaxima"/>
+     <addaction name="separator"/>
+     <addaction name="actionViewVerticesAll"/>
+     <addaction name="actionViewVerticesAllMono"/>
+     <addaction name="actionViewVerticesAllColor"/>
+     <addaction name="actionViewVerticesAllFuncVal"/>
+     <addaction name="actionViewVerticesAllLabel"/>
+     <addaction name="separator"/>
+     <addaction name="actionVisSpriteShapeStarRounded"/>
+     <addaction name="actionVisSpriteShapePolarRose"/>
+     <addaction name="actionVisSpriteShapeDisc"/>
+     <addaction name="actionVisSpriteShapeBox"/>
+    </widget>
+    <widget class="QMenu" name="menuToolbars">
+     <property name="title">
+      <string>&amp;Toolbars</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionFullscreen"/>
+     <addaction name="separator"/>
+     <addaction name="actionMenu"/>
+     <addaction name="actionToolbar"/>
+     <addaction name="actionSidebar"/>
+     <addaction name="actionStatusbar"/>
+    </widget>
+    <widget class="QMenu" name="menuNormals">
+     <property name="title">
+      <string>Normalvector Rendering</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionNormalsVertex"/>
+     <addaction name="actionNormalsFace"/>
+     <addaction name="actionNormalsPolyline"/>
+     <addaction name="actionNormalsPolylineMain"/>
+     <addaction name="separator"/>
+     <addaction name="actionNormalsLength"/>
+     <addaction name="actionNormalsWidth"/>
+    </widget>
+    <widget class="QMenu" name="menuPolylines_Settings">
+     <property name="title">
+      <string>Polylines - Render Settings</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionVisPolyLineWidth"/>
+     <addaction name="separator"/>
+     <addaction name="actionViewPolylinesCurv"/>
+     <addaction name="actionViewPolylinesCurvScale"/>
+    </widget>
+    <widget class="QMenu" name="menuRotateViewByValue">
+     <property name="title">
+      <string>Rotate - View - by Value (Degree)</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionRotYaw"/>
+     <addaction name="actionRotPitch"/>
+     <addaction name="actionRotRoll"/>
+    </widget>
+    <addaction name="menuToolbars"/>
+    <addaction name="separator"/>
+    <addaction name="actionViewActivateInspectionOptions"/>
+    <addaction name="separator"/>
+    <addaction name="actionViewShow2DBoundingBox"/>
+    <addaction name="actionViewMatrix"/>
+    <addaction name="actionViewMatrixSet"/>
+    <addaction name="separator"/>
+    <addaction name="actionViewBoundingBox"/>
+    <addaction name="actionViewBoundingBoxEnclosed"/>
+    <addaction name="actionBoundingBoxLineWidth"/>
+    <addaction name="separator"/>
+    <addaction name="menuVertices"/>
+    <addaction name="actionViewFaces"/>
+    <addaction name="actionViewFacesSelected"/>
+    <addaction name="actionViewEdges"/>
+    <addaction name="separator"/>
+    <addaction name="actionViewMeshAxis"/>
+    <addaction name="separator"/>
+    <addaction name="actionViewMeshPlane"/>
+    <addaction name="actionMeshPlaneFlip"/>
+    <addaction name="actionViewMeshPlaneClipping"/>
+    <addaction name="separator"/>
+    <addaction name="actionViewClipThruSelPrim"/>
+    <addaction name="separator"/>
+    <addaction name="menuNormals"/>
+    <addaction name="separator"/>
+    <addaction name="actionViewPolylines"/>
+    <addaction name="menuPolylines_Settings"/>
+    <addaction name="separator"/>
+    <addaction name="actionViewDatumSpheres"/>
+    <addaction name="actionViewDatumBoxes"/>
+    <addaction name="separator"/>
+    <addaction name="actionViewDefaultViewLight"/>
+    <addaction name="actionViewDefaultViewLightZoom"/>
+    <addaction name="separator"/>
+    <addaction name="actionRotOrthoPlane"/>
+    <addaction name="actionViewAxisUp"/>
+    <addaction name="menuRotateViewByValue"/>
+    <addaction name="separator"/>
+    <addaction name="actionSelPrimViewReference"/>
+    <addaction name="actionCurrentViewToDefault"/>
+    <addaction name="separator"/>
+    <addaction name="separator"/>
+    <addaction name="actionBad_Lit_Areas"/>
+    <addaction name="actionBad_Lit_Areas_Upper_Threshold"/>
+    <addaction name="actionBad_Lit_Areas_Lower_Threshold"/>
+   </widget>
+   <widget class="QMenu" name="menuSelect">
+    <property name="title">
+     <string>Select</string>
+    </property>
+    <property name="toolTipsVisible">
+     <bool>true</bool>
+    </property>
+    <widget class="QMenu" name="menuVertices_SelMVerts_by_Value_Type">
+     <property name="title">
+      <string>Vertices - SelMVerts - &amp;by Value/Type/Index</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionSelVertSolo"/>
+     <addaction name="actionSelVertBorder"/>
+     <addaction name="actionSelVertDoubleCone"/>
+     <addaction name="actionSelVertFlagSynthetic"/>
+     <addaction name="actionSelVertNonManifoldFace"/>
+     <addaction name="actionSelVertsRandom"/>
+     <addaction name="actionSelVertFlagCircleCenter"/>
+     <addaction name="separator"/>
+     <addaction name="actionSelVertLocalMin"/>
+     <addaction name="actionSelVertLocalMax"/>
+     <addaction name="separator"/>
+     <addaction name="actionSelVertLabelAreaLT"/>
+     <addaction name="actionSelVertLabelAreaRelLT"/>
+     <addaction name="separator"/>
+     <addaction name="actionSelVertFaceMinAngleLT"/>
+     <addaction name="actionSelVertFaceMaxAngleGT"/>
+     <addaction name="separator"/>
+     <addaction name="actionSelVertLabelNo"/>
+     <addaction name="actionSelVertLabelBackGrd"/>
+     <addaction name="actionSelVertLabeledNot"/>
+     <addaction name="separator"/>
+     <addaction name="actionSelVertNonMax"/>
+     <addaction name="actionSelVertRidges"/>
+     <addaction name="separator"/>
+     <addaction name="actionSelVertFromSelMFaces"/>
+     <addaction name="separator"/>
+     <addaction name="actionSelVertsByIdx"/>
+     <addaction name="actionSelVertsByIdxShow"/>
+    </widget>
+    <widget class="QMenu" name="menuVertices_SelMVerts_Unselect">
+     <property name="title">
+      <string>Vertices - SelMVerts - &amp;Deselect</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionDeSelVertsNoLabel"/>
+    </widget>
+    <widget class="QMenu" name="menuPlane_Extra">
+     <property name="title">
+      <string>Plane - Extra</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionPlaneSetVPos"/>
+     <addaction name="actionPlaneSetHNF"/>
+     <addaction name="separator"/>
+     <addaction name="actionPlaneGetVPos"/>
+     <addaction name="actionPlaneGetHNF"/>
+    </widget>
+    <widget class="QMenu" name="menuPolylines">
+     <property name="title">
+      <string>Polylines</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionSelPolyShortest"/>
+     <addaction name="actionSelPolyLongest"/>
+     <addaction name="separator"/>
+     <addaction name="actionSelPolyNoLabel"/>
+     <addaction name="actionSelPolyNotLabeled"/>
+     <addaction name="actionSelPolyRunLenGT"/>
+     <addaction name="actionSelPolyRunLenLT"/>
+     <addaction name="actionSelPolyLabelNo"/>
+     <addaction name="actionSelPolyVerticesNr"/>
+    </widget>
+    <widget class="QMenu" name="menuFaces_Extra">
+     <property name="title">
+      <string>Faces - Extra</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionSelFaceSticky"/>
+     <addaction name="actionSelFaceNonManifold"/>
+     <addaction name="actionSelFaceZeroArea"/>
+     <addaction name="separator"/>
+     <addaction name="actionSelMFacesBorderBridgeTriConn"/>
+     <addaction name="actionSelMFacesBorderDangling"/>
+     <addaction name="actionSelMFacesBorderBridge"/>
+     <addaction name="actionSelMFacesBorderWithThreeVertices"/>
+     <addaction name="separator"/>
+     <addaction name="actionSelFaceSelfIntersecting"/>
+     <addaction name="actionSelFaceInSphere"/>
+     <addaction name="actionSelFaceRandom"/>
+     <addaction name="actionSelMFacesLabledVerticesVoronoiCorner"/>
+     <addaction name="actionSelMFacesWithThreeVerticesSelected"/>
+    </widget>
+    <addaction name="actionDeSelVertsAll"/>
+    <addaction name="menuVertices_SelMVerts_Unselect"/>
+    <addaction name="separator"/>
+    <addaction name="actionSelVertFuncLT"/>
+    <addaction name="actionSelVertFuncGT"/>
+    <addaction name="menuVertices_SelMVerts_by_Value_Type"/>
+    <addaction name="separator"/>
+    <addaction name="actionSelVertInvert"/>
+    <addaction name="separator"/>
+    <addaction name="actionSelMVertsGUIPinPoint"/>
+    <addaction name="actionSelMVertsGUILasso"/>
+    <addaction name="actionDeSelMVertsGUILasso"/>
+    <addaction name="separator"/>
+    <addaction name="actionSelectVertexEnterIndex"/>
+    <addaction name="actionSelectVertex"/>
+    <addaction name="actionSelectFace"/>
+    <addaction name="separator"/>
+    <addaction name="actionSelectPositions"/>
+    <addaction name="actionSelectThreePositions"/>
+    <addaction name="actionSelectPositionsDeselectAll"/>
+    <addaction name="separator"/>
+    <addaction name="actionSelectCone"/>
+    <addaction name="actionSelectSphere"/>
+    <addaction name="separator"/>
+    <addaction name="actionPlaneSetHNFByView"/>
+    <addaction name="actionSelectPlane3FP"/>
+    <addaction name="actionSectionDrag"/>
+    <addaction name="actionPlaneSetByAxisSelPrim"/>
+    <addaction name="actionPlaneSetByAxisLastSelPos"/>
+    <addaction name="actionPlaneOrientTowardsAxis"/>
+    <addaction name="menuPlane_Extra"/>
+    <addaction name="separator"/>
+    <addaction name="actionSelFaceNone"/>
+    <addaction name="actionSelMFacesGUIPinPoint"/>
+    <addaction name="actionSelMFacesWithSyntheticVertices"/>
+    <addaction name="menuFaces_Extra"/>
+    <addaction name="separator"/>
+    <addaction name="menuPolylines"/>
+    <addaction name="separator"/>
+    <addaction name="actionVertices_Normal_Sphere"/>
+    <addaction name="actionFaces_Normal_Sphere"/>
+   </widget>
+   <widget class="QMenu" name="menuHistogram">
+    <property name="title">
+     <string>&amp;Histogram</string>
+    </property>
+    <property name="toolTipsVisible">
+     <bool>true</bool>
+    </property>
+    <addaction name="actionHistShow"/>
+    <addaction name="actionHistLog"/>
+    <addaction name="separator"/>
+    <addaction name="actionHistFunctionValuesVertex"/>
+    <addaction name="actionHistFunctionValuesVertexLocalMin"/>
+    <addaction name="actionHistFunctionValuesVertexLocalMax"/>
+    <addaction name="separator"/>
+    <addaction name="actionHistFVELementsVertex"/>
+    <addaction name="actionHistFVELementsVertexDim"/>
+    <addaction name="separator"/>
+    <addaction name="actionHistFacesEdgeLength"/>
+    <addaction name="actionHistFacesAnglesMin"/>
+    <addaction name="actionHistFacesAnglesMax"/>
+    <addaction name="separator"/>
+    <addaction name="actionPlotPolylineRunlength"/>
+    <addaction name="separator"/>
+    <addaction name="actionHistSceneRGB"/>
+    <addaction name="actionHistSceneRGBLog"/>
+   </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Sett&amp;ings</string>
+    </property>
+    <property name="toolTipsVisible">
+     <bool>true</bool>
+    </property>
+    <widget class="QMenu" name="menuGridsExtra">
+     <property name="title">
+      <string>Grids - Extra</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionGridRectangular"/>
+     <addaction name="separator"/>
+     <addaction name="actionGridPolarCircles"/>
+     <addaction name="actionGridPolarLines"/>
+    </widget>
+    <widget class="QMenu" name="menuMaterialDefaults">
+     <property name="title">
+      <string>Material Defaults</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionRenderMatted"/>
+     <addaction name="actionRenderDefault"/>
+     <addaction name="actionRenderMetallic"/>
+     <addaction name="actionRenderLightShading"/>
+    </widget>
+    <widget class="QMenu" name="menuLanguages">
+     <property name="title">
+      <string>Languages</string>
+     </property>
+    </widget>
+    <widget class="QMenu" name="menuAutomatic_Mesh_Polishing">
+     <property name="title">
+      <string>Automatic Mesh Polishing</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionRemove_Dangling_Faces"/>
+     <addaction name="actionMax_Number_of_vertices_for_hole_filling"/>
+    </widget>
+    <addaction name="actionSetFOV"/>
+    <addaction name="separator"/>
+    <addaction name="actionProjectPerspective"/>
+    <addaction name="actionProjectOrthographic"/>
+    <addaction name="separator"/>
+    <addaction name="actionOrthoSetDPI"/>
+    <addaction name="separator"/>
+    <addaction name="actionBackGroundGridNone"/>
+    <addaction name="actionBackGroundGridRaster"/>
+    <addaction name="actionBackGroundGridPolar"/>
+    <addaction name="actionGridHighlightCenter"/>
+    <addaction name="actionGrid_Center_Cross_in_front"/>
+    <addaction name="actionGridShiftDepth"/>
+    <addaction name="menuGridsExtra"/>
+    <addaction name="separator"/>
+    <addaction name="actionLightning"/>
+    <addaction name="actionLightFixedCam"/>
+    <addaction name="actionLightFixedCamIntensity"/>
+    <addaction name="actionLightFixedDirectionPhi"/>
+    <addaction name="actionLightFixedDirectionTheta"/>
+    <addaction name="actionLightFixedWorld"/>
+    <addaction name="actionLightFixedWorldIntensity"/>
+    <addaction name="actionLightAmbient"/>
+    <addaction name="actionSelectAmbient"/>
+    <addaction name="actionLightVectorsShown"/>
+    <addaction name="actionLightVectorLength"/>
+    <addaction name="separator"/>
+    <addaction name="actionSelMatShininess"/>
+    <addaction name="actionSelMatSpecular"/>
+    <addaction name="separator"/>
+    <addaction name="menuMaterialDefaults"/>
+    <addaction name="separator"/>
+    <addaction name="actionSmoothShading"/>
+    <addaction name="actionFacesBackfaceCulling"/>
+    <addaction name="actionFace_Backface_Lightning"/>
+    <addaction name="separator"/>
+    <addaction name="actionFog"/>
+    <addaction name="actionFogLinearDistMin"/>
+    <addaction name="actionFogLinearDistMax"/>
+    <addaction name="separator"/>
+    <addaction name="menuAutomatic_Mesh_Polishing"/>
+    <addaction name="separator"/>
+    <addaction name="actionGigaMeshLogo"/>
+    <addaction name="separator"/>
+    <addaction name="actionSelDatSphereTransp"/>
+    <addaction name="separator"/>
+    <addaction name="actionPin_Size"/>
+    <addaction name="actionPin_Line_Height"/>
+    <addaction name="separator"/>
+    <addaction name="actionPointcloud_pointsize"/>
+    <addaction name="actionDisplay_as_pointcloud_when_moving"/>
+    <addaction name="separator"/>
+    <addaction name="actionExternal_Programs"/>
+    <addaction name="separator"/>
+    <addaction name="menuLanguages"/>
+    <addaction name="separator"/>
+    <addaction name="actionHighDPIZoomFactor"/>
+   </widget>
+   <widget class="QMenu" name="menuColors">
+    <property name="title">
+     <string>Colo&amp;rs</string>
+    </property>
+    <property name="toolTipsVisible">
+     <bool>true</bool>
+    </property>
+    <addaction name="actionSelectColorBackground"/>
+    <addaction name="separator"/>
+    <addaction name="actionSelectColorSolid"/>
+    <addaction name="actionSelectColorBackface"/>
+    <addaction name="separator"/>
+    <addaction name="actionSelectColorVertexMono"/>
+    <addaction name="actionSelectColorVertexLocalMin"/>
+    <addaction name="actionSelectColorVertexLocalMax"/>
+    <addaction name="actionSelectColorEdgeMono"/>
+    <addaction name="actionSelectColorPolyline"/>
+    <addaction name="separator"/>
+    <addaction name="actionSelectColorNoLabel"/>
+    <addaction name="actionSelectColorLabelsMono"/>
+    <addaction name="actionShowLablesMono"/>
+   </widget>
+   <widget class="QMenu" name="menuColorRamp">
+    <property name="title">
+     <string>&amp;Colorramp</string>
+    </property>
+    <property name="toolTipsVisible">
+     <bool>true</bool>
+    </property>
+    <widget class="QMenu" name="menuDeprecatedColorramps">
+     <property name="title">
+      <string>Deprecated Colorramps</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionVisMapHSV"/>
+     <addaction name="actionVisMapHSVPart"/>
+     <addaction name="actionVisMapJet"/>
+    </widget>
+    <widget class="QMenu" name="menuHypsometricTints">
+     <property name="title">
+      <string>Hypsometric Tints</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionVisMapHypsometric"/>
+     <addaction name="actionVisMapHypsoArid"/>
+     <addaction name="actionVisMapHypsoHirise1"/>
+     <addaction name="actionVisMapHypsoHirise2"/>
+    </widget>
+    <addaction name="actionVisMapMorgenstemning"/>
+    <addaction name="actionVisMapHot"/>
+    <addaction name="actionVisMapCold"/>
+    <addaction name="actionVisMapGrayscale"/>
+    <addaction name="actionVisMapYlOrBr"/>
+    <addaction name="actionVisMapCopper"/>
+    <addaction name="actionVisMapSiennatones"/>
+    <addaction name="actionVisMapRusttones"/>
+    <addaction name="actionVisMapRdGy"/>
+    <addaction name="actionVisMapSpectral"/>
+    <addaction name="actionVisMapRdYlGn"/>
+    <addaction name="actionVisMapParula"/>
+    <addaction name="menuHypsometricTints"/>
+    <addaction name="menuDeprecatedColorramps"/>
+    <addaction name="separator"/>
+    <addaction name="actionRepeatMapWaves"/>
+    <addaction name="actionVisMapWavelength"/>
+    <addaction name="separator"/>
+    <addaction name="actionVisMapAutoMinMax"/>
+    <addaction name="actionVisMapQuantil"/>
+    <addaction name="actionVisMapQuantilSetMin"/>
+    <addaction name="actionVisMapQuantilSetMax"/>
+    <addaction name="actionVisMapFixedMinMax"/>
+    <addaction name="actionSetFixedRangeNormalized"/>
+    <addaction name="actionVisMapFixedSetMin"/>
+    <addaction name="actionVisMapFixedSetMax"/>
+    <addaction name="separator"/>
+    <addaction name="actionVisMapInvert"/>
+    <addaction name="actionVisMapLog"/>
+    <addaction name="separator"/>
+    <addaction name="actionIsolines"/>
+    <addaction name="actionIsolinesDistance"/>
+    <addaction name="actionSetIsolinesByNumber"/>
+    <addaction name="actionIsolinesTenZeroed"/>
+    <addaction name="actionIsolinesOffset"/>
+    <addaction name="actionIsolinesWidthPixel"/>
+    <addaction name="actionIsolinesOnly"/>
+    <addaction name="actionIsolinesSolid"/>
+   </widget>
+   <widget class="QMenu" name="menuInfo">
+    <property name="title">
+     <string>Info</string>
+    </property>
+    <property name="toolTipsVisible">
+     <bool>true</bool>
+    </property>
+    <addaction name="actionShowInfoMesh"/>
+    <addaction name="actionShowInfoSelPrim"/>
+    <addaction name="actionShowInfoAxis"/>
+    <addaction name="separator"/>
+    <addaction name="actionEstimateVolume"/>
+    <addaction name="actionComputeVolumePlane"/>
+    <addaction name="separator"/>
+    <addaction name="actionPolylinesLength"/>
+    <addaction name="separator"/>
+    <addaction name="actionShowInfoFuncVal"/>
+    <addaction name="separator"/>
+    <addaction name="actionShowInfoLabelProp"/>
+    <addaction name="separator"/>
+    <addaction name="actionMetaDataEditModelId"/>
+    <addaction name="actionMetaDataEditMaterial"/>
+    <addaction name="actionMetaDataEditWebReference"/>
+    <addaction name="separator"/>
+    <addaction name="actionShowLaTeXInfo"/>
+    <addaction name="separator"/>
+    <addaction name="actionInfoKeyShortcuts"/>
+    <addaction name="actionKeyboardLayout"/>
+    <addaction name="separator"/>
+    <addaction name="actionVisitVideoTutorials"/>
+    <addaction name="actionVisitWebSite"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuAnalyze">
+    <property name="title">
+     <string>A&amp;nalyze</string>
+    </property>
+    <property name="toolTipsVisible">
+     <bool>true</bool>
+    </property>
+    <widget class="QMenu" name="menuOctree">
+     <property name="title">
+      <string>Octree</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionGenerateOctree"/>
+     <addaction name="actionDraw_Octree"/>
+     <addaction name="actionDetect_Self_Intersections"/>
+     <addaction name="actionRemove_Drawing_of_Octree"/>
+     <addaction name="actionDelete_Octree"/>
+    </widget>
+    <addaction name="actionMSIIFilterApplyQuick"/>
+    <addaction name="actionEstimateMSIIFeature"/>
+    <addaction name="separator"/>
+    <addaction name="actionApplyTpsRpmTransformation"/>
+    <addaction name="separator"/>
+    <addaction name="actionPolylinesFromMultipleFuncVals"/>
+    <addaction name="actionPolylinesFromPlaneIntersect"/>
+    <addaction name="actionPolylinesFromAxisAndPostions"/>
+    <addaction name="actionMeshBordersToPolylines"/>
+    <addaction name="actionSelectionToPolyline"/>
+    <addaction name="actionCreate_SkeletonLine"/>
+    <addaction name="separator"/>
+    <addaction name="actionPolylinesFromFuncVal"/>
+    <addaction name="actionIsoValSet"/>
+    <addaction name="separator"/>
+    <addaction name="actionPolylinesCompIntInvRunLen"/>
+    <addaction name="actionPolylinesCompIntInvAngle"/>
+    <addaction name="actionPolylineExtrema"/>
+    <addaction name="actionViewPolylinesCurvAbs"/>
+    <addaction name="actionSetLengthSmooth"/>
+    <addaction name="actionPolylinesCopyNormalToVertices"/>
+    <addaction name="separator"/>
+    <addaction name="actionGeodesicPatchSelPrim"/>
+    <addaction name="actionGeodPatchVertSel"/>
+    <addaction name="actionGeodPatchVertSelOrdered"/>
+    <addaction name="separator"/>
+    <addaction name="actionPositionsEuclideanDistances"/>
+    <addaction name="actionPositionsComputeCircleCenters"/>
+    <addaction name="actionCompAxisFromCircleCenters"/>
+    <addaction name="separator"/>
+    <addaction name="actionSphereIntersect"/>
+    <addaction name="separator"/>
+    <addaction name="menuOctree"/>
+    <addaction name="separator"/>
+    <addaction name="actionEllipsenFit"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuView"/>
+   <addaction name="menuSelect"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuFunctions"/>
+   <addaction name="menuLabeling"/>
+   <addaction name="menuAnalyze"/>
+   <addaction name="menuHistogram"/>
+   <addaction name="menuColorRamp"/>
+   <addaction name="menuSettings"/>
+   <addaction name="menuColors"/>
+   <addaction name="menuInfo"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="uiMainToolBar">
+   <property name="minimumSize">
+    <size>
+     <width>40</width>
+     <height>40</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionFileReload"/>
+   <addaction name="separator"/>
+   <addaction name="actionLightFixedCam"/>
+   <addaction name="actionLightFixedWorld"/>
+   <addaction name="actionLightAmbient"/>
+   <addaction name="separator"/>
+   <addaction name="actionRenderMatted"/>
+   <addaction name="actionRenderDefault"/>
+   <addaction name="actionRenderMetallic"/>
+   <addaction name="actionRenderLightShading"/>
+   <addaction name="actionRenderFlatAndEdges"/>
+   <addaction name="actionIsolinesTenZeroed"/>
+   <addaction name="separator"/>
+   <addaction name="actionAmbientOcclusion"/>
+   <addaction name="separator"/>
+   <addaction name="actionScreenshot"/>
+   <addaction name="separator"/>
+   <addaction name="actionGridHighlightCenter"/>
+   <addaction name="actionBackGroundGridRaster"/>
+   <addaction name="actionBackGroundGridPolar"/>
+   <addaction name="actionGridCenter"/>
+   <addaction name="separator"/>
+   <addaction name="actionShowInfoMesh"/>
+   <addaction name="actionViewActivateInspectionOptions"/>
+   <addaction name="actionViewVerticesNone"/>
+   <addaction name="actionViewVerticesBorder"/>
+   <addaction name="actionViewVerticesSelected"/>
+   <addaction name="separator"/>
+   <addaction name="actionRemoveUncleanSmall"/>
+   <addaction name="actionEditMeshPolish"/>
+   <addaction name="separator"/>
+   <addaction name="actionMSIIFilterApplyQuick"/>
+   <addaction name="separator"/>
+   <addaction name="actionSelectVertex"/>
+   <addaction name="actionSelMVertsGUIPinPoint"/>
+   <addaction name="actionSelectPositions"/>
+   <addaction name="actionSelectThreePositions"/>
+   <addaction name="actionSelMVertsGUILasso"/>
+   <addaction name="actionDeSelMVertsGUILasso"/>
+   <addaction name="actionSelectCone"/>
+   <addaction name="actionSetConeAxisCentralPixel"/>
+   <addaction name="separator"/>
+   <addaction name="actionPolylinesFromAxisAndPostions"/>
+   <addaction name="actionPolylinesFromPlaneIntersect"/>
+   <addaction name="actionExportPlaneIntersectSVG"/>
+  </widget>
+  <action name="actionFileOpen">
+   <property name="text">
+    <string>&amp;Open</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionApplyTpsRpmTransformation">
+   <property name="text">
+    <string>&amp;Apply TPS-RPM Transformation</string>
+   </property>
+  </action>
+  <action name="actionEstimateMSIIFeature">
+   <property name="text">
+    <string>&amp;MSII Feature Vector - SelVert</string>
+   </property>
+  </action>
+  <action name="actionImportTexMap">
+   <property name="text">
+    <string>Import &amp;Color (per Vertex)</string>
+   </property>
+  </action>
+  <action name="actionFileSaveAs">
+   <property name="text">
+    <string>&amp;Save as</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionSaveFlagBinary">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Binary</string>
+   </property>
+  </action>
+  <action name="actionImportVertexCoordinatesFromCSV">
+   <property name="text">
+    <string>Import Mesh Coordinates From CSV File</string>
+   </property>
+  </action>
+  <action name="actionImportFeatureVectors">
+   <property name="text">
+    <string>&amp;Import Feature Vectors (per Vertex)</string>
+   </property>
+  </action>
+  <action name="actionSelectVertex">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_vertices_select_single_vertex.svg</normaloff>:/GMToolBar/gigamesh_icon_vertices_select_single_vertex.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Primitive - Vertex - SelVert/SelPrim</string>
+   </property>
+   <property name="toolTip">
+    <string>Select single vertex (SelPrim)</string>
+   </property>
+   <property name="gmMeshWidgetParamInt" stdset="0">
+    <number>0</number>
+   </property>
+   <property name="gmMeshWidgetParamValue" stdset="0">
+    <number>0</number>
+   </property>
+  </action>
+  <action name="actionSelectFace">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_vertices_select_single_face.svg</normaloff>:/GMToolBar/gigamesh_icon_vertices_select_single_face.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Pri&amp;mitive - Face - SelFace/SelPrim</string>
+   </property>
+   <property name="gmMeshWidgetParamInt" stdset="0">
+    <number>0</number>
+   </property>
+   <property name="gmMeshWidgetParamValue" stdset="0">
+    <number>0</number>
+   </property>
+  </action>
+  <action name="actionFeatDistSelEuc">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Feature Distance to SelVert (Euclid)</string>
+   </property>
+  </action>
+  <action name="actionCutOffFeatureVertex">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Feature Vector &amp;Elements - Cut-Off SelVert</string>
+   </property>
+  </action>
+  <action name="actionCutOffFeatureFace">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Feature Elements cut-&amp;off SelFace</string>
+   </property>
+  </action>
+  <action name="actionProjectOrthographic">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Orthographic View</string>
+   </property>
+   <property name="gmMeshWidgetFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionLabelFaces">
+   <property name="text">
+    <string>Label + &amp;Remove Small Areas</string>
+   </property>
+  </action>
+  <action name="actionScreenshot">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_screenshot.svg</normaloff>:/GMToolBar/gigamesh_icon_screenshot.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Screenshot (PNG)</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Capture a screenshot as PNG file with transparent background.&lt;br/&gt;Choosing tiled rendering will capture the whole 3D-model.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionVideoFrameSize">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Video &amp;Frame Size (Fix)</string>
+   </property>
+   <property name="gmMeshWidgetFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionSaveStillImages360HLR">
+   <property name="text">
+    <string>&amp;360° Circular Orbit Horizontal Axis</string>
+   </property>
+  </action>
+  <action name="actionScreenshotViews">
+   <property name="text">
+    <string>Scr&amp;eenshot Views (PNG)</string>
+   </property>
+   <property name="toolTip">
+    <string>Screenshot Views (PNG)</string>
+   </property>
+  </action>
+  <action name="actionViewVerticesAll">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;All (Point Cloud)</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionViewVerticesBorder">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_vertices_border.svg</normaloff>:/GMToolBar/gigamesh_icon_vertices_border.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Border</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Border Vertices</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionViewVerticesSolo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_vertices_solo.svg</normaloff>:/GMToolBar/gigamesh_icon_vertices_solo.svg</iconset>
+   </property>
+   <property name="text">
+    <string>S&amp;olo</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionViewVerticesNonManifold">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_vertices_nonmanifold.svg</normaloff>:/GMToolBar/gigamesh_icon_vertices_nonmanifold.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Non-&amp;Manifold</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionViewVerticesSingular">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_vertices_singular.svg</normaloff>:/GMToolBar/gigamesh_icon_vertices_singular.svg</iconset>
+   </property>
+   <property name="text">
+    <string>S&amp;ingular</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionViewFaces">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Faces</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionViewEdges">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Edges</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionViewVerticesAllMono">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>All - Monoc&amp;hrome</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionUnloadFeatureVectors">
+   <property name="text">
+    <string>&amp;Unload Feature Vectors</string>
+   </property>
+  </action>
+  <action name="actionLabelVertices">
+   <property name="text">
+    <string>&amp;Label - All Vertices / SelMVerts</string>
+   </property>
+  </action>
+  <action name="actionSelectColorSolid">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Solid Color</string>
+   </property>
+  </action>
+  <action name="actionNormalsVertex">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Normals - Vertex</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionNormalsFace">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Normals - Face</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionSelectionToPolyline">
+   <property name="text">
+    <string>Polylines from &amp;SelMVerts</string>
+   </property>
+  </action>
+  <action name="actionUnload3D">
+   <property name="text">
+    <string>Unload &amp;3D</string>
+   </property>
+  </action>
+  <action name="actionLabelbordersToPolylines">
+   <property name="text">
+    <string>Label &amp;Borders to Polyline(s)</string>
+   </property>
+  </action>
+  <action name="actionViewPolylines">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Polylines</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionViewVerticesSelected">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_vertices_selected.svg</normaloff>:/GMToolBar/gigamesh_icon_vertices_selected.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Selected (SelMVerts)</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Selected Vertices (SelMVerts)</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionViewBoundingBox">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Bounding Box</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionSelectColorBackground">
+   <property name="text">
+    <string>&amp;Background Color</string>
+   </property>
+  </action>
+  <action name="actionSelectColorBackface">
+   <property name="text">
+    <string>Backface &amp;Color</string>
+   </property>
+  </action>
+  <action name="actionViewDatumSpheres">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Datum - Spheres</string>
+   </property>
+  </action>
+  <action name="actionViewDatumBoxes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Datum - Bo&amp;xes</string>
+   </property>
+  </action>
+  <action name="actionExportPolylines">
+   <property name="text">
+    <string>&amp;Export Polylines (ASCII)</string>
+   </property>
+  </action>
+  <action name="actionVisMapHot">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Hot (improved)</string>
+   </property>
+  </action>
+  <action name="actionVisMapHSV">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>HSV (full)</string>
+   </property>
+  </action>
+  <action name="actionVisMapGrayscale">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Grayscale</string>
+   </property>
+  </action>
+  <action name="actionVisMapInvert">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Invert</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionFeatAutoCorrelationVert">
+   <property name="text">
+    <string>Feature Auto Correlation</string>
+   </property>
+  </action>
+  <action name="actionFeatCorrelationSelectedVert">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Feature C&amp;orrelation to SelVert</string>
+   </property>
+  </action>
+  <action name="actionLightning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Lighting</string>
+   </property>
+   <property name="shortcut">
+    <string>^</string>
+   </property>
+   <property name="gmMeshWidgetFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionEstimateVolume">
+   <property name="text">
+    <string>Mesh Volume (dx,dy,d&amp;z)</string>
+   </property>
+  </action>
+  <action name="actionSphereIntersect">
+   <property name="text">
+    <string>Sp&amp;here Intersect</string>
+   </property>
+  </action>
+  <action name="actionEstimateBBox">
+   <property name="text">
+    <string>Estimate Bounding Bo&amp;x</string>
+   </property>
+  </action>
+  <action name="actionSelectColorVertexMono">
+   <property name="text">
+    <string>&amp;Vertex Color</string>
+   </property>
+  </action>
+  <action name="actionDistanceToPlane">
+   <property name="text">
+    <string>&amp;Distance to Plane</string>
+   </property>
+  </action>
+  <action name="actionVisMapHypsometric">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>H&amp;ypsometric Tint</string>
+   </property>
+  </action>
+  <action name="actionVisMapLog">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Logarithmic</string>
+   </property>
+  </action>
+  <action name="actionSelVertFuncLT">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Vertices - SelMVerts - FuncVal &lt;</string>
+   </property>
+  </action>
+  <action name="actionFeatAutoSelectedVertCorr">
+   <property name="text">
+    <string>Feature Auto + Correlation to SelVert</string>
+   </property>
+  </action>
+  <action name="actionSelectAmbient">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Light Ambient - Set Brightness</string>
+   </property>
+   <property name="gmMeshWidgetParamFloat" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionSelMatShininess">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Material - Shininess</string>
+   </property>
+   <property name="gmMeshWidgetParamFloat" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionSelMatSpecular">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Mat&amp;erial - Specular</string>
+   </property>
+   <property name="gmMeshWidgetParamFloat" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionSelDatSphereTransp">
+   <property name="text">
+    <string>&amp;Datum - Sphere Transp.</string>
+   </property>
+  </action>
+  <action name="actionVisVertIndex">
+   <property name="text">
+    <string>&amp;Vertex - Indices</string>
+   </property>
+  </action>
+  <action name="actionVisVert1RArea">
+   <property name="text">
+    <string>Vertex - &amp;1-Ring Area</string>
+   </property>
+  </action>
+  <action name="actionLabelSelMVerts">
+   <property name="text">
+    <string>Lab&amp;el - SelMVerts</string>
+   </property>
+  </action>
+  <action name="actionAdvancePolyThres">
+   <property name="text">
+    <string>Label &amp;Polylines - Advance to Threshold</string>
+   </property>
+  </action>
+  <action name="actionRemovePolylinesAll">
+   <property name="text">
+    <string>Remove - All Polylines</string>
+   </property>
+  </action>
+  <action name="actionSelVertFuncGT">
+   <property name="text">
+    <string>Vertices - SelMVerts - FuncVal &gt;</string>
+   </property>
+  </action>
+  <action name="actionSelVertNonMax">
+   <property name="text">
+    <string>Vertices - SelMVerts - NonMa&amp;x</string>
+   </property>
+  </action>
+  <action name="actionLabelFuncValMinima">
+   <property name="text">
+    <string>Label &amp;FuncVal Minima</string>
+   </property>
+  </action>
+  <action name="actionLabelFuncValMaxima">
+   <property name="text">
+    <string>Label FuncVal &amp;Maxima</string>
+   </property>
+  </action>
+  <action name="actionSelectColorEdgeMono">
+   <property name="text">
+    <string>&amp;Edge Color</string>
+   </property>
+  </action>
+  <action name="actionLabelSelectionToSeeds">
+   <property name="text">
+    <string>Label - &amp;SelMVerts to Seeds</string>
+   </property>
+  </action>
+  <action name="actionVisMapRdGy">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;RdGy (Brewer, diverging)</string>
+   </property>
+   <property name="toolTip">
+    <string>Red-Gray</string>
+   </property>
+  </action>
+  <action name="actionScreenshotSVG">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_screenshot_svg.svg</normaloff>:/GMToolBar/gigamesh_icon_screenshot_svg.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Screenshot (SVG+&amp;PNG)</string>
+   </property>
+  </action>
+  <action name="actionExportFaceNormalAngles">
+   <property name="text">
+    <string>Export Face Norma&amp;l Angles</string>
+   </property>
+  </action>
+  <action name="actionNormalsPolyline">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Normals - Polyline</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionNormalsPolylineMain">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Normals - Polyline Mean</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionPolylineExtrema">
+   <property name="text">
+    <string>Polylines - &amp;Compute Curvature and Extrema</string>
+   </property>
+  </action>
+  <action name="actionSetLengthSmooth">
+   <property name="text">
+    <string>Set &amp;Length for Smoothing</string>
+   </property>
+  </action>
+  <action name="actionViewPolylinesCurv">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Polylines with Curvature</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionSaveStillImages360VUp">
+   <property name="text">
+    <string>360° Circular Orbit &amp;Vertical Axis</string>
+   </property>
+  </action>
+  <action name="actionSaveStillImages360PrimN">
+   <property name="text">
+    <string>360° Circular Orbit &amp;Normal of SelPrim</string>
+   </property>
+  </action>
+  <action name="actionViewPolylinesCurvAbs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Polylines &amp;w. Absolute Curvature</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionSelectPlane3FP">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Plane - Set using &amp;3 Points</string>
+   </property>
+   <property name="gmMeshWidgetParamInt" stdset="0">
+    <number>0</number>
+   </property>
+   <property name="gmMeshWidgetParamValue" stdset="0">
+    <number>0</number>
+   </property>
+  </action>
+  <action name="actionSectionDrag">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>단면 절개 (드래그)</string>
+   </property>
+   <property name="toolTip">
+    <string>마우스 드래그로 단면 생성 (고고학 실측용)</string>
+   </property>
+   <property name="gmMeshWidgetParamInt" stdset="0">
+    <number>0</number>
+   </property>
+   <property name="gmMeshWidgetParamValue" stdset="0">
+    <number>0</number>
+   </property>
+  </action>
+  <action name="actionPolylinesFromFuncVal">
+   <property name="text">
+    <string>Polylines from &amp;Isovalue / Functionvalue</string>
+   </property>
+  </action>
+  <action name="actionCheckNonMaxCorr">
+   <property name="text">
+    <string>&amp;Check correctness of Non-Max suppression</string>
+   </property>
+  </action>
+  <action name="actionViewMeshPlane">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Mesh Plane</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F1</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionGeodesicPatchSelPrim">
+   <property name="text">
+    <string>&amp;Geodesic Distance to SelPrim (SelVert/SelFace)</string>
+   </property>
+  </action>
+  <action name="actionSaveStillImages360PlaneN">
+   <property name="text">
+    <string>360° Circular Orbit Normal of &amp;Plane</string>
+   </property>
+  </action>
+  <action name="actionFog">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fog</string>
+   </property>
+   <property name="gmMeshWidgetFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionSphericalImages">
+   <property name="text">
+    <string>Sp&amp;herical Stack Camera Orbiting</string>
+   </property>
+  </action>
+  <action name="actionSphericalImagesVertical">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Camera on Longitudinal Orbit (Vertical Axis)</string>
+   </property>
+  </action>
+  <action name="actionVideoFrameSizeSet">
+   <property name="text">
+    <string>&amp;Video Frame Size (Set)</string>
+   </property>
+   <property name="gmMeshWidgetParamInt" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionSphericalImagesStateNr">
+   <property name="text">
+    <string>Sph&amp;erical Stack State No.</string>
+   </property>
+  </action>
+  <action name="actionSelectColorNoLabel">
+   <property name="text">
+    <string>&amp;No Label Color</string>
+   </property>
+  </action>
+  <action name="actionScreenshotRuler">
+   <property name="text">
+    <string>Screenshot &amp;Ruler</string>
+   </property>
+  </action>
+  <action name="actionScreenshotsCrop">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Screenshot &amp;Cropping</string>
+   </property>
+  </action>
+  <action name="actionFuncValsNormalize">
+   <property name="text">
+    <string>Function Value - &amp;Normalize</string>
+   </property>
+  </action>
+  <action name="actionFuncValSet">
+   <property name="text">
+    <string>Funct&amp;ion Value - Set Value</string>
+   </property>
+  </action>
+  <action name="actionFTWaveletDecomp">
+   <property name="text">
+    <string>&amp;Feature Vector Wavelet decomp.</string>
+   </property>
+  </action>
+  <action name="actionFuncValueCutOff">
+   <property name="text">
+    <string>Function Value - Cut-off</string>
+   </property>
+  </action>
+  <action name="actionDeSelVertsAll">
+   <property name="text">
+    <string>&amp;Vertices - SelMVerts - Deselect All</string>
+   </property>
+  </action>
+  <action name="actionSelMVertsGUIPinPoint">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_vertices_select_multiple_vertices.svg</normaloff>:/GMToolBar/gigamesh_icon_vertices_select_multiple_vertices.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Vertices - SelMVerts - &amp;GUI - Pinpoint</string>
+   </property>
+   <property name="toolTip">
+    <string>Select multiple vertices by pinpointing (SelMVerts)</string>
+   </property>
+   <property name="gmMeshWidgetParamInt" stdset="0">
+    <number>0</number>
+   </property>
+   <property name="gmMeshWidgetParamValue" stdset="0">
+    <number>0</number>
+   </property>
+  </action>
+  <action name="actionGeodPatchVertSel">
+   <property name="text">
+    <string>Geodesic Distance to SelMVerts</string>
+   </property>
+  </action>
+  <action name="actionShowLablesMono">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Lables &amp;Mono</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionSelectColorLabelsMono">
+   <property name="text">
+    <string>&amp;Labels Mono Color</string>
+   </property>
+  </action>
+  <action name="actionSelectColorPolyline">
+   <property name="text">
+    <string>&amp;Polyline Color</string>
+   </property>
+  </action>
+  <action name="actionVisMapWavelength">
+   <property name="text">
+    <string>Set Intervall (Wavelength)</string>
+   </property>
+  </action>
+  <action name="actionViewPolylinesCurvScale">
+   <property name="text">
+    <string>Polylines - Set Curvature Scale</string>
+   </property>
+  </action>
+  <action name="actionRemoveVerticesSelected">
+   <property name="text">
+    <string>Remove - SelMVerts</string>
+   </property>
+  </action>
+  <action name="actionSelVertSolo">
+   <property name="text">
+    <string>&amp;Vertices - Solo</string>
+   </property>
+  </action>
+  <action name="actionSelVertNonManifoldFace">
+   <property name="text">
+    <string>Vertices - &amp;Non-manifold</string>
+   </property>
+  </action>
+  <action name="actionSelVertDoubleCone">
+   <property name="text">
+    <string>Vertices - &amp;Singular</string>
+   </property>
+  </action>
+  <action name="actionSelVertLabelAreaLT">
+   <property name="text">
+    <string>Vertices - &amp;Labelarea &lt; Abs</string>
+   </property>
+  </action>
+  <action name="actionSelVertLabelAreaRelLT">
+   <property name="text">
+    <string>Ve&amp;rtices - Labelarea &lt; %</string>
+   </property>
+  </action>
+  <action name="actionRemoveUncleanSmall">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_meshclean.svg</normaloff>:/GMToolBar/gigamesh_icon_meshclean.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Remove - Unclean/Small</string>
+   </property>
+   <property name="toolTip">
+    <string>Removes all unclean and small surface parts</string>
+   </property>
+  </action>
+  <action name="actionSelVertBorder">
+   <property name="text">
+    <string>Vertices - &amp;Border</string>
+   </property>
+  </action>
+  <action name="actionSelVertFaceMaxAngleGT">
+   <property name="text">
+    <string>Vert&amp;ices - Face Maximum Angle &gt;</string>
+   </property>
+  </action>
+  <action name="actionSelVertFaceMinAngleLT">
+   <property name="text">
+    <string>Vertices - Face &amp;Minimum Angle &lt;</string>
+   </property>
+  </action>
+  <action name="actionOrthoSetDPI">
+   <property name="text">
+    <string>Ort&amp;ho Scale (Set DPI)</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F7</string>
+   </property>
+  </action>
+  <action name="actionFillHoles">
+   <property name="text">
+    <string>&amp;Fill Holes (libpsalm)</string>
+   </property>
+  </action>
+  <action name="actionFeatLengthEuc">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_feature_vector_norm2.svg</normaloff>:/GMToolBar/gigamesh_icon_feature_vector_norm2.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Feature Vector Length (Euclid/&amp;2-Norm)</string>
+   </property>
+  </action>
+  <action name="actionRotYaw">
+   <property name="text">
+    <string>Rotate - Yaw (L/R)</string>
+   </property>
+  </action>
+  <action name="actionRotPitch">
+   <property name="text">
+    <string>Rotate - Pitch (U/D)</string>
+   </property>
+  </action>
+  <action name="actionRotRoll">
+   <property name="text">
+    <string>Rotate - Roll</string>
+   </property>
+  </action>
+  <action name="actionShowLaTeXInfo">
+   <property name="text">
+    <string>LaTeX Snipset for &amp;report/catalog</string>
+   </property>
+  </action>
+  <action name="actionSelPolyNoLabel">
+   <property name="text">
+    <string>Pol&amp;ylines - No Label</string>
+   </property>
+  </action>
+  <action name="actionRemovePolylinesSelected">
+   <property name="text">
+    <string>Remove - SelMPol&amp;ylines</string>
+   </property>
+  </action>
+  <action name="actionFeatDistSelMan">
+   <property name="text">
+    <string>Feature Distance to SelVert (Man)</string>
+   </property>
+  </action>
+  <action name="actionFeatLengthMan">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_feature_vector_norm1.svg</normaloff>:/GMToolBar/gigamesh_icon_feature_vector_norm1.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Feature Vector Length (Man/1-Norm) ⭑</string>
+   </property>
+  </action>
+  <action name="actionVisMapQuantil">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Quantil</string>
+   </property>
+  </action>
+  <action name="actionSelFaceSticky">
+   <property name="text">
+    <string>Faces - Stic&amp;ky</string>
+   </property>
+  </action>
+  <action name="actionRemoveFacesSelected">
+   <property name="text">
+    <string>Remove - SelMFaces</string>
+   </property>
+  </action>
+  <action name="actionSelFaceNonManifold">
+   <property name="text">
+    <string>Faces - &amp;Non-manifold</string>
+   </property>
+  </action>
+  <action name="actionFeatElement">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_feature_vector_element_index.svg</normaloff>:/GMToolBar/gigamesh_icon_feature_vector_element_index.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Feature Vector &amp;Element by Index ⭑</string>
+   </property>
+  </action>
+  <action name="actionVisMapFixedMinMax">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Fixed Range</string>
+   </property>
+  </action>
+  <action name="actionVisMapFixedSetMin">
+   <property name="text">
+    <string>Fi&amp;xed Range - Set Minimum</string>
+   </property>
+  </action>
+  <action name="actionSmoothShading">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Smooth Shading</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionVisMapAutoMinMax">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Auto Min/Max</string>
+   </property>
+  </action>
+  <action name="actionIsoValSet">
+   <property name="text">
+    <string>Iso&amp;value - Set</string>
+   </property>
+  </action>
+  <action name="actionSelPolyLongest">
+   <property name="text">
+    <string>Polyline - &amp;Longest</string>
+   </property>
+  </action>
+  <action name="actionSelPolyRunLenGT">
+   <property name="text">
+    <string>Polylines - R&amp;un Length &gt;</string>
+   </property>
+  </action>
+  <action name="actionSelPolyRunLenLT">
+   <property name="text">
+    <string>Polylines - Run Length &lt;</string>
+   </property>
+  </action>
+  <action name="actionPlaneGetVPos">
+   <property name="text">
+    <string>Plane - Sho&amp;w VPos</string>
+   </property>
+  </action>
+  <action name="actionPlaneSetVPos">
+   <property name="text">
+    <string>Plane - Set VPos</string>
+   </property>
+  </action>
+  <action name="actionViewMatrix">
+   <property name="text">
+    <string>&amp;Show Camera Position</string>
+   </property>
+  </action>
+  <action name="actionViewMatrixSet">
+   <property name="text">
+    <string>Set Camera Position</string>
+   </property>
+  </action>
+  <action name="actionSelectCone">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_select_cone.svg</normaloff>:/GMToolBar/gigamesh_icon_select_cone.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Cone</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Cone (Axis and two outer Points)</string>
+   </property>
+   <property name="gmMeshWidgetParamInt" stdset="0">
+    <number>0</number>
+   </property>
+   <property name="gmMeshWidgetParamValue" stdset="0">
+    <number>0</number>
+   </property>
+  </action>
+  <action name="actionCenterAroundCone">
+   <property name="text">
+    <string>Cone - Center Mesh around</string>
+   </property>
+   <property name="toolTip">
+    <string>If a cone has been selected, the given mesh will be centered around it. This means that the cone axis will become the new y axis of the local coodinate system. The mesh will be centered around this axis.</string>
+   </property>
+  </action>
+  <action name="actionUnrollMeshAroundCone">
+   <property name="text">
+    <string>Cone - &amp;Unroll Mesh</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If a cone has been selected, the current mesh is unrolled around it. This action is &lt;span style=&quot; font-weight:600;&quot;&gt;irreversible&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionSetFOV">
+   <property name="text">
+    <string>&amp;Perspective - Set Field of View</string>
+   </property>
+   <property name="gmMeshWidgetParamFloat" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionSplitByPlaneAdvanced">
+   <property name="text">
+    <string>&amp;Split by Plane (Advanced)</string>
+   </property>
+   <property name="toolTip">
+    <string>Splits the mesh by the currently selected plane.</string>
+   </property>
+  </action>
+  <action name="actionHueToFuncVal">
+   <property name="text">
+    <string>&amp;Color - Hue to FuncVal</string>
+   </property>
+  </action>
+  <action name="actionSelectSphere">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_select_sphere.svg</normaloff>:/GMToolBar/gigamesh_icon_select_sphere.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Sphere</string>
+   </property>
+   <property name="gmMeshWidgetParamInt" stdset="0">
+    <number>0</number>
+   </property>
+   <property name="gmMeshWidgetParamValue" stdset="0">
+    <number>0</number>
+   </property>
+  </action>
+  <action name="actionCenterAroundSphere">
+   <property name="text">
+    <string>Sp&amp;here - Center Mesh around</string>
+   </property>
+  </action>
+  <action name="actionUnrollAroundSphere">
+   <property name="text">
+    <string>Sphere - Unroll Mesh</string>
+   </property>
+  </action>
+  <action name="actionSetMeridianPrime">
+   <property name="text">
+    <string>Set &amp;Prime Meridian for Rollouts</string>
+   </property>
+  </action>
+  <action name="actionSelVertsByIdx">
+   <property name="text">
+    <string>Vertices - SelMVerts - &amp;Enter Indices</string>
+   </property>
+  </action>
+  <action name="actionSelFaceZeroArea">
+   <property name="text">
+    <string>Faces - &amp;Zero Area</string>
+   </property>
+  </action>
+  <action name="actionViewVerticesLocalMinima">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_vertices_funcval_min.svg</normaloff>:/GMToolBar/gigamesh_icon_vertices_funcval_min.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;FuncVal Local Minima</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionViewVerticesLocalMaxima">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_vertices_funcval_max.svg</normaloff>:/GMToolBar/gigamesh_icon_vertices_funcval_max.svg</iconset>
+   </property>
+   <property name="text">
+    <string>F&amp;uncVal Local Maxima</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionSelVertLocalMin">
+   <property name="text">
+    <string>Vertices - &amp;FuncVal Local Minimum</string>
+   </property>
+  </action>
+  <action name="actionSelVertLocalMax">
+   <property name="text">
+    <string>V&amp;ertices - FuncVal Local Maximum</string>
+   </property>
+  </action>
+  <action name="actionRotOrthoPlane">
+   <property name="text">
+    <string>Rotate - View - &amp;Ortho to Plane</string>
+   </property>
+   <property name="shortcut">
+    <string>F8</string>
+   </property>
+  </action>
+  <action name="actionExportPolylinesProjected">
+   <property name="text">
+    <string>Export &amp;Polylines Projected (ASCII)</string>
+   </property>
+  </action>
+  <action name="actionVisMapHSVPart">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>HSV (&amp;part)</string>
+   </property>
+  </action>
+  <action name="actionVisMapSpectral">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Spectral (Brewer, diverging)</string>
+   </property>
+   <property name="toolTip">
+    <string>Spectral (Red-Yellow-Blue)</string>
+   </property>
+  </action>
+  <action name="actionVisMapRdYlGn">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>RdYlGn (&amp;Brewer, diverging)</string>
+   </property>
+   <property name="toolTip">
+    <string>Red-Yellow-Green</string>
+   </property>
+  </action>
+  <action name="actionVisMapQuantilSetMin">
+   <property name="text">
+    <string>Q&amp;uantil Min</string>
+   </property>
+   <property name="gmMeshGLParamFloat" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionVisMapQuantilSetMax">
+   <property name="text">
+    <string>Qua&amp;ntil Max</string>
+   </property>
+   <property name="gmMeshGLParamFloat" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionExportFuncVals">
+   <property name="text">
+    <string>Export Function &amp;Values (FuncVal)</string>
+   </property>
+  </action>
+  <action name="actionDistanceToLineDir">
+   <property name="text">
+    <string>Distance to &amp;Line (Pos, Dir)</string>
+   </property>
+  </action>
+  <action name="actionApplyMatrix4D">
+   <property name="text">
+    <string>Apply &amp;4x4 Matrix - All Vertices</string>
+   </property>
+  </action>
+  <action name="actionSelVertLabelNo">
+   <property name="text">
+    <string>Verti&amp;ces - Label No.</string>
+   </property>
+  </action>
+  <action name="actionApplyMatrix4DVertSel">
+   <property name="text">
+    <string>App&amp;ly 4x4 Matrix - SelMVerts</string>
+   </property>
+  </action>
+  <action name="actionVisFaceSortIndex">
+   <property name="text">
+    <string>Faces - &amp;Sort Index</string>
+   </property>
+  </action>
+  <action name="actionVisFaceMarchSphereIndex">
+   <property name="text">
+    <string>Marching Front with Distance to Seed (SelVert)</string>
+   </property>
+   <property name="toolTip">
+    <string>Marching Front with Distance to Seed (SelVert)</string>
+   </property>
+  </action>
+  <action name="actionVisVertOctree">
+   <property name="text">
+    <string>Vertex - &amp;Octree</string>
+   </property>
+  </action>
+  <action name="actionLabelVertEqualFV">
+   <property name="text">
+    <string>Label - &amp;Vertices w. Equal FuncVal</string>
+   </property>
+  </action>
+  <action name="actionSelFaceInSphere">
+   <property name="text">
+    <string>Faces - &amp;In Sphere</string>
+   </property>
+  </action>
+  <action name="actionSelFaceNone">
+   <property name="text">
+    <string>&amp;Faces - Deselect all</string>
+   </property>
+  </action>
+  <action name="actionMatlabSelectedFaceNormals">
+   <property name="text">
+    <string>&amp;SelMFaces Normals Matlab</string>
+   </property>
+  </action>
+  <action name="actionVisVertFaceSphereAngleMax">
+   <property name="text">
+    <string>Vertex - S&amp;phere Angle Max. to Faces</string>
+   </property>
+  </action>
+  <action name="actionVisVertFaceSphereMeanAngleMax">
+   <property name="text">
+    <string>Vertex - Sp&amp;here MeanNorm Angle Max</string>
+   </property>
+  </action>
+  <action name="actionApplyMeltingSphere">
+   <property name="text">
+    <string>&amp;Melting Sphere - All Vertices</string>
+   </property>
+  </action>
+  <action name="actionVisVert1RSumAngles">
+   <property name="text">
+    <string>Vertex - 1-&amp;Ring Sum of Angles</string>
+   </property>
+  </action>
+  <action name="actionDistanceToPrimSelCOG">
+   <property name="text">
+    <string>Dista&amp;nce to SelPrim (COG)</string>
+   </property>
+  </action>
+  <action name="actionSetConeData">
+   <property name="text">
+    <string>&amp;Cone - Set Data</string>
+   </property>
+  </action>
+  <action name="actionFuncValsAbs">
+   <property name="text">
+    <string>Function Value - Absolute</string>
+   </property>
+  </action>
+  <action name="actionFuncValsAdd">
+   <property name="text">
+    <string>Function Value - Add</string>
+   </property>
+  </action>
+  <action name="actionComputeVolumePlane">
+   <property name="text">
+    <string>Mesh Volume (&amp;Plane)</string>
+   </property>
+  </action>
+  <action name="actionPlaneGetHNF">
+   <property name="text">
+    <string>Plane - Show HNF</string>
+   </property>
+  </action>
+  <action name="actionPlaneSetHNF">
+   <property name="text">
+    <string>Plane - Set &amp;HNF</string>
+   </property>
+  </action>
+  <action name="actionPlaneSetHNFByView">
+   <property name="text">
+    <string>Plane - Set HNF by View</string>
+   </property>
+   <property name="shortcut">
+    <string>F9</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionMeshBordersToPolylines">
+   <property name="text">
+    <string>Polylines from Mesh &amp;Borders</string>
+   </property>
+  </action>
+  <action name="actionSelFaceRandom">
+   <property name="text">
+    <string>Faces - &amp;Random</string>
+   </property>
+  </action>
+  <action name="actionSphericalImagesLight">
+   <property name="text">
+    <string>&amp;Spherical Stack Lightsource Orbiting</string>
+   </property>
+  </action>
+  <action name="actionSphericalImagesHorizontal">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Camera &amp;on Altitudinal Orbit (Horizontal Axis)</string>
+   </property>
+  </action>
+  <action name="actionProjectPerspective">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Perspective &amp;View</string>
+   </property>
+  </action>
+  <action name="actionViewVerticesNone">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_vertices_none.svg</normaloff>:/GMToolBar/gigamesh_icon_vertices_none.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;None</string>
+   </property>
+   <property name="toolTip">
+    <string>Hide all vertices</string>
+   </property>
+  </action>
+  <action name="actionViewMeshPlaneClipping">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Mesh Plane as Clipping Plane</string>
+   </property>
+   <property name="shortcut">
+    <string>F3</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionMeshPlaneFlip">
+   <property name="text">
+    <string>Mesh Plane Flip</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F3</string>
+   </property>
+  </action>
+  <action name="actionSplitByIsoValue">
+   <property name="text">
+    <string>Split &amp;by IsoValue</string>
+   </property>
+  </action>
+  <action name="actionFileReload">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_reload.svg</normaloff>:/GMToolBar/gigamesh_icon_reload.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Reload</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionViewDefaultViewLight">
+   <property name="text">
+    <string>Default View and Light</string>
+   </property>
+   <property name="shortcut">
+    <string>F12</string>
+   </property>
+  </action>
+  <action name="actionViewDefaultViewLightZoom">
+   <property name="text">
+    <string>Default View, Light and &amp;Zoom</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F12</string>
+   </property>
+  </action>
+  <action name="actionSelPrimViewReference">
+   <property name="text">
+    <string>SelPrim to View Reference</string>
+   </property>
+   <property name="shortcut">
+    <string>F4</string>
+   </property>
+  </action>
+  <action name="actionCurrentViewToDefault">
+   <property name="text">
+    <string>Current View to Default</string>
+   </property>
+   <property name="shortcut">
+    <string>F6</string>
+   </property>
+  </action>
+  <action name="actionFacesBackfaceCulling">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Faces - Backface Culling</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionViewClipThruSelPrim">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Clipping Thru SelPrim</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F4</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionLightFixedCam">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_light_fixed_cam.svg</normaloff>:/GMToolBar/gigamesh_icon_light_fixed_cam.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Light &amp;1 (Camera fixed, Parallel)</string>
+   </property>
+   <property name="shortcut">
+    <string>1</string>
+   </property>
+   <property name="gmMeshWidgetFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionLightFixedWorld">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_light_fixed_object.svg</normaloff>:/GMToolBar/gigamesh_icon_light_fixed_object.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Light &amp;2 (Object fixed, Parallel)</string>
+   </property>
+   <property name="shortcut">
+    <string>2</string>
+   </property>
+   <property name="gmMeshWidgetFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionLightAmbient">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_light_ambient.svg</normaloff>:/GMToolBar/gigamesh_icon_light_ambient.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Light Ambient</string>
+   </property>
+   <property name="shortcut">
+    <string>9</string>
+   </property>
+   <property name="gmMeshWidgetFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionFuncVert1RingRMin">
+   <property name="text">
+    <string>Verte&amp;x - 1-Ring r_min</string>
+   </property>
+  </action>
+  <action name="actionShowInfoSelPrim">
+   <property name="text">
+    <string>Properties of the &amp;SelPrim</string>
+   </property>
+   <property name="shortcut">
+    <string>I</string>
+   </property>
+  </action>
+  <action name="actionShowInfoFuncVal">
+   <property name="text">
+    <string>&amp;Function Values</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+I</string>
+   </property>
+  </action>
+  <action name="actionDatumAddSphere">
+   <property name="text">
+    <string>&amp;Datum - Add Sphere</string>
+   </property>
+  </action>
+  <action name="actionFullscreen">
+   <property name="text">
+    <string>&amp;Fullscreen</string>
+   </property>
+   <property name="shortcut">
+    <string>F11</string>
+   </property>
+  </action>
+  <action name="actionMenu">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Menu</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="actionSidebar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Sidebar</string>
+   </property>
+  </action>
+  <action name="actionStatusbar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Stat&amp;usbar</string>
+   </property>
+  </action>
+  <action name="actionEditMeshPolish">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_autopolish.svg</normaloff>:/GMToolBar/gigamesh_icon_autopolish.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Automatic Mesh Polishing</string>
+   </property>
+  </action>
+  <action name="actionFuncVert1RingVolInt">
+   <property name="text">
+    <string>Vertex - 1-Ring Volume &amp;Integral</string>
+   </property>
+  </action>
+  <action name="actionInfoKeyShortcuts">
+   <property name="text">
+    <string>&amp;Keyboard Shortcuts</string>
+   </property>
+  </action>
+  <action name="actionPolylinesLength">
+   <property name="text">
+    <string>Length &amp;distribution of the Polylines </string>
+   </property>
+  </action>
+  <action name="actionPolylinesCompIntInvRunLen">
+   <property name="text">
+    <string>&amp;Polylines - Compute Int. Inv. - RunLen</string>
+   </property>
+  </action>
+  <action name="actionPolylinesCompIntInvAngle">
+   <property name="text">
+    <string>Pol&amp;ylines - Compute Int. Inv. - Angle</string>
+   </property>
+  </action>
+  <action name="actionGenerateOctree">
+   <property name="text">
+    <string>Generate Octree</string>
+   </property>
+  </action>
+  <action name="actionDraw_Octree">
+   <property name="text">
+    <string>&amp;Draw Octree</string>
+   </property>
+  </action>
+  <action name="actionRemove_Drawing_of_Octree">
+   <property name="text">
+    <string>&amp;Remove Drawing of Octree</string>
+   </property>
+  </action>
+  <action name="actionDelete_Octree">
+   <property name="text">
+    <string>Delete &amp;Octree</string>
+   </property>
+  </action>
+  <action name="actionSelMVertsGUILasso">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_vertices_select_multiple_polyline.svg</normaloff>:/GMToolBar/gigamesh_icon_vertices_select_multiple_polyline.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Vertices - SelMVerts - GUI - Lasso</string>
+   </property>
+   <property name="toolTip">
+    <string>Selected multiple vertices with a lasso (SelMVerts)</string>
+   </property>
+   <property name="gmMeshWidgetParamInt" stdset="0">
+    <number>0</number>
+   </property>
+   <property name="gmMeshWidgetParamValue" stdset="0">
+    <number>0</number>
+   </property>
+  </action>
+  <action name="actionViewFacesSelected">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Selected (SelMFaces)</string>
+   </property>
+  </action>
+  <action name="actionPolylinesCopyNormalToVertices">
+   <property name="text">
+    <string>Polylines - Copy &amp;Normal to Vertices</string>
+   </property>
+  </action>
+  <action name="actionSelPolyLabelNo">
+   <property name="text">
+    <string>Polylines - Label No.</string>
+   </property>
+  </action>
+  <action name="actionExportPolylinesFuncVals">
+   <property name="text">
+    <string>E&amp;xport Polylines FuncVals</string>
+   </property>
+  </action>
+  <action name="actionFuncValFeatureVecCorrelateWith">
+   <property name="text">
+    <string>Feature Correlation with</string>
+   </property>
+  </action>
+  <action name="actionLabelColorShift">
+   <property name="text">
+    <string>Label Rendering: Color Shift</string>
+   </property>
+   <property name="gmMeshGLParInt" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionGeodPatchVertSelOrdered">
+   <property name="text">
+    <string>Geodesic Distance to SelMVerts, ordered</string>
+   </property>
+  </action>
+  <action name="actionSelPolyNotLabeled">
+   <property name="text">
+    <string>Polylines - Not Labeled</string>
+   </property>
+  </action>
+  <action name="actionSelVertsByIdxShow">
+   <property name="text">
+    <string>Vertices - SelMVerts - Show Indices</string>
+   </property>
+  </action>
+  <action name="actionDeSelVertsNoLabel">
+   <property name="text">
+    <string>&amp;Vertices - No Label</string>
+   </property>
+  </action>
+  <action name="actionSelVertLabeledNot">
+   <property name="text">
+    <string>Vertices - N&amp;ot Labeled</string>
+   </property>
+  </action>
+  <action name="actionLabelSelMVertsBackground">
+   <property name="text">
+    <string>Label - SelMVerts t&amp;o Background</string>
+   </property>
+  </action>
+  <action name="actionHistShow">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Show</string>
+   </property>
+   <property name="gmMeshWidgetFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionHistFacesEdgeLength">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Edge Length</string>
+   </property>
+  </action>
+  <action name="actionHistFVELementsVertex">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Feature &amp;Vector Vertex Elements</string>
+   </property>
+  </action>
+  <action name="actionHistFVELementsVertexDim">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Feature Vector Vertex Elements &amp;Dimension</string>
+   </property>
+  </action>
+  <action name="actionHistFunctionValuesVertex">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Function Values Vertex</string>
+   </property>
+  </action>
+  <action name="actionHistFacesAnglesMin">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Angles Faces Minimum</string>
+   </property>
+  </action>
+  <action name="actionHistFacesAnglesMax">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Angles Faces &amp;Maximum</string>
+   </property>
+  </action>
+  <action name="actionPlotPolylineRunlength">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Polyline Runlength</string>
+   </property>
+  </action>
+  <action name="actionHistLog">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Logarithmic</string>
+   </property>
+   <property name="gmMeshWidgetFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionHistSceneRGB">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Scene &amp;RGB Histogram</string>
+   </property>
+   <property name="gmMeshWidgetFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionHistSceneRGBLog">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Scene RGB &amp;Histogram logarithmic</string>
+   </property>
+   <property name="gmMeshWidgetFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionGigaMeshLogo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>GigaMesh Logo</string>
+   </property>
+   <property name="gmMeshWidgetFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionKeyboardLayout">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Keyboard &amp;Layout</string>
+   </property>
+  </action>
+  <action name="actionDetect_Self_Intersections">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Detect Self-Intersections</string>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionImportNormals">
+   <property name="text">
+    <string>Import &amp;Normals (per Vertex)</string>
+   </property>
+  </action>
+  <action name="actionLightFixedCamIntensity">
+   <property name="text">
+    <string>Light 1 &amp;Brightness</string>
+   </property>
+   <property name="gmMeshWidgetParamFloat" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionLightFixedWorldIntensity">
+   <property name="text">
+    <string>Light 2 Brightness</string>
+   </property>
+   <property name="gmMeshWidgetParamFloat" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionFogLinearDistMin">
+   <property name="text">
+    <string>Fog, li&amp;near, distance minimum</string>
+   </property>
+   <property name="gmMeshWidgetParamFloat" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionFogLinearDistMax">
+   <property name="text">
+    <string>Fog, linear, distance ma&amp;ximum </string>
+   </property>
+   <property name="gmMeshWidgetParamFloat" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionIsolines">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Isolines</string>
+   </property>
+   <property name="gmMeshGLFlag" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionIsolinesDistance">
+   <property name="text">
+    <string>Isolines - &amp;Distance</string>
+   </property>
+   <property name="gmMeshGLParamFloat" stdset="0">
+    <number>0</number>
+   </property>
+  </action>
+  <action name="actionIsolinesOffset">
+   <property name="text">
+    <string>Isolines - Offset</string>
+   </property>
+   <property name="gmMeshGLParamFloat" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionIsolinesWidthPixel">
+   <property name="text">
+    <string>Isolines - &amp;Width (Pixel)</string>
+   </property>
+   <property name="gmMeshGLParamFloat" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionLightFixedDirectionPhi">
+   <property name="text">
+    <string>L&amp;ight 1 Set Direction Phi</string>
+   </property>
+   <property name="gmMeshWidgetParamFloat" stdset="0">
+    <number>-1</number>
+   </property>
+  </action>
+  <action name="actionLightFixedDirectionTheta">
+   <property name="text">
+    <string>Light 1 Set Direction Theta</string>
+   </property>
+  </action>
+  <action name="actionGridRectangular">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Rectangular Grid</string>
+   </property>
+  </action>
+  <action name="actionGridPolarCircles">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Polar Grid: &amp;Circles</string>
+   </property>
+  </action>
+  <action name="actionGridPolarLines">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Polar Grid: Angles</string>
+   </property>
+  </action>
+  <action name="actionGridShiftDepth">
+   <property name="text">
+    <string>&amp;Grid shift depth</string>
+   </property>
+  </action>
+  <action name="actionBoundingBoxLineWidth">
+   <property name="text">
+    <string>Bounding Box Line Width</string>
+   </property>
+  </action>
+  <action name="actionRepeatMapWaves">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Repeat Map (Waves)</string>
+   </property>
+  </action>
+  <action name="actionVisMapJet">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Jet (Octave)</string>
+   </property>
+  </action>
+  <action name="actionViewVerticesAllColor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>All - &amp;Color per Vertex</string>
+   </property>
+  </action>
+  <action name="actionViewVerticesAllFuncVal">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>All - Function &amp;Value</string>
+   </property>
+  </action>
+  <action name="actionViewVerticesAllLabel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>All - &amp;Label colors</string>
+   </property>
+  </action>
+  <action name="actionSelectColorVertexLocalMin">
+   <property name="text">
+    <string>Vertex &amp;FuncVal Local Max Color</string>
+   </property>
+  </action>
+  <action name="actionSelectColorVertexLocalMax">
+   <property name="text">
+    <string>Verte&amp;x FuncVal Local Min Color</string>
+   </property>
+  </action>
+  <action name="actionNormalsLength">
+   <property name="text">
+    <string>Normals - &amp;Length (absolute)</string>
+   </property>
+  </action>
+  <action name="actionNormalsWidth">
+   <property name="text">
+    <string>Normals - Width (relative)</string>
+   </property>
+  </action>
+  <action name="actionVisMapCold">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Cold (improved)</string>
+   </property>
+  </action>
+  <action name="actionVisMapMorgenstemning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Morgenstemning (M. Geissbuehler)</string>
+   </property>
+  </action>
+  <action name="actionVisSpriteShapeBox">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Shape - Bo&amp;x</string>
+   </property>
+  </action>
+  <action name="actionVisSpriteShapeDisc">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Shape - &amp;Disc</string>
+   </property>
+  </action>
+  <action name="actionVisSpriteShapePolarRose">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Shape - &amp;Polar Rose</string>
+   </property>
+  </action>
+  <action name="actionVisSpriteShapeStarRounded">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Shape - Star, &amp;rounded</string>
+   </property>
+  </action>
+  <action name="actionSelPolyVerticesNr">
+   <property name="text">
+    <string>Polylines - Number &amp;of Vertices</string>
+   </property>
+  </action>
+  <action name="actionViewVerticesSynthetic">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_vertices_synthetic.svg</normaloff>:/GMToolBar/gigamesh_icon_vertices_synthetic.svg</iconset>
+   </property>
+   <property name="text">
+    <string>S&amp;ynthetic</string>
+   </property>
+  </action>
+  <action name="actionViewBoundingBoxEnclosed">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Boundin&amp;g Box (enclosed)</string>
+   </property>
+  </action>
+  <action name="actionSelPolyShortest">
+   <property name="text">
+    <string>Polyline - Shortest</string>
+   </property>
+  </action>
+  <action name="actionIsolinesOnly">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Isolines - Only</string>
+   </property>
+  </action>
+  <action name="actionIsolinesSolid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Isolines - Solid</string>
+   </property>
+  </action>
+  <action name="actionEllipsenFit">
+   <property name="text">
+    <string>Ellipse &amp;Fit</string>
+   </property>
+  </action>
+  <action name="actionSelectPositions">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_vertices_select_multiple_positions.svg</normaloff>:/GMToolBar/gigamesh_icon_vertices_select_multiple_positions.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Positions - SelPrims</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select positions on the mesh i.e. points within triangles. &lt;/p&gt;&lt;p&gt;These positions cae be used to:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;measure (euclidean) distances,&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;compute multiple profile lines (axis required!) and &lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;the estimation of a rotational axis.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Note: a mouse-right-click selects the last of a set of positions. For each set a guess of the rotational axis is made, while the axis is averaged using all guesses. Positions within a set are rendered with connecting lines.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionSelectPositionsDeselectAll">
+   <property name="text">
+    <string>Positions - SelPrims - Deselect All</string>
+   </property>
+  </action>
+  <action name="actionPositionsEuclideanDistances">
+   <property name="text">
+    <string>Positions - SelMPrims - &amp;Euclidean Distances</string>
+   </property>
+  </action>
+  <action name="actionViewWireFrame">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Wireframe</string>
+   </property>
+  </action>
+  <action name="actionViewActivateInspectionOptions">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_inspection_mode.svg</normaloff>:/GMToolBar/gigamesh_icon_inspection_mode.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Set &amp;Inspection View</string>
+   </property>
+   <property name="toolTip">
+    <string>Set Inspection View</string>
+   </property>
+  </action>
+  <action name="actionRecursive">
+   <property name="text">
+    <string>recursive</string>
+   </property>
+  </action>
+  <action name="actionScreenshotDirectory">
+   <property name="text">
+    <string>Screenshot &amp;Directory (Legacy)</string>
+   </property>
+  </action>
+  <action name="actionScreenshotPNGDirectory">
+   <property name="text">
+    <string>Screenshot PNG Directory</string>
+   </property>
+  </action>
+  <action name="actionTest">
+   <property name="text">
+    <string>test</string>
+   </property>
+  </action>
+  <action name="actionSketch_Rendering">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Sketch &amp;Rendering</string>
+   </property>
+  </action>
+  <action name="actionTransparency">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_transparency.svg</normaloff>:/GMToolBar/gigamesh_icon_transparency.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Transparency</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle Transparency</string>
+   </property>
+  </action>
+  <action name="actionSketch_Rendering_Settings">
+   <property name="text">
+    <string>S&amp;ketch Rendering Settings</string>
+   </property>
+  </action>
+  <action name="actionTransparency_Settings">
+   <property name="text">
+    <string>Transparency Settings</string>
+   </property>
+  </action>
+  <action name="actionFeatDistSelCosSim">
+   <property name="text">
+    <string>Feature Distance to SelVert (Cos.Sim.)</string>
+   </property>
+  </action>
+  <action name="actionFeatBVFunc">
+   <property name="text">
+    <string>Feature Vector &amp;Bounded Variation (BV)</string>
+   </property>
+  </action>
+  <action name="actionFeatTVSeqn">
+   <property name="text">
+    <string>Feat&amp;ure Vector Total Variation (TV)</string>
+   </property>
+  </action>
+  <action name="actionFeatDistSelTanimoto">
+   <property name="text">
+    <string>Feature Distance to SelVert (Tanimoto)</string>
+   </property>
+  </action>
+  <action name="actionFeatDistSelEucNorm">
+   <property name="text">
+    <string>Feature Distance to SelVert (Normali&amp;zed Euclid)</string>
+   </property>
+  </action>
+  <action name="actionBad_Lit_Areas">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Over-/Underexposed Areas</string>
+   </property>
+  </action>
+  <action name="actionBad_Lit_Areas_Upper_Threshold">
+   <property name="text">
+    <string>Overexposure Threshold</string>
+   </property>
+  </action>
+  <action name="actionBad_Lit_Areas_Lower_Threshold">
+   <property name="text">
+    <string>Underexposure Threshold</string>
+   </property>
+  </action>
+  <action name="actionSelVertFromSelMFaces">
+   <property name="text">
+    <string>Vertices - SelMVerts - From SelMFaces</string>
+   </property>
+  </action>
+  <action name="actionRemoveFacesZeroArea">
+   <property name="text">
+    <string>Remove - Faces &amp;Zero Area</string>
+   </property>
+  </action>
+  <action name="actionColorRGBAvgToFuncVal">
+   <property name="text">
+    <string>Color - &amp;RGB Average to FuncVal</string>
+   </property>
+  </action>
+  <action name="actionApplyMatrix4DScale">
+   <property name="text">
+    <string>Transform - Apply Scale/S&amp;kew - All Vertices</string>
+   </property>
+  </action>
+  <action name="actionColorRGBAvgWeigthToFuncVal">
+   <property name="text">
+    <string>Color - RGB Avg. &amp;weigthed to FuncVal (GIMP)</string>
+   </property>
+  </action>
+  <action name="actionFuncVertDistancesMax">
+   <property name="text">
+    <string>Vertex - &amp;Maximum of Distances</string>
+   </property>
+  </action>
+  <action name="actionColorRGBSaturationRemovalToFuncVal">
+   <property name="text">
+    <string>Color - Saturation removal to FuncVal</string>
+   </property>
+  </action>
+  <action name="actionColorHSVComponentToFuncVal">
+   <property name="text">
+    <string>Color - &amp;HSV Decomp. Brightness to FuncVal</string>
+   </property>
+  </action>
+  <action name="actionFuncValFeatureVecMax">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_feature_vector_max.svg</normaloff>:/GMToolBar/gigamesh_icon_feature_vector_max.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Feature Vector Element Ma&amp;x ★</string>
+   </property>
+  </action>
+  <action name="actionShowInfoMesh">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_mesh_information.svg</normaloff>:/GMToolBar/gigamesh_icon_mesh_information.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Properties of the &amp;Mesh</string>
+   </property>
+   <property name="toolTip">
+    <string>Show the properties of the mesh including indicators for its quality.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionEditRemoveSeededSynthComp">
+   <property name="text">
+    <string>Remove - Filled Holes (SelMVerts)</string>
+   </property>
+  </action>
+  <action name="actionSelMFacesWithSyntheticVertices">
+   <property name="text">
+    <string>Faces - with Synthetic Vertices</string>
+   </property>
+  </action>
+  <action name="actionCreate_SkeletonLine">
+   <property name="text">
+    <string>Polylines from RidgePoints (S&amp;keletonline)</string>
+   </property>
+  </action>
+  <action name="actionSetConeAxisCentralPixel">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_select_axis_central_pixel.svg</normaloff>:/GMToolBar/gigamesh_icon_select_axis_central_pixel.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Cone - Set A&amp;xis Central Pixel</string>
+   </property>
+   <property name="toolTip">
+    <string>Set the rotational axis using the central pixel</string>
+   </property>
+  </action>
+  <action name="actionAngleConeAxis">
+   <property name="text">
+    <string>&amp;Angle based on Cone Axis</string>
+   </property>
+  </action>
+  <action name="actionEditVerticesAdd">
+   <property name="text">
+    <string>Vertices - Add manually</string>
+   </property>
+  </action>
+  <action name="actionPositionsComputeCircleCenters">
+   <property name="text">
+    <string>Positions - SelMPrims - Comp&amp;ute Circle Centers</string>
+   </property>
+  </action>
+  <action name="actionCompAxisFromCircleCenters">
+   <property name="text">
+    <string>&amp;Axis from Circle Centers</string>
+   </property>
+  </action>
+  <action name="actionSelVertFlagCircleCenter">
+   <property name="text">
+    <string>Vertices - Circle Center</string>
+   </property>
+  </action>
+  <action name="actionUnrollMeshAroundCylinder">
+   <property name="text">
+    <string>Cylinder - Unroll Mesh</string>
+   </property>
+  </action>
+  <action name="actionMakeConeCoverMesh">
+   <property name="text">
+    <string>Cone - Cover the &amp;whole mesh</string>
+   </property>
+  </action>
+  <action name="actionCylinderSetRadius">
+   <property name="text">
+    <string>Cylinder - Set Radius</string>
+   </property>
+  </action>
+  <action name="actionExtrudePolylines">
+   <property name="text">
+    <string>Extrude Polylines</string>
+   </property>
+  </action>
+  <action name="actionViewAxisUp">
+   <property name="text">
+    <string>Rotate - View - Parallel to Axis</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F8</string>
+   </property>
+  </action>
+  <action name="actionFuncValMeanOneRingRepeat">
+   <property name="text">
+    <string>Function Value - &amp;1-Ring Mean Filter</string>
+   </property>
+  </action>
+  <action name="actionFuncValScalarMultiply">
+   <property name="text">
+    <string>Function Value - Multiply</string>
+   </property>
+  </action>
+  <action name="actionFuncValFeatureVecPNorm">
+   <property name="text">
+    <string>Feature Vector Distance - &amp;p-Norm (experimental)</string>
+   </property>
+  </action>
+  <action name="actionFuncValFeatureVecMin">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_feature_vector_min.svg</normaloff>:/GMToolBar/gigamesh_icon_feature_vector_min.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Feature Vector Element Min</string>
+   </property>
+  </action>
+  <action name="actionFuncValMedianOneRingRepeat">
+   <property name="text">
+    <string>Function Value - 1-Rin&amp;g Median Filter</string>
+   </property>
+  </action>
+  <action name="actionSetIsolinesByNumber">
+   <property name="text">
+    <string>Isolines - Distance by Number</string>
+   </property>
+  </action>
+  <action name="actionHistFunctionValuesVertexLocalMin">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>F&amp;unction Values Vertex Local Minima</string>
+   </property>
+  </action>
+  <action name="actionHistFunctionValuesVertexLocalMax">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fu&amp;nction Values Vertex Local Maxima</string>
+   </property>
+  </action>
+  <action name="actionFuncValFeatureVecMahalanobis">
+   <property name="text">
+    <string>Feature Vector Distance - Mahalanobis inspired (exp.)</string>
+   </property>
+  </action>
+  <action name="actionVisPolyLineWidth">
+   <property name="text">
+    <string>Polylines - &amp;Width</string>
+   </property>
+  </action>
+  <action name="actionSelVertRidges">
+   <property name="text">
+    <string>Vertices - SelMVerts - Ridges (experimental)</string>
+   </property>
+  </action>
+  <action name="actionRenderMatted">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_render_dull.svg</normaloff>:/GMToolBar/gigamesh_icon_render_dull.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Material Matted / D&amp;ull</string>
+   </property>
+   <property name="toolTip">
+    <string>For objects made from wood or clay</string>
+   </property>
+  </action>
+  <action name="actionRenderMetallic">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_render_shiny.svg</normaloff>:/GMToolBar/gigamesh_icon_render_shiny.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Material Shin&amp;y / Metallic</string>
+   </property>
+   <property name="toolTip">
+    <string>For objects made from metal or other shiny surfaces</string>
+   </property>
+  </action>
+  <action name="actionBackGroundGridRaster">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_background_grid_raster.svg</normaloff>:/GMToolBar/gigamesh_icon_background_grid_raster.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Rectangular Raster Grid</string>
+   </property>
+   <property name="toolTip">
+    <string>Rectangular Raster Grid</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+F2</string>
+   </property>
+  </action>
+  <action name="actionBackGroundGridPolar">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_background_grid_polar.svg</normaloff>:/GMToolBar/gigamesh_icon_background_grid_polar.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Polar Grid - Lines and Circles</string>
+   </property>
+   <property name="toolTip">
+    <string>Polar Grid</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F2</string>
+   </property>
+  </action>
+  <action name="actionGridHighlightCenter">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_background_grids_highlight_center.svg</normaloff>:/GMToolBar/gigamesh_icon_background_grids_highlight_center.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Grid: Highlight &amp;Central Pixel</string>
+   </property>
+   <property name="toolTip">
+    <string>Additional cross-hair</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F2</string>
+   </property>
+  </action>
+  <action name="actionBackGroundGridNone">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_empty.svg</normaloff>:/GMToolBar/gigamesh_icon_empty.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Grid - None / Toggle</string>
+   </property>
+   <property name="toolTip">
+    <string>Disable all grids</string>
+   </property>
+   <property name="shortcut">
+    <string>F2</string>
+   </property>
+  </action>
+  <action name="actionRenderDefault">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_render_default.svg</normaloff>:/GMToolBar/gigamesh_icon_render_default.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Material Default</string>
+   </property>
+   <property name="toolTip">
+    <string>High contrast for e.g. cuneiform tablets</string>
+   </property>
+  </action>
+  <action name="actionLightVectorsShown">
+   <property name="text">
+    <string>Light Vectors Sho&amp;wn</string>
+   </property>
+   <property name="toolTip">
+    <string>Number of directional vectors shown during orientation of the light source(s)</string>
+   </property>
+  </action>
+  <action name="actionSelVertFlagSynthetic">
+   <property name="text">
+    <string>Vertices - S&amp;ynthetic</string>
+   </property>
+  </action>
+  <action name="actionVisitWebSite">
+   <property name="text">
+    <string>&amp;Visit Web Site</string>
+   </property>
+   <property name="toolTip">
+    <string>Visit the GigaMesh web page</string>
+   </property>
+  </action>
+  <action name="actionDistanceToAxis">
+   <property name="text">
+    <string>Distance to Axis (Pos, Pos)</string>
+   </property>
+  </action>
+  <action name="actionEditRecomputeVertexNormals">
+   <property name="text">
+    <string>Vertices - Recompute Normals</string>
+   </property>
+  </action>
+  <action name="actionVisMapHypsoHirise1">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hypsometric &amp;1 (HiRise inspired, exper.)</string>
+   </property>
+   <property name="toolTip">
+    <string>Hypsometric 1 (HiRise inspired, exper.)</string>
+   </property>
+  </action>
+  <action name="actionVisMapHypsoHirise2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hypsometric &amp;2 (HiRise inspired, exper.)</string>
+   </property>
+   <property name="toolTip">
+    <string>Hypsometric 2 (HiRise inspired, exper.)</string>
+   </property>
+  </action>
+  <action name="actionSetMeridianPrimeSelPrim">
+   <property name="text">
+    <string>Set Prime Meridian - SelPrim</string>
+   </property>
+  </action>
+  <action name="actionSetMeridianCutSelPrim">
+   <property name="text">
+    <string>Set Meridian for Cutting Rollouts - SelPrim</string>
+   </property>
+  </action>
+  <action name="actionDistanceToSphere">
+   <property name="text">
+    <string>Distance To Sphere</string>
+   </property>
+   <property name="toolTip">
+    <string>Distance To Sphere</string>
+   </property>
+  </action>
+  <action name="actionVisMapParula">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Parula (Jet replacment)</string>
+   </property>
+   <property name="toolTip">
+    <string>Parula (Jet replacment)</string>
+   </property>
+  </action>
+  <action name="actionFuncValAngleToRadial">
+   <property name="text">
+    <string>Angle to Radial</string>
+   </property>
+  </action>
+  <action name="actionFuncValAxisAngleToRadial">
+   <property name="text">
+    <string>Angle to Radial along Axis</string>
+   </property>
+  </action>
+  <action name="actionFuncValOrthogonalAxisAngleToRaial">
+   <property name="text">
+    <string>Angle to Radial in orthogonal Plane</string>
+   </property>
+  </action>
+  <action name="actionSelFaceSelfIntersecting">
+   <property name="text">
+    <string>Faces - Self-intersecting</string>
+   </property>
+  </action>
+  <action name="actionFuncValSetToOrder">
+   <property name="text">
+    <string>Function Value - to &amp;Order</string>
+   </property>
+  </action>
+  <action name="actionImportFunctionValues">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Import Function Values (&amp;per Vertex)</string>
+   </property>
+  </action>
+  <action name="actionViewMeshAxis">
+   <property name="text">
+    <string>Mesh Axis</string>
+   </property>
+  </action>
+  <action name="actionPlaneSetByAxisSelPrim">
+   <property name="text">
+    <string>Plane - Set using Axis and SelPrim</string>
+   </property>
+  </action>
+  <action name="actionPolylinesFromPlaneIntersect">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_mesh_plane_intersect.svg</normaloff>:/GMToolBar/gigamesh_icon_mesh_plane_intersect.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Polylines from Plane Intersections</string>
+   </property>
+  </action>
+  <action name="actionExportPlaneIntersectSVG">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_mesh_plane_intersect_export_svg.svg</normaloff>:/GMToolBar/gigamesh_icon_mesh_plane_intersect_export_svg.svg</iconset>
+   </property>
+   <property name="text">
+    <string>E&amp;xport Plane Intersections (SVG)</string>
+   </property>
+  </action>
+  <action name="actionToolbar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Toolbar</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+M</string>
+   </property>
+  </action>
+  <action name="actionRenderFlatAndEdges">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_flatshade_and_edges.svg</normaloff>:/GMToolBar/gigamesh_icon_flatshade_and_edges.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Flat shading and edges</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Switch between flat shading with triangle edges rendered and smooth shading without edges. The first option is usefull to inspection details of the mesh in high magnification.&lt;/p&gt;&lt;p&gt;Recommended to be used together with rendering in solid color.&lt;/p&gt;&lt;p&gt;
+&lt;table&gt;
+&lt;tr&gt;
+	&lt;td&gt;&lt;img src=&quot;:/GMToolTipImages/tooltips/rendering_flat_smooth_egde_off.png&quot;/&gt;&lt;/td&gt;
+	&lt;td&gt;&amp;nbsp;&lt;/td&gt;
+	&lt;td&gt;&lt;img src=&quot;:/GMToolTipImages/tooltips/rendering_flat_smooth_egde_on.png&quot;/&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionPolylinesFromAxisAndPostions">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_mesh_plane_axis_positions_intersect.svg</normaloff>:/GMToolBar/gigamesh_icon_mesh_plane_axis_positions_intersect.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Polylines from A&amp;xis and Positions</string>
+   </property>
+   <property name="toolTip">
+    <string>Compute polylines using an axis and selected positions.</string>
+   </property>
+  </action>
+  <action name="actionShowInfoAxis">
+   <property name="text">
+    <string>Properties &amp;of the Axis</string>
+   </property>
+  </action>
+  <action name="actionExportSVGDashedAxis">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>SVG - Das&amp;hed Axis</string>
+   </property>
+  </action>
+  <action name="actionFeatureVecMeanOneRingRepeat">
+   <property name="text">
+    <string>Feature Vector Elements - 1-Ring Mean Filter</string>
+   </property>
+  </action>
+  <action name="actionAmbientOcclusion">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_ambient_occlusion.svg</normaloff>:/GMToolBar/gigamesh_icon_ambient_occlusion.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Ambient Occlusion</string>
+   </property>
+   <property name="toolTip">
+    <string>Compute Ambient Occlusion and store as Function Value</string>
+   </property>
+  </action>
+  <action name="actionVisMapYlOrBr">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>YlOrBr (Brewer, sequential)</string>
+   </property>
+   <property name="toolTip">
+    <string>Yellow-Orange-Brown</string>
+   </property>
+  </action>
+  <action name="actionVisMapCopper">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Copper (Octave)</string>
+   </property>
+   <property name="toolTip">
+    <string>Black-Copper</string>
+   </property>
+  </action>
+  <action name="actionVisMapRusttones">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Rust (similar Mathematica)</string>
+   </property>
+   <property name="toolTip">
+    <string>Black to Dark Brown</string>
+   </property>
+  </action>
+  <action name="actionVisMapSiennatones">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Sienna (similar Mathematica)</string>
+   </property>
+   <property name="toolTip">
+    <string>Siennatones</string>
+   </property>
+  </action>
+  <action name="actionRenderLightShading">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_render_light_shading.svg</normaloff>:/GMToolBar/gigamesh_icon_render_light_shading.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Material Light Shading</string>
+   </property>
+   <property name="toolTip">
+    <string>Strong ambient light to achieve light shading e.g. for terrain data with hypsometric tint or ambient occlusion.</string>
+   </property>
+  </action>
+  <action name="actionFuncValAdjacentFaceCount">
+   <property name="text">
+    <string>Vertex - Adjacent &amp;Face Count</string>
+   </property>
+   <property name="toolTip">
+    <string>Stores the number of adjacent faces as function value.</string>
+   </property>
+  </action>
+  <action name="actionIsolinesTenZeroed">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_ioslines_ten_zeroed.svg</normaloff>:/GMToolBar/gigamesh_icon_ioslines_ten_zeroed.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Isolines - 10, &amp;Zeroed</string>
+   </property>
+   <property name="toolTip">
+    <string>Show 10 Isolines and set their offset to 0.</string>
+   </property>
+  </action>
+  <action name="actionTransformFunctionValuesToRGB">
+   <property name="text">
+    <string>&amp;Transform Function Value to RGB</string>
+   </property>
+  </action>
+  <action name="actionMultiplyColorValuesWithFunctionValues">
+   <property name="text">
+    <string>&amp;Multiply Color per Vertex with Function Value</string>
+   </property>
+  </action>
+  <action name="actionNormalizeFunctionValues">
+   <property name="text">
+    <string>&amp;Normalize Function Values w. Colorramp Settings</string>
+   </property>
+  </action>
+  <action name="actionSaveStillImages360DurationSlow">
+   <property name="text">
+    <string>360° Slow &amp;rotation duration (seconds)</string>
+   </property>
+  </action>
+  <action name="actionExportCoordinatesOfAllVerticesAsCSV">
+   <property name="text">
+    <string>Export Coordinates Of All Vertices As CSV File</string>
+   </property>
+  </action>
+  <action name="actionExportCoordinatesOfSelectedVerticesAsCSV">
+   <property name="text">
+    <string>Export Coordinates of Selected Vertices as CSV File</string>
+   </property>
+  </action>
+  <action name="actionExportCoordinatesOfSelectedPrimitivesAsCSV">
+   <property name="text">
+    <string>Export Coordinates Of Selected Primitives As CSV File</string>
+   </property>
+  </action>
+  <action name="actionImportTpsRpmTransformationMatrix">
+   <property name="text">
+    <string>Import TPS-RPM Transformation Matrix</string>
+   </property>
+  </action>
+  <action name="actionPolylinesFromMultipleFuncVals">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_polylines_from_multiple_functionvalues.svg</normaloff>:/GMToolBar/gigamesh_icon_polylines_from_multiple_functionvalues.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Polylines from multiple FunctionValues</string>
+   </property>
+  </action>
+  <action name="actionVisitVideoTutorials">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_visit_video_tutorials.svg</normaloff>:/GMToolBar/gigamesh_icon_visit_video_tutorials.svg</iconset>
+   </property>
+   <property name="text">
+    <string>V&amp;isit Video Tutorials</string>
+   </property>
+  </action>
+  <action name="actionScreenshotDPISuffix">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>DPI Suffix for &amp;Ortho Images</string>
+   </property>
+  </action>
+  <action name="actionLabelAll">
+   <property name="text">
+    <string>Label - All</string>
+   </property>
+  </action>
+  <action name="actionSelMFacesBorderWithThreeVertices">
+   <property name="text">
+    <string>Faces - Border - 3 Vertices</string>
+   </property>
+  </action>
+  <action name="actionEditRemoveFacesBorderErosion">
+   <property name="text">
+    <string>Remove - Faces Border Erosion</string>
+   </property>
+  </action>
+  <action name="actionVisMapHypsoArid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hypsometric Arid (Land only, T. Patterson, B. Jenny)</string>
+   </property>
+  </action>
+  <action name="actionVisMapFixedSetMax">
+   <property name="text">
+    <string>Fi&amp;xed Range - Set Maximum</string>
+   </property>
+  </action>
+  <action name="actionSetFixedRangeNormalized">
+   <property name="text">
+    <string>Fixed Range - Set Normalized [0-1]</string>
+   </property>
+  </action>
+  <action name="actionScreenshotViewsPDF">
+   <property name="text">
+    <string>Screenshot Views (PDF with TEX+PNG)</string>
+   </property>
+  </action>
+  <action name="actionExportScreenShotsViewsSix">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Views Six (or eight, when disabled)</string>
+   </property>
+  </action>
+  <action name="actionScreenshotViewsPDFDirectory">
+   <property name="text">
+    <string>Screenshot Directory Views (PDF with Tex+PNG)</string>
+   </property>
+  </action>
+  <action name="actionSplitByPlane">
+   <property name="text">
+    <string>Split by Plane (Quick)</string>
+   </property>
+  </action>
+  <action name="actionMetaDataEditWebReference">
+   <property name="text">
+    <string>Meta-Data Edit: Web Reference</string>
+   </property>
+  </action>
+  <action name="actionMetaDataEditModelId">
+   <property name="text">
+    <string>Meta-Data Edit: Model Id</string>
+   </property>
+  </action>
+  <action name="actionMetaDataEditMaterial">
+   <property name="text">
+    <string>Meta-Data Edit: Material</string>
+   </property>
+  </action>
+  <action name="actionSelMFacesGUIPinPoint">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Faces - GUI Pinpoint</string>
+   </property>
+  </action>
+  <action name="actionScreenshotViewsDirectory">
+   <property name="text">
+    <string>Directory: Screenshot for all files</string>
+   </property>
+  </action>
+  <action name="actionScreenshotPDF">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_screenshot_pdf.svg</normaloff>:/GMToolBar/gigamesh_icon_screenshot_pdf.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Screenshot (PDF with TEX+PNG)</string>
+   </property>
+  </action>
+  <action name="actionPin_Size">
+   <property name="text">
+    <string>Pin Size</string>
+   </property>
+  </action>
+  <action name="actionPin_Line_Height">
+   <property name="text">
+    <string>Pin Line Height</string>
+   </property>
+  </action>
+  <action name="actionFace_Backface_Lightning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Faces - Backface Lighting</string>
+   </property>
+  </action>
+  <action name="actionPointcloud_pointsize">
+   <property name="text">
+    <string>Pointcloud - Pointsize</string>
+   </property>
+  </action>
+  <action name="actionDisplay_as_pointcloud_when_moving">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show reduced Pointcloud when moving</string>
+   </property>
+  </action>
+  <action name="actionFacesInvertOrientation">
+   <property name="text">
+    <string>Faces - Invert Orientation</string>
+   </property>
+  </action>
+  <action name="actionSelectVertexEnterIndex">
+   <property name="text">
+    <string>&amp;Primitive - Vertex - SelVert/SelPrim - Enter Index</string>
+   </property>
+  </action>
+  <action name="actionSelVertInvert">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_vertices_selected_invert.svg</normaloff>:/GMToolBar/gigamesh_icon_vertices_selected_invert.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Vertices - SelMVerts - Invert selection</string>
+   </property>
+  </action>
+  <action name="actionSelVertsRandom">
+   <property name="text">
+    <string>Vertices - Random</string>
+   </property>
+  </action>
+  <action name="actionSelMFacesLabledVerticesVoronoiCorner">
+   <property name="text">
+    <string>Faces - Corners of Voronoi cells of labled vertices</string>
+   </property>
+  </action>
+  <action name="actionShowInfoLabelProp">
+   <property name="text">
+    <string>Label Properties</string>
+   </property>
+  </action>
+  <action name="actionExternal_Programs">
+   <property name="text">
+    <string>External Programs</string>
+   </property>
+  </action>
+  <action name="actionFuncValFeatureVecElementsStdDev">
+   <property name="text">
+    <string>Feature Vector Elements Standard Deviation</string>
+   </property>
+  </action>
+  <action name="actionGridCenter">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_background_center_location.svg</normaloff>:/GMToolBar/gigamesh_icon_background_center_location.svg</iconset>
+   </property>
+   <property name="text">
+    <string>GridCenter</string>
+   </property>
+   <property name="toolTip">
+    <string>Sets where the center of the grid is located</string>
+   </property>
+  </action>
+  <action name="actionFuncValPlaneAngle">
+   <property name="text">
+    <string>An&amp;gle to Plane (Slope)</string>
+   </property>
+  </action>
+  <action name="actionDistanceToCone">
+   <property name="text">
+    <string>Distance to Cone</string>
+   </property>
+  </action>
+  <action name="actionSelMFacesBorderBridge">
+   <property name="text">
+    <string>Faces - Border - Bridge</string>
+   </property>
+  </action>
+  <action name="actionSelMFacesBorderDangling">
+   <property name="text">
+    <string>Faces - Border - Dangling</string>
+   </property>
+  </action>
+  <action name="actionSelMFacesBorderBridgeTriConn">
+   <property name="text">
+    <string>Faces - Border - Bridge Tri-Connection</string>
+   </property>
+  </action>
+  <action name="actionSelMFacesWithThreeVerticesSelected">
+   <property name="text">
+    <string>Faces - with three selected vertices (SelMVerts)</string>
+   </property>
+  </action>
+  <action name="actionVertices_Blaschke_Image">
+   <property name="text">
+    <string>Vertices - Blaschke Image</string>
+   </property>
+  </action>
+  <action name="actionVertices_Normal_Sphere">
+   <property name="text">
+    <string>Normal-Sphere - Vertices</string>
+   </property>
+  </action>
+  <action name="actionExport_Normal_Sphere_Data">
+   <property name="text">
+    <string>Export Normal-Sphere Data</string>
+   </property>
+  </action>
+  <action name="actionSelVertLabelBackGrd">
+   <property name="text">
+    <string>Vertices - Labeled Background</string>
+   </property>
+  </action>
+  <action name="actionSphereSurfaceLength">
+   <property name="text">
+    <string>Sphere Surface Length</string>
+   </property>
+  </action>
+  <action name="actionSphereVolumeArea">
+   <property name="text">
+    <string>Sphere Volume Area</string>
+   </property>
+  </action>
+  <action name="actionSphereSurfaceNumberOfComponents">
+   <property name="text">
+    <string>Sphere Surface Number of Components</string>
+   </property>
+  </action>
+  <action name="actionSaveFlagTextureExport">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Save Texture along Mesh</string>
+   </property>
+  </action>
+  <action name="actionFaces_Normal_Sphere">
+   <property name="text">
+    <string>Normal-Sphere - Faces</string>
+   </property>
+  </action>
+  <action name="actionExportFeatureVectors">
+   <property name="text">
+    <string>Export Feature Vectors (per Vertex)</string>
+   </property>
+  </action>
+  <action name="actionFuncValToFeatureVector">
+   <property name="text">
+    <string>Function Value to Feature Vector</string>
+   </property>
+  </action>
+  <action name="actionGrid_Center_Cross_in_front">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Grid: Center Crosshair in front</string>
+   </property>
+  </action>
+  <action name="actionPlaneSetByAxisLastSelPos">
+   <property name="text">
+    <string>Plane - Set using Axis and last Selected Position</string>
+   </property>
+  </action>
+  <action name="actionPlaneOrientTowardsAxis">
+   <property name="text">
+    <string>Plane - Set orientation using Axis</string>
+   </property>
+  </action>
+  <action name="actionMSIIFilterApplyQuick">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_compute_msii_quick.svg</normaloff>:/GMToolBar/gigamesh_icon_compute_msii_quick.svg</iconset>
+   </property>
+   <property name="text">
+    <string>MSII Feature Vectors and Function Value (Quick)</string>
+   </property>
+   <property name="toolTip">
+    <string>Apply MSII filtering with default settings. Only a radius i.e. largest feature size is required.
+Volume based feature vectors are computed including a function value (Max element). 
+The latter will be shown, when the processing has finished.</string>
+   </property>
+  </action>
+  <action name="actionLightVectorLength">
+   <property name="text">
+    <string>Light Vectors Length</string>
+   </property>
+   <property name="toolTip">
+    <string>Set the length of the light vectors</string>
+   </property>
+  </action>
+  <action name="actionSet_Vertex_Alpha">
+   <property name="text">
+    <string>Vertices - Set Vertex Alpha</string>
+   </property>
+   <property name="toolTip">
+    <string>Set the alpha value of the selected vertices to value. Apply to all, if no vertex is selected.</string>
+   </property>
+  </action>
+  <action name="actionReplaceTransparencyBgColor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>PNG - Keep Background</string>
+   </property>
+  </action>
+  <action name="actionExportMetaDataHTML">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_export_metadata_html.svg</normaloff>:/GMToolBar/gigamesh_icon_export_metadata_html.svg</iconset>
+   </property>
+   <property name="text">
+    <string>HTML page</string>
+   </property>
+  </action>
+  <action name="actionExportMetaDataXML">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_export_metadata_xml.svg</normaloff>:/GMToolBar/gigamesh_icon_export_metadata_xml.svg</iconset>
+   </property>
+   <property name="text">
+    <string>XML</string>
+   </property>
+  </action>
+  <action name="actionExportMetaDataJSON">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_export_metadata_json.svg</normaloff>:/GMToolBar/gigamesh_icon_export_metadata_json.svg</iconset>
+   </property>
+   <property name="text">
+    <string>JSON-LD</string>
+   </property>
+   <property name="toolTip">
+    <string>JSON for Linking Data</string>
+   </property>
+  </action>
+  <action name="actionExportMetaDataTTL">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_export_metadata_ttl.svg</normaloff>:/GMToolBar/gigamesh_icon_export_metadata_ttl.svg</iconset>
+   </property>
+   <property name="text">
+    <string>TTL (Turtle, RDF)</string>
+   </property>
+  </action>
+  <action name="actionExportMetaDataAll">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_export_metadata_all.svg</normaloff>:/GMToolBar/gigamesh_icon_export_metadata_all.svg</iconset>
+   </property>
+   <property name="text">
+    <string>All above (HTML, TTL, JSON and XML)</string>
+   </property>
+  </action>
+  <action name="actionHighDPIZoomFactor">
+   <property name="text">
+    <string>HighDPI Zoom Factor</string>
+   </property>
+  </action>
+  <action name="actionDirectoryFuncValToRGB">
+   <property name="text">
+    <string>Directory: FuncVal to RGB</string>
+   </property>
+  </action>
+  <action name="actionSaveLabelsSeparated">
+   <property name="text">
+    <string>Save Labels separated</string>
+   </property>
+  </action>
+  <action name="actionViewShow2DBoundingBox">
+   <property name="text">
+    <string>Bounding Box Size in Camera Coordinates</string>
+   </property>
+  </action>
+  <action name="actionImportPolylines">
+   <property name="text">
+    <string>Import Polylines</string>
+   </property>
+  </action>
+  <action name="actionImportLabels">
+   <property name="text">
+    <string>Import Labels</string>
+   </property>
+  </action>
+  <action name="actionLabelVertEqualRGB">
+   <property name="text">
+    <string>Label - Vertices w. Equal RGB</string>
+   </property>
+  </action>
+  <action name="actionImport_and_apply_transformation_matrices">
+   <property name="text">
+    <string>Import and Apply transformation-matrices</string>
+   </property>
+  </action>
+  <action name="actionRemove_Dangling_Faces">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Remove Dangling Faces</string>
+   </property>
+  </action>
+  <action name="actionMax_Number_of_vertices_for_hole_filling">
+   <property name="text">
+    <string>Max. Number of vertices for hole filling</string>
+   </property>
+  </action>
+  <action name="actionAutomatic_Mesh_Alignment">
+   <property name="text">
+    <string>Automatic Mesh Alignment</string>
+   </property>
+  </action>
+  <action name="actionFuncValFeatureVecMinSigned">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_feature_vector_min_sign.svg</normaloff>:/GMToolBar/gigamesh_icon_feature_vector_min_sign.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Feature Vector Element Min Signed 🞵</string>
+   </property>
+  </action>
+  <action name="actionFuncValFeatureVecMaxSigned">
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_feature_vector_max_sign.svg</normaloff>:/GMToolBar/gigamesh_icon_feature_vector_max_sign.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Feature Vector Element Max Signed ❋</string>
+   </property>
+  </action>
+  <action name="actionSphericalImagesLightDirectory">
+   <property name="text">
+    <string>Directory: Spherical Stack Lightsource Orbiting</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This method renders the screenshots for each mesh within a directory with an &lt;span style=&quot; font-weight:600;&quot;&gt;orbiting light source.&lt;/span&gt; The current mesh has to be located in this directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionDirectory_Spherical_Stack_Camera_Orbiting">
+   <property name="text">
+    <string>Directory: Spherical Stack Camera Orbiting</string>
+   </property>
+  </action>
+  <action name="actionDirectoryAutomaticMeshAlignment">
+   <property name="text">
+    <string>Directory: Automatic Mesh Alignment</string>
+   </property>
+   <property name="toolTip">
+    <string>Directory: Automatic Mesh Alignment</string>
+   </property>
+  </action>
+  <action name="actionLabelKMeansVertPos">
+   <property name="text">
+    <string>Label K-Means: Vertex Position</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This method uses selected vertices (SelMVerts) to label the point cloud of the mesh into as many labels as there are selected vertices. The selection sets a preference for the central location of the classes. However, the algorithm is allowed to shift the location of the classes. This means that selections that are too close together may result in clusters in different locations than expected. Also note that highly curved surfaces can cause the labels to be disconnected as they are part of another area of the triangular grid, since only the positions of the vertices are used for clustering.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionDeSelMVertsGUILasso">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_vertices_deselect_multiple_polyline.svg</normaloff>:/GMToolBar/gigamesh_icon_vertices_deselect_multiple_polyline.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Vertices - DeselectMVerts - GUI - Lasso</string>
+   </property>
+   <property name="toolTip">
+    <string>Deselect multiple vertices with a lasso</string>
+   </property>
+  </action>
+  <action name="actionSelectThreePositions">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gigamesh.qrc">
+     <normaloff>:/GMToolBar/gigamesh_icon_vertices_select_three_positions.svg</normaloff>:/GMToolBar/gigamesh_icon_vertices_select_three_positions.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Positions - SelPrims - Select 3 </string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select 3 positions on the mesh i.e. points within triangles.&lt;/p&gt;&lt;p&gt;This selection mode automatically starts a new set of connected points after 3 pins.&lt;/p&gt;&lt;p&gt;These positions are used to calculate circle centers as part of the profile line calculation process.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionFileExportAsLegacy">
+   <property name="text">
+    <string>Export as Legacy</string>
+   </property>
+   <property name="toolTip">
+    <string>Export as Legacy (without Features, Labels and Flags)</string>
+   </property>
+  </action>
+  <action name="actionSaveFlagGMExtras">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;GM Extras (Features, Labels, Flags)</string>
+   </property>
+  </action>
+  <action name="actionDownscaleTexture">
+   <property name="text">
+    <string>Downscale Texture(s)</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="gigamesh.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>actionLightning</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>actionSelectAmbient</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionLightning</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>actionSelMatShininess</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionLightning</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>actionSelMatSpecular</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionVisMapFixedMinMax</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>actionVisMapFixedSetMin</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionLightning</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>actionLightFixedCam</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionLightning</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>actionLightFixedWorld</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionLightning</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>actionLightAmbient</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

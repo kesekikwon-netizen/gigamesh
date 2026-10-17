@@ -1,0 +1,5 @@
+?package(gigamesh): needs="X11" \
+                    section="Graphics" \
+                    title="GigaMesh" \
+                    command="/usr/bin/gigamesh" \
+                    icon="/usr/share/pixmaps/gigamesh_logo.svg"

@@ -1,0 +1,73 @@
+# Build directories & CMake / Ninja / MSVC artifacts
+build*/
+**/build*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+compile_commands.json
+.ninja_deps
+.ninja_log
+*.o
+*.obj
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.a
+*.exe
+*.dll
+*.so
+*.dylib
+
+# IDE & OS
+.vscode/
+.vs/
+*.suo
+*.user
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archives
+_archived_old_files/
+*.zip
+
+# Logs
+*.log
+.logs/
+
+# Temporary & Headless test outputs
+nul
+*.tmp
+*.bak
+studio_*.svg
+studio_*.dxf
+studio_*.pdf
+studio_*.png
+studio_*.stl
+studio_*.pline
+studio_*.gltf
+studio_*.ply
+
+# Qt
+*.qm
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Node.js
+node_modules/
+package-lock.json
+*.tgz
+
+# MCP build artifacts
+.claude/mcp/*/dist/
+.claude/mcp/*/node_modules/
+.claude/snapshots/

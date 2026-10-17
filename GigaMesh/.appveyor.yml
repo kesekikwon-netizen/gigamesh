@@ -1,0 +1,98 @@
+branches:
+  only:
+    - develop
+    - master
+
+image:
+  - macOS
+  #- Ubuntu2204
+  - Visual Studio 2019
+
+for:
+-
+  matrix:
+    only:
+    #ubuntu crashs due to appveyor-tools
+      - image: Ubuntu2204
+
+  install:
+  - export Qt5_DIR="$HOME/Qt/latest/gcc_64"
+  - export PATH="$Qt5_DIR/bin:$PATH"
+  - export QT_SELECT=qt5
+  - sudo apt-get update
+  - sudo apt-get -y install build-essential libtiff5-dev
+  - sudo apt-get -y install libgl-dev g++-10 gcc-9
+  - sudo apt-get -y install dotnet-runtime-7.0
+  - sudo apt-get -y install moreutils
+  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-10 --slave /usr/bin/gcov gcov /usr/bin/gcov-8
+  - ps: iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
+  - jq '.runtimeOptions.tfm = "netcoreapp7.0"' ./appveyor-tools/secure-file.runtimeconfig.json|sponge ./appveyor-tools/secure-file.runtimeconfig.json
+  - sh: ./appveyor-tools/secure-file -decrypt gui/src/analyticsConfig.h.enc -secret $my_secret -salt $my_salt
+  after_build:
+  - mv install GigaMesh
+  - cd ..
+  test_script:
+  - build/tests/gigameshCore_tests -o test_reportUbuntu.xml -r junit || true
+  on_finish:
+    - sh: |
+        find "$APPVEYOR_BUILD_FOLDER" -type f -name 'test_*.xml' -print0 | xargs -0 -I '{}' curl -F 'file=@{}' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
+
+
+-
+  matrix:
+    only:
+      - image: Visual Studio 2019
+ 
+  install:
+  - ps: iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
+  - cmd: appveyor-tools\secure-file -decrypt gui\src\analyticsConfig.h.enc -secret %my_secret% -salt %my_salt%
+  - cmd: set QTDIR=C:\Qt\5.15.2\msvc2019_64
+  - cmd: set PATH=%QTDIR%\bin;C:\Qt\Tools\msvc2019_64\bin;%PATH%;
+  after_build:
+  - windeployqt install/bin/gigamesh.exe
+  - mv install GigaMesh
+  - ps: cp C:\OpenSSL-v111-Win64\bin\*.dll GigaMesh\bin
+  - cd ..
+  test_script:
+  - .\build\tests\Release\gigameshCore_tests.exe -o test_reportWin.xml -r junit & exit 0
+    #upload results
+  - ps: $wc = New-Object 'System.Net.WebClient'
+  - ps: $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test_reportWin.xml))
+-
+  matrix:
+    only:
+      - image: macOS
+  
+  install:
+  #- brew update > /dev/null
+  #- brew install qt5
+  #- chmod -R 755 /usr/local/opt/qt5/*
+  - export CMAKE_PREFIX_PATH="$HOME/Qt/5.15.2/lib/cmake"
+  - export Qt5_DIR="$HOME/Qt/5.15.2/clang_64"
+  - export QTDIR="$HOME/Qt/5.15.2/clang_64"
+  - export PATH="$QTDIR/bin:$PATH"
+  - export QT_SELECT=qt5
+  - ps: iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
+  - sh: ./appveyor-tools/secure-file -decrypt gui/src/analyticsConfig.h.enc -secret $my_secret -salt $my_salt
+  after_build:
+  - cd install/bin
+  - macdeployqt gigamesh.app
+  - cd ../..
+  - mv install GigaMesh
+  - cd ..
+  test_script:
+  - build/tests/gigameshCore_tests -o test_reportMac.xml -r junit || true
+  on_finish:
+    - sh: |
+        find "$APPVEYOR_BUILD_FOLDER" -type f -name 'test_*.xml' -print0 | xargs -0 -I '{}' curl -F 'file=@{}' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
+
+build_script:
+  - mkdir build
+  - cd build
+  - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install
+  - cmake --build . --config Release
+  - cmake --build . --config Release --target install
+
+artifacts:
+  - path: build/GigaMesh
+    type: zip

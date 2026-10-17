@@ -1,0 +1,177 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-11-11T19:45:00Z",
+  "project": {
+    "name": "DongArch3D",
+    "description": "Dongguk Archaeological 3D Measurement System",
+    "repository": "/media/kwon/새 볼륨/1105/GigaMesh",
+    "buildDir": "/media/kwon/새 볼륨/1105/GigaMesh/build",
+    "mainBranch": "master",
+    "currentBranch": "feature/cutline-realtime-preview"
+  },
+  "currentWork": {
+    "feature": "Cutline Realtime Preview System",
+    "stage": "Stage 5 완료 + Menu Integration",
+    "lastCommit": "c242e39",
+    "lastCommitMessage": "feat(cutline): Connect Realtime Dialog to menu system",
+    "completedStages": [
+      {
+        "stage": 1,
+        "name": "Async Pipeline",
+        "description": "CutlineService + CutlineController + 16ms debounce",
+        "commit": "initial"
+      },
+      {
+        "stage": 2,
+        "name": "RealtimeDialog UI",
+        "description": "Complete UI integration with overlay widget",
+        "commit": "6768476"
+      },
+      {
+        "stage": 3,
+        "name": "Performance Profiling",
+        "description": "std::chrono measurement, 60fps validation",
+        "commit": "4661fe9"
+      },
+      {
+        "stage": 4,
+        "name": "Slot Save/Load",
+        "description": "CutlineSlotManager + JSON serialization + session recovery",
+        "commit": "0e94150"
+      },
+      {
+        "stage": 5,
+        "name": "SVG Export + Menu Integration",
+        "description": "CutlineSVGExporter + QGMMainWindow menu connection",
+        "commit": "c242e39"
+      }
+    ],
+    "nextStage": {
+      "stage": 6,
+      "name": "MeshWidget Overlay Rendering",
+      "description": "QPainter overlay for real-time section visualization",
+      "tasks": [
+        "Add paintGL() overlay rendering in MeshWidget",
+        "Project 3D polyline to screen coordinates",
+        "Connect CutlineOverlayWidget to MeshWidget",
+        "Test real-time updates on camera/plane changes"
+      ]
+    }
+  },
+  "keyFiles": {
+    "cutlineCore": [
+      "gui/src/dongarch/cutline/CutlineParams.h",
+      "gui/src/dongarch/cutline/CutlineService.h",
+      "gui/src/dongarch/cutline/CutlineService.cpp",
+      "gui/src/dongarch/cutline/CutlineController.h",
+      "gui/src/dongarch/cutline/CutlineController.cpp"
+    ],
+    "cutlineUI": [
+      "gui/src/dongarch/cutline/CutlineOverlayWidget.h",
+      "gui/src/dongarch/cutline/CutlineOverlayWidget.cpp",
+      "gui/src/dongarch/cutline/DongArchCutlineRealtimeDialog.h",
+      "gui/src/dongarch/cutline/DongArchCutlineRealtimeDialog.cpp"
+    ],
+    "cutlineSlotManager": [
+      "gui/src/dongarch/cutline/CutlineSlotManager.h",
+      "gui/src/dongarch/cutline/CutlineSlotManager.cpp"
+    ],
+    "cutlineAlgorithms": [
+      "gui/src/dongarch/cutline/algorithms/DouglasPeucker.h",
+      "gui/src/dongarch/cutline/algorithms/DouglasPeucker.cpp",
+      "gui/src/dongarch/cutline/algorithms/CatmullRomSpline.h",
+      "gui/src/dongarch/cutline/algorithms/CatmullRomSpline.cpp"
+    ],
+    "build": [
+      "gui/CMakeLists.txt"
+    ]
+  },
+  "requirements": {
+    "source": "Arch3D-Liner-User-Guide-ver.2023.07.01.01.pdf",
+    "completed": [
+      "실시간 미리보기 (카메라/평면 변경 시 즉시 갱신)",
+      "Top/Front/Right 평면 모드",
+      "평면 오프셋 조절 (슬라이더/마우스 휠/숫자 입력)",
+      "Douglas-Peucker 간략화 (ε 파라미터)",
+      "Catmull-Rom Spline 스무딩",
+      "라인 스타일 (두께/색상/투명도)",
+      "슬롯 저장/불러오기 (5개)",
+      "세션 복구 (앱 재시작 후 복원)",
+      "60fps 목표 성능",
+      "비동기 처리 (워커 스레드)",
+      "Graceful degradation (실패 시 폴백)"
+    ],
+    "pending": [
+      "SVG 내보내기 (1:1 스케일, 레이어 분리)"
+    ]
+  },
+  "mcp": {
+    "installed": true,
+    "location": "/media/kwon/새 볼륨/1105/.claude/mcp/code-execution",
+    "registered": true,
+    "configFile": "/media/kwon/새 볼륨/1105/.claude/mcp.json",
+    "servers": {
+      "code-execution": {
+        "purpose": "C++ Build/Test/Analysis",
+        "tools": [
+          "build_project - CMake + Make with 400x token savings",
+          "run_tests - CTest with 25x token savings",
+          "analyze_code - clang-tidy/cppcheck with 10x token savings"
+        ]
+      },
+      "js-executor": {
+        "purpose": "JavaScript Code Execution (Anthropic MCP)",
+        "tools": [
+          "execute_code - Sandboxed JS execution"
+        ],
+        "status": "Ready for use after Claude Code restart"
+      }
+    },
+    "mandatoryUsage": {
+      "rule": "ALWAYS use these 2 MCPs in every conversation",
+      "mcps": [
+        {
+          "name": "docfork-mcp",
+          "purpose": "문서 검색/수집",
+          "when": "정보/문서가 필요할 때, 추측 대신 확인",
+          "tools": [
+            "docfork_search_docs",
+            "docfork_read_url"
+          ]
+        },
+        {
+          "name": "smithery-ai-server-sequential-thinking",
+          "purpose": "순차적 사고 및 분석",
+          "when": "복잡한 문제, 계획 수립, 의사결정, 분석",
+          "tools": [
+            "sequentialthinking"
+          ]
+        }
+      ],
+      "referenceDoc": ".claude/MCP_MANDATORY_USAGE.md"
+    }
+  },
+  "architecture": {
+    "pattern": "MVVM + Async Pipeline",
+    "components": {
+      "Model": "CutlineService (QtConcurrent worker thread)",
+      "ViewModel": "CutlineController (16ms debounce, RequestId validation)",
+      "View": "DongArchCutlineRealtimeDialog + CutlineOverlayWidget",
+      "Storage": "CutlineSlotManager (JSON persistence)"
+    },
+    "dataFlow": [
+      "User Input → Controller → Debounce Timer (16ms)",
+      "Timer → Service::computeAsync (QtConcurrent::run)",
+      "Worker Thread: Raw → Douglas-Peucker → Catmull-Rom",
+      "Service → Controller::onPolylineReady",
+      "Controller → Overlay Widget → QPainter rendering"
+    ]
+  },
+  "buildInfo": {
+    "lastBuildTime": "2025-11-11T19:45:00Z",
+    "lastBuildResult": "success",
+    "compiler": "g++",
+    "cmakeVersion": "3.x",
+    "qtVersion": "5.15.13"
+  }
+}

@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/pythonscripts">
+        <file>warp_vertices.py</file>
+        <file>PCA_vertices.py</file>
+    </qresource>
+    <qresource prefix="/"/>
+</RCC>

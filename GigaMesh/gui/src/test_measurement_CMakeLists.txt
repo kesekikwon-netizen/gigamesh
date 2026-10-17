@@ -1,0 +1,35 @@
+# Standalone CMakeLists.txt for testing QGMDockMeasurement
+# To use this file, copy it to a separate directory and run:
+# cmake -DCMAKE_PREFIX_PATH="C:/Qt/5.15.2/msvc2019_64" .
+# cmake --build . --config Release
+
+cmake_minimum_required(VERSION 3.10)
+project(MeasurementPanelTest)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+
+# Add the source files
+add_executable(test_measurement_panel
+	test_measurement_panel.cpp
+	QGMDockMeasurement.cpp
+	QGMDockMeasurement.h
+)
+
+target_link_libraries(test_measurement_panel
+	Qt5::Core
+	Qt5::Widgets
+)
+
+# For Windows, copy Qt DLLs to output directory
+if(WIN32)
+	add_custom_command(TARGET test_measurement_panel POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E echo "Run windeployqt to deploy Qt libraries"
+	)
+endif()

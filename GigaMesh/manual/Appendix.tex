@@ -1,0 +1,92 @@
+\appendix
+%\addcontentsline{toc}{chapter}{Appendix} 
+\chapter{Keyboard Usage}
+\label{keyboard}
+The following keys are used for often recureing tasks. They are not necessarily shortcuts of the items in the pull-down menu. They are meant for convenience and precise transformations.
+
+\subsection*{Transformation of the view}
+   
+   \keystroke{A}/\keystroke{D} Rotate CCW/CW about y-axis by 1° (yaw)
+   
+   \keystroke{W}/\keystroke{S} Rotate CCW/CW about x-axis by 1° (pitch)
+   
+   \keystroke{Q}/\keystroke{E}  Rotate CCW/CW about z-axis by 1° (roll)
+   
+   \keystroke{Y}/\keystroke{X} Rotate CCW/CW about the y-axis by 90° (yaw)
+
+   \keystroke{C}/\keystroke{V} Rotate CCW/CW about  the x-axis by 90° (pitch)   
+   
+   \keystroke{B}/\keystroke{N} Rotate CCW/CW abbout  the z-axis by 90° (roll)
+   
+   \LArrow \UArrow \DArrow \RArrow Shift the viewport in orthographic projection mode
+
+\subsection*{Lighting}      
+   \keystroke{P} Toggles between moving the lights and moving the object in relation to the camera 
+   
+   \keystroke{0} Light (generic) on/off
+   
+   \keystroke{1} Switch on/off light no.~1
+   
+   \keystroke{2} Switch on/off light no.~2
+   
+   \keystroke{3} Switch on/off light no.~3
+   
+   \keystroke{4} Switch on/off light no.~4
+   
+   \keystroke{5} Switch on/off light no.~5
+   
+   \keystroke{9} Switch on/off ambient light
+   
+   \Ctrl + \fbox{Left\phantom{g}mouse button}\quad Move the lights (all together)
+
+\subsection*{Additional shortcuts}     
+   \keystroke{F1} Toggle bounding box (on/off)
+   
+   \keystroke{F2} Toggle graticules (on/off)
+   
+   \keystroke{F3}  Toggle clip through selection (on/off)
+   
+   \keystroke{F4} Set SelPrim to reference point for the view of the camera
+   
+   \keystroke{F5} Toggle backface-culling (on/off)
+   
+   \keystroke{F6} Make current view to default view
+   
+   \keystroke{F7} Toggle grid in orthogonal mode  (on/off)
+
+   \keystroke{Shift} + \keystroke{F7} Set DPI-value for grid in orthogonal mode
+  
+   \keystroke{F8} Rotate orthogonal to plane   
+   
+   \keystroke{F12} Reset view and lights to the default, ignoring the zoom factor
+   
+   \keystroke{Shift} + \keystroke{F12} Reset view and zoom factor and lights to the default (A-side)
+      
+   \keystroke{Shift} + \fbox{Left\phantom{g}mouse button}\quad Rotate mesh plane
+         
+   \keystroke{Shift} + \fbox{Right mouse button}\quad Translate mesh plane
+   
+   \Ctrl + \keystroke{Q} Quit the program
+% \end{itemize}
+
+\chapter{FAQ}
+\label{FAQ}
+
+\begin{enumerate}
+\item[\bf Question:] What do I do if there is only one new file after the computation of the feature vector?
+
+{\bf Answer:} Something went wrong during the computation. Since the program is robust against unclean meshes you should try to run it again and hope for a proper result in the second run. Therefore you have to delete the {\tt *info.txt} file and restart the computation. 
+%Hope for it to work. 
+%\footnote{Hint: do not cross fingers.}
+
+\item[\bf Question:] There are NO executables in the {\tt mesh} folder.
+
+{\bf Answer:} If the folder contains no executables then they still have to be compiled. Just type make and wait until you get prompted again. If there are no error messages the compiling was successful.
+
+\item[\bf Question:] After selecting \texttt{Visualize $\rightarrow$ Feature Correlation to Selected} a window poped up saying that the function is not available, ALGLIB library missing.
+
+{\bf Answer:} Make sure that the library has been compiled or do it now by changing into the folder {\tt external} in your \GigaMesh folder. Then execute the shellscript by typing {\tt make\_alglib.sh}. NOTE: If the library is available, the ERROR message indicates that there are NO feature vectors available in your {\tt *.ply} file. Make sure that you have opened a file with precomputed feature vectores as described in paragraph \ref{feature}.
+
+\end{enumerate}
+
+

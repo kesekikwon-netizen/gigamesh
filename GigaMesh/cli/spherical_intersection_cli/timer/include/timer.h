@@ -1,0 +1,48 @@
+/* * GigaMesh - The GigaMesh Software Framework is a modular software for display,
+ * editing and visualization of 3D-data typically acquired with structured light or
+ * structure from motion.
+ * Copyright (C) 2009-2020 Hubert Mara
+ *
+ * This file is part of GigaMesh.
+ *
+ * GigaMesh is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GigaMesh is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GigaMesh.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef TIMER_H
+#define TIMER_H
+
+#include <chrono>
+#include <iostream>
+#include <string>
+#include <unordered_map>
+
+namespace timer {
+class Timer {
+      private:
+	static std::unordered_map<
+	    std::string, std::chrono::time_point<std::chrono::system_clock>>
+	    start_times;
+	static std::unordered_map<
+	    std::string, double>
+	    run_times;
+
+      public:
+	static void start(const std::string &action);
+	static void stop(const std::string &action);
+	static double get(const std::string &action);
+};
+
+} // namespace utility
+
+#endif

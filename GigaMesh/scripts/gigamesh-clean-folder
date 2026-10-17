@@ -1,0 +1,43 @@
+#!/bin/bash
+MESHCLEAN='./gigamesh-clean'
+#MESHCLEAN=${HOME}'/GigaMesh/mesh/gigamesh-clean'
+LOGFILE='automatic_cleaning.log'
+WAITFORKILLTIME=10
+
+# Reset logfile for new batch run:
+rm -f ${LOGFILE}
+
+# First run: Just clean, because this works robustly.
+#            Begin with smallest files.
+for OPTOCAT_FILE in `ls -r --sort=size *.PLY`
+do
+	echo ${OPTOCAT_FILE}
+	${MESHCLEAN} --remove-only -f ${OPTOCAT_FILE}
+done
+
+# Second run with filling holes - not so stable for files with larger holes.
+for CLEAN_FILE in *_GMC.ply
+do
+	echo ${CLEAN_FILE}
+	CLEAN_FILENAME_LENGTH=$[${#CLEAN_FILE}-8]
+	FILLED_FILENAME=${CLEAN_FILE:0:CLEAN_FILENAME_LENGTH}
+	${MESHCLEAN} -f ${CLEAN_FILE} -o ${FILLED_FILENAME} & FILL_PID=$!
+	# Kill process after reasonable time
+	sleep ${WAITFORKILLTIME}
+	if ps -p ${FILL_PID} > /dev/null; then
+		kill -9 ${FILL_PID}
+	    date >> automatic_cleaning.log
+	    echo "Killed process cleaning ${CLEAN_FILE}" >> ${LOGFILE}
+	    #echo "Killed process cleaning ${CLEAN_FILE}" >&2
+	fi
+done
+
+# For vNGG_Data - allow access for others:
+chmod og+w *.ply
+
+# There should be at least a final entry in the logfile:
+date >> automatic_cleaning.log
+echo "Automatic cleaning done." >>  ${LOGFILE}
+
+# Show log entries:
+cat ${LOGFILE}

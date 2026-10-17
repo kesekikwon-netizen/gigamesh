@@ -1,0 +1,89 @@
+name: DongArch3D Studio CI
+
+on:
+  push:
+    branches: [master, main, "feat/**"]
+    paths:
+      - "studio/**"
+      - "GigaMesh/gui/src/dongarch/karch/**"
+      - "docs/ui/**"
+      - ".github/workflows/studio-ci.yml"
+  pull_request:
+    branches: [master, main]
+    paths:
+      - "studio/**"
+      - "GigaMesh/gui/src/dongarch/karch/**"
+      - "docs/ui/**"
+      - ".github/workflows/studio-ci.yml"
+  workflow_dispatch:
+
+# 동일 브랜치에 연속 푸시 시 이전 실행을 즉시 취소하여 Actions 쿼터 절약
+concurrency:
+  group: studio-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CMAKE_BUILD_TYPE: Release
+  QT_QPA_PLATFORM: offscreen
+
+jobs:
+  build-and-verify:
+    name: MSVC C++20 · Ninja · CTest (11 Suites) · UI_RULES Shots
+    runs-on: windows-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup MSVC x64 & Ninja
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Install Qt 6 (Cached)
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.6.3"
+          arch: "win64_msvc2019_64"
+          cache: true
+
+      - name: Configure CMake (Release + AVX2 + LTO + PCH)
+        run: |
+          cmake -S studio -B studio/build-ci -G Ninja `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DSTUDIO_ENABLE_LTO=ON `
+            -DSTUDIO_ENABLE_AVX2=ON `
+            -DSTUDIO_ENABLE_PCH=ON `
+            -DSTUDIO_BUILD_KARCH_TESTS=ON
+
+      - name: Build DongArch3DStudio & 11 Test Targets
+        run: cmake --build studio/build-ci --parallel
+
+      - name: Run CTest (10 K-Arch Unit Tests + Headless Studio Pipeline)
+        run: ctest --test-dir studio/build-ci --output-on-failure --parallel 4
+
+      - name: Capture 5 Canonical UI_RULES Verification Screenshots (Offscreen)
+        run: |
+          $shotDir = "studio/build-ci/shots"
+          New-Item -ItemType Directory -Force -Path $shotDir | Out-Null
+          $exe = "studio/build-ci/DongArch3DStudio.exe"
+          & $exe --shot "$shotDir/shot_home.png"
+          & $exe --sample --shot "$shotDir/shot_main.png"
+          & $exe --blind --shot "$shotDir/shot_blind.png"
+          & $exe --sample --max --shot "$shotDir/shot_max.png"
+          & $exe --sample --export --shot "$shotDir/shot_export.png"
+          Get-ChildItem $shotDir/*.png | ForEach-Object {
+            if ($_.Length -lt 5000) { throw "Screenshot $($_.Name) is unexpectedly small ($($_.Length) bytes)" }
+          }
+
+      - name: Upload UI Verification Screenshots & Sample Outputs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dongarch3d-studio-verification
+          retention-days: 14
+          path: |
+            studio/build-ci/shots/*.png
+            studio/build-ci/studio_out.*
+            studio/build-ci/studio_blind.*

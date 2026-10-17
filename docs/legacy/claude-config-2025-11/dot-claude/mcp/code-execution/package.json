@@ -1,0 +1,33 @@
+{
+  "name": "mcp-code-execution",
+  "version": "1.0.0",
+  "description": "MCP-based code execution tools for DongArch3D development",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "code-execution": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "test": "ts-node examples/diagnose-build-error.ts",
+    "start": "node dist/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "code-execution",
+    "automation",
+    "dongarch3d"
+  ],
+  "author": "DongArch3D Team",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0",
+    "glob": "^11.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  }
+}

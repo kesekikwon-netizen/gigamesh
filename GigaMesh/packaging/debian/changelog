@@ -1,0 +1,200 @@
+gigamesh (190211-1) stable; urgency=low
+  * +) Screenshot views: new export to PDF (requiring pdflatex). Currently only using horizontal axis and only six views. See 'File - Export Screenshots - Screenshot Views (PDF+PNG)'.
+    +) Screenshot views: PDF export can be applied to a whole directory with multiple meshes (not recursive). See 'File - Export Screenshots - Screenshot Views Directory (PDF+PNG)'.
+    +) Screenshot views: default is now six views - eight views are optional for e.g. cuneiform tablets. See 'File - Export Screenshots - Views Six (...)'.
+    +) Roll mesh (or plane) clockwise by a half degree using the 'r' key.
+    +) Improved keyboard layout display. See 'Info - Keyboard Layout' menu.
+    +) Zoom with plus and minus keys enabled. Holding shift increases the zoom factor. Only tested with German keyboards!
+    +) Split mesh using the plane with and without dialog. For the latter see  'Edit - Split by plane (Quick)'.
+    +) Split mesh using the plane: option seperate checked by default. See 'Edit - Split by plane (Advanced)'.
+    +) Meta-Data: Entry web-reference added. All three entries can be edited. See 'Info - Meta-Data Edit: ...'.
+    +) CLI gigamesh-featurevectors automatically selects the number of threads using the number of CPU cores minus one.
+    +) CLI gigamesh-info is NEW for collecting information about meshes. See '-h' or '--help' for options.
+    +) CLI gigamesh-clean optimized. Cleaning meshes is now 3-5x faster.
+    +) CLI gigamesh-clean allows to (pre)set the embedded Meta-data with options '--set-material-when-empty' and '--set-id-when-empty'. See 'gigamesh-clean --help'.
+    +) CLI gigamesh-clean writes meta information about the process to <filename-out>.info-clean.txt.
+    o) CLI gigamesh-clean skips files already processed. So it can easily be used to re-start the cleaning in case of an external error i.e. no disk space.
+    o) CLI gigamesh-clean writes new files and meta-data sidecar into the current directory and not into the directory of the input files are i.e. sort of an implicit copy.
+    +) Bugfix: Transparent colors are set to opaque for backfaces as transparency is not supported.
+    +) Bugfix: Function distance to center of gravity of a selected primitive was doing nothing.
+    +) Bugfix: Screenshots of perspective renderings caused a crash.
+    +) Bugfix: recent files had wrong extensions in case of upper case file names.
+    +) Bugfix: gigamesh-clean had a memory leaking causing it to be killed after processing large numbers of files (hundreds).
+ 
+ -- Felix Feldmann <info@gigamesh.eu>  Mon, 11 Feb 2019 11:24:00 +0100
+
+gigamesh (181005-1) stable; urgency=low
+  * +) Minor bugfixes: progressbar and user interaction.
+ -- Felix Feldmann <info@gigamesh.eu>  Fri, 5 Oct 2018 14:24:00 +0200
+
+gigamesh (181004-1) stable; urgency=low
+  * +) Major bugfix: the MSII filter results were randomly influenced. MSII results were affected since version 180329.
+    +) Multiplication of the function value to the color per vertex. See 'Edit' and usefull together with the normalization.
+    +) Function value normalization using Colorramp settings.
+    +) Removal of vertices on edges connecting faces with improper i.e. inverted orientation. Cleaning is now faster, more robust and results in a nicer mesh.
+    +) Removal of 'dangling' faces along borders. See 'Remove - Faces Border Erosion' as well as clean mesh and automatic polishing.
+    +) Select 'dangling' faces i.e. having three border vertices. See 'Select - Faces - having 3 Border Vertices'.
+    +) gigamesh-clean removes 'dangling' faces by default. This can be turned off using the option -n or --no-border-erosion.
+    +) For the number of 'dangling' faces and vertices on inverted edges see 'Info - Mesh information'.
+    +) File save as button after orientation including suggested file suffix 'GMO'.
+    +) Minor improvement for entering Meta-Data e.g. Model Id and material.
+    +) Performance improvement for the lasso selection of vertices (SelMVerts). Note, that after the first use the selection gets faster.
+    +) TPS registration and deformation added. (Experimental!)
+    o) Buttons for the background grids and the graticule are now using shortcut combinations with the F2 key. See 'Info - Keyboard Shortcuts'.
+    +) Light beams shown during moving the light sources can be deactivated using 'Settings - Light Vectors Shown' entering 0 (zero).
+    +) A number of memory leaks was fixed.
+ -- Felix Feldmann <info@gigamesh.eu>  Thu, 4 Oct 2018 15:24:00 +0200
+
+
+gigamesh (180814-1) stable; urgency=low
+  * +) Multiple polylines from isolines using the function values. See 'Analyze - Polylines from multiple FunctionValues'. Very usefull after computing 'Functions - Distance to Plane'.
+    +) Multi-selections like function values for isolines accept ranges denoted with one or two colons. E.g. 1:3 is equal to enter '1 2 3' or 1:-0.5:0 is equal to '1.0 0.5 0.0'.
+    +) Store function value rendering (colors) as color per vertex. See 'Edit - Transform function values to RGB'.
+    +) Export of PNGs have the correct resolution in DPI embedded. The DPI value can be appended to the filename optionally with 'File - Export Screenshots - DPI Suffix for ortho images'. The 'setdpi' script is now obsolete.
+    +) New option: gigamesh-clean accepts wildcards e.g. 'gigamesh-clean *.ply'
+    +) Usage for gigamesh-clean added use -h or --help.
+    +) Sphere rollout adapted to user interaction similiar to cone rollout i.e. ask to flip the mesh and show profile lines.
+    +) Ask to discard histogram(s) during screenshots. Implemented for single images and six/eighth sided views.
+    +) Menu 'Info - Visit Video Tutorial' added.
+ -- Felix Feldmann <info@gigamesh.eu>  Tue, 14 Aug 2018 16:24:00 +0200
+
+gigamesh (180525-1) stable; urgency=low
+  * +) New option: 'File - Export Image Stack - 360 Slow rotation duration (seconds)' to set the acceleration and deceleration for 360 degree videos.
+    +) New: gigamesh-featurevectors computes the Euclidean length for the feature vectors, which is stored as function value i.e. quality field of the PLY file.
+    +) Bugfix: PLY files with identical i.e. broken feature vectors.
+ -- Felix Feldmann <info@gigamesh.eu>  Fri, 25 May 2018 19:00:00 +0100
+
+gigamesh (180507-1) stable; urgency=low
+  * +) New: gigamesh-featurevectors computes the Euclidean length for the feature vectors, which is stored as function value i.e. quality field of the PLY file.
+    +) Bugfix: PLY files with identical i.e. broken feature vectors.
+ -- Felix Feldmann <info@gigamesh.eu>  Tue, 15 May 2018 19:00:00 +0100
+
+gigamesh (180507-1) stable; urgency=low
+  * +) New option: Additional parameter (4th value) for ambient occlusion to suppress dark spots occuring for very small triangles.
+    +) New option: Ambient occlusion can be used to darken the color per vertex.
+    +) New command line option: -h --help to show command line options.
+    +) New command line option: --load-last to open the last used 3D-dataset.
+    +) New command line option: --hidpi20 scales the window by a factor of 2 for HiDPI/4k displays.
+    +) Bugfix: Half line width for the silhouette in NPR rendering.
+    +) Bugfix: Modal dialog for NPR settings.
+    +) Bugfix: Missing libpsalm and related segmentation fault.
+    +) Bugfix: Orange star not shown for SelPrim/SelVert.
+    +) Bugfix: Segmentation fault while storing files with feature vectors.
+    +) Bugfix: Polylines around labels crashed.
+    +) Bugfix: Import of feature vectors using a locale having a "," instead of a ".".
+ -- Hubert Mara <hubert.mara@iwr.uni-heidelberg.de>  Mon, 07 May 2018 19:00:00 +0100
+
+gigamesh (180413-1) stable; urgency=low
+  * +) Ambient Occlusion mapped to function value. Also available as button in the toolbar.
+    +) New colorramps Brewer YlOrBr; Octave Copper; Sienna(Tones) and Rust(Tones) e.g. to be combined with Ambient Occlusion.
+    +) New button in toolbar to switch to light shading e.g. to be combined with Ambient Occlusion or Hypsometric Tints.
+    +) New function values can be computed: different types of angles to axis.
+    +) NPR rendering can be switched to use color per vertex for the toon shader.
+    +) Dialogs improved for HiDPI displays i.e. 4k monitors.
+    +) Improved smoothing of function values (mean).
+    o) Experimental: Select faces of (self-)intersecting manifolds. Very slow for large meshes.
+    o) Experimental: Feature vector smoothing (mean) added.
+    -) Bug: Screenshots without tiled rendering stop working, when called twice.
+ -- Hubert Mara <hubert.mara@iwr.uni-heidelberg.de>  Fri, 13 Apr 2018 19:00:00 +0100
+
+gigamesh (180326-1) stable; urgency=low
+
+  * +) Horizontal lines for profile line export, when an axis is present. 
+    +) Option for axis rendering to SVG, which can be chosen set using the menu item  'File - Export Screenshots - SVG Dashed Axis'.
+    +) Improved parsing of ASCII PLY files from well-known low-cost 3D-scanners.
+    +) Improved mesh cleaning and polishing. Faces having a zero area are removed and/or fixed.
+    o) Minor bugfixes.
+
+ -- Hubert Mara <hubert.mara@iwr.uni-heidelberg.de>  Thu, 26 Mar 2018 19:00:00 +0100
+
+gigamesh (180308-1) stable; urgency=low
+
+  * Initial Debian release
+  * o) Minor fix for setting the default view using an axis.
+    +) Multiple profile lines using an axis and selected positions (export not yet
+    using the axis position).
+    +) Improved: inspection mode defaults and new icon for flat shading and edges.
+    +) Improved: user guidance for selections (right hand side menu).
+    o) Change: Color settings are kept, when a new dataset is loaded. To reset the
+    colors restart GigaMesh.
+    o) Bugfix and improvement: parsing of ASCII PLYs and OBJs.
+    o) Bugfix: Geodesic distance to SelPrim (SelVert/SelFace) was not computed
+    properly.
+
+ -- Felix Feldmann <felix.feldmann@iwr.uni-heidelberg.de>  Thu, 08 Mar 2018 17:30:08 +0100
+
+gigamesh (180223-1) stable; urgency=low
+
+  * +) Initial zoom factor is set to a rounded resolution in Dots Per Inch
+    (DPI).
+    +) Zoomlevels in orthograpic projection are incremented using the resolution
+    in Dots Per Inch (DPI).
+    +) 'Select > Vertices by value/type > Vertices Label No.' now fetches the
+    label numbers from selected vertices (SelMVerts).
+    o) Fullscreen mode (F11): toggle menu (CTRL+M) and toolbar (CTRL+SHIFT+M)
+    o) Wireframe rendering moved to right hand side menu.
+    o) NPRendering moved to right hand side menu.
+    o) The '?' menu was renamed to 'Info' and hosts the LaTeX snipset generator
+    for the reports/catalogs. The 'Extra' menu is gone for good.
+    o) Minor bugfix and improvement in 'Info > Mesh information'. Inverted faces
+    are counted. Fractions for relative values are shown.
+    o) Bugfix: import of feature vectors with NaN (not-a-number) elements was
+    broken.
+    o) Bugfix: generic slider improved to be useable with HiDPI displays (i.e. 4k
+    monitors).
+    -) Other GUI elements need to be checked and improved for HiDPI displays. 
+
+ -- Felix Feldmann <felix.feldmann@iwr.uni-heidelberg.de>  Fri, 23 Feb 2018 22:30:08 +0100
+
+
+gigamesh (180210-1) stable; urgency=low
+
+  * +) Optional limit for filling holes, which can be given as number of
+    vertices as libpsalm is not always capable of filling large complex holes.
+    +) Quick export of plane-mesh intersections - see toolbar and menu: 'Analyze -
+    Polylines from plane intersections' and 'File - Export Plane Intersections
+    (SVG)'.
+    +) Further menu items re-arranged - see '?' menu.
+    +) Smoothing the function values improved. The incremental changes can be
+    stored as feature vectors.
+    +) New 'Edit Function Value': sort by function value and use the index of the
+    sorted vertices for equalized visualizations.
+    +) Information about the selected primitive, function values and the mesh
+    improved and moved to '?' menu.
+    +) Improved options for choosing the function value within the NPR shader.
+    +) Distance to (selected) sphere added.
+    +) Perula colorramp added, which replaces Jet (in Matlab). 
+
+ -- Felix Feldmann <felix.feldmann@iwr.uni-heidelberg.de>  Sat, 10 Feb 2018 18:30:08 +0100
+
+gigamesh (171201-1) stable; urgency=low
+
+  * +) Cone rollout: selection of the prime meridian using a selected
+    primitive added (SelPrim).
+    +) Cone rollout: improved user guidance and automatic question to cover the
+    whole mesh.
+    +) Cone rollout: optional straighten of the arc and 180 degree rotation after
+    rollout.
+    +) After unrolling a cone, the axis and an average radius are set for an
+    additional cylinder rollout to remove the typical arc shape. (Edit menu >
+    Cylinder unroll mesh)
+    +) When an axis is present, it can be used to shift and orient the default
+    view (View menu, F6).
+    +) Experimental hyposmetric tints added. Inspired by those used to visualize
+    DTMs within the NASA Mars HiRise WebSite. (Colorramp menu)
+    +) Minor improvement of the normal vector estimation. The latter can now be
+    triggered by the user (Edit Menu)
+    +) Slope angle added using the normal of the mesh plane as reference.
+    (Function menu)
+    +) Distance to axis added. This is an alternative to distance to line using a
+    second position vector instead of a direction. (Function menu)
+
+ -- Felix Feldmann <felix.feldmann@iwr.uni-heidelberg.de>  Fri, 01 Dec 2017 09:30:08 +0100
+
+
+gigamesh (171102-1) stable; urgency=low
+
+  * o) Bugfix: overlays like histogram or keyboard-layout was broken after
+    transparent rendering.
+
+ -- Felix Feldmann <felix.feldmann@iwr.uni-heidelberg.de>  Thu, 02 Nov 2017 11:30:08 +0100
