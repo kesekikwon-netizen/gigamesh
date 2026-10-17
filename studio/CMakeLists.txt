@@ -55,6 +55,7 @@ target_include_directories(karch PUBLIC ${KARCH_DIR})
 add_library(studio_core STATIC
   src/ArtifactDoc.cpp src/ArtifactDoc.h
   src/CutGesture.h
+  src/CutPageText.h
   src/MeshIO.cpp src/MeshIO.h
   src/MeshRaster.cpp src/MeshRaster.h
   src/Plate.cpp src/Plate.h
@@ -69,14 +70,15 @@ if(STUDIO_ENABLE_PCH)
 endif()
 
 # ---- 앱 -------------------------------------------------------------------
-add_executable(DongArch3DStudio WIN32
-  src/main.cpp
+# 화면 원본: 앱과 화면 통합 시험(test_studio_cutpage)이 함께 쓴다 (각자 컴파일 — 앱 링크 구조는 그대로)
+set(STUDIO_GUI_SRC
   src/MainWindow.cpp src/MainWindow.h
   src/Ribbon.cpp src/Ribbon.h
   src/SheetView.cpp src/SheetView.h
   src/View3D.cpp src/View3D.h
   src/StartPage.cpp src/StartPage.h
   src/ExportDialog.cpp src/ExportDialog.h)
+add_executable(DongArch3DStudio WIN32 src/main.cpp ${STUDIO_GUI_SRC})
 set_target_properties(DongArch3DStudio PROPERTIES AUTOMOC ON)
 target_link_libraries(DongArch3DStudio PRIVATE studio_core Qt6::Widgets)
 if(STUDIO_ENABLE_PCH)
@@ -100,6 +102,12 @@ target_link_libraries(test_studio_cut PRIVATE studio_core)
 add_test(NAME studio_cut COMMAND test_studio_cut ${CMAKE_CURRENT_BINARY_DIR})
 # 시간 측정(미리보기 16 ms)이 다른 시험과 겹치지 않게 (CI 는 ctest --parallel 4)
 set_tests_properties(studio_cut PROPERTIES RUN_SERIAL TRUE)
+# ② 막으로 자르기 페이지 화면 통합 (오프스크린 MainWindow — 원본 계산 ≈ 11번이라 혼자 돈다)
+add_executable(test_studio_cutpage tests/test_cutpage.cpp ${STUDIO_GUI_SRC})
+set_target_properties(test_studio_cutpage PROPERTIES AUTOMOC ON)
+target_link_libraries(test_studio_cutpage PRIVATE studio_core Qt6::Widgets)
+add_test(NAME studio_cutpage COMMAND test_studio_cutpage ${CMAKE_CURRENT_BINARY_DIR})
+set_tests_properties(studio_cutpage PROPERTIES RUN_SERIAL TRUE)
 
 if(STUDIO_BUILD_KARCH_TESTS)
   set(KARCH_TESTS

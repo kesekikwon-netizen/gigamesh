@@ -55,11 +55,13 @@ public:
     SheetCanvas* canvas() const { return canvas_; }
     void refresh(const ArtifactDoc& doc, int slot);
     void setMaximized(bool on);
+    void setCutPage(bool on) { cutPage_ = on; }  // ② 막으로 자르기: 종단면 머리 = 실시간 단면 — θ°
 
 signals:
     void maximizeToggled();
 
 private:
+    bool cutPage_ = false;
     QLabel* title_;
     QLabel* sub_;
     QLabel* badge_;

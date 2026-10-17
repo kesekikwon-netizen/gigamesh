@@ -18,6 +18,7 @@ class QWidget;
 namespace studio {
 
 class Ribbon;
+class RibbonGroup;
 class SheetPane;
 class View3DPane;
 class StartPage;
@@ -53,6 +54,7 @@ private:
     QWidget* buildCtxBar();
     QWidget* buildStatusBar();
     void onAction(const QString& id);
+    void onPage(int p);  // 리본 탭 바뀜: ② 막으로 자르기에 있는 동안만 「✂ 막으로 자르기」를 든다
     void onChip(const QString& group, int idx);
     void setHandTool(const QString& id);  // "" = 내려놓기
     void toggleMaximize();
@@ -107,9 +109,12 @@ private:
     QLabel* ctxBadge_ = nullptr;
     QLabel* ctxHint_ = nullptr;
     QLabel* ctxRight_ = nullptr;
-    QVector<QWidget*> ctxCutKeys_;   // 단면 도구 단축키 묶음 ([ ] · W · - + · 1~5 · Esc)
+    QVector<QWidget*> ctxCutKeys_;   // 단면 도구 단축키 묶음 (← → · W · - + · 1~5 · R · Esc)
+    QVector<QWidget*> ctxDupKeys_;   // 그중 ② 리본과 겹쳐 ② 에서 숨기는 것 (← → · R)
     QVector<QWidget*> ctxBaseKeys_;  // ① 바닥 정하기 단축키 묶음 (Enter 확정 · Shift −90°)
-    int pHome_ = -1, pBase_ = -1;     // 리본 페이지: 홈, ① 바닥 정하기
+    int pHome_ = -1, pBase_ = -1, pCut_ = -1;  // 리본 페이지: 홈, ① 바닥 정하기, ② 막으로 자르기
+    RibbonGroup* cutAxisGroup_ = nullptr;      // ② 막 방향 (그룹 이름에 지금 각)
+    QLabel* cutAngle_ = nullptr;               // ② 각도 칸
     QWidget* slotPanel_ = nullptr;
     QListWidget* slotList_ = nullptr;
     QLabel* slotCount_ = nullptr;

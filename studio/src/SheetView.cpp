@@ -1,5 +1,6 @@
 #include "SheetView.h"
 
+#include "CutPageText.h"
 #include "Theme.h"
 
 #include <QHBoxLayout>
@@ -197,8 +198,10 @@ SheetPane::SheetPane(QWidget* parent) : QWidget(parent) {
     h->setContentsMargins(12, 0, 8, 0);
     h->setSpacing(8);
     title_ = new QLabel(head);
+    title_->setObjectName("SheetTitle");
     title_->setFont(theme::serifFont(19));
     sub_ = new QLabel(head);
+    sub_->setObjectName("SheetSub");
     sub_->setStyleSheet(QStringLiteral("color:%1; font-size:12px;").arg(theme::hex(theme::Muted)));
     badge_ = new QLabel(head);
     badge_->setFixedHeight(22);
@@ -242,8 +245,10 @@ void SheetPane::refresh(const ArtifactDoc& doc, int slot) {
     const auto& sl = doc.slotList();
     if (slot >= 0 && slot < int(sl.size())) {
         const auto& s = sl[size_t(slot)];
-        title_->setText(s.name);
-        QString subText = s.kind != SlotKind::Vertical ? QStringLiteral("H %1 mm 수평 절단 평면").arg(s.z, 0, 'f', 1)
+        const bool live = cutPage_ && s.kind == SlotKind::Vertical;  // ② 종단면: 끄는 동안 각도를 따라간다
+        title_->setText(live ? cutpage::plateTitle(s.name.at(0), doc.previewAngle()) : s.name);
+        QString subText = live ? cutpage::plateSub(doc.sectionSide())
+                          : s.kind != SlotKind::Vertical ? QStringLiteral("H %1 mm 수평 절단 평면").arg(s.z, 0, 'f', 1)
                           : doc.sectionSide() == SectionSide::Right
                               ? QStringLiteral("외면 왼쪽 · 단면 오른쪽 (국내 보고서 표준)")
                               : QStringLiteral("단면 왼쪽 · 외면 오른쪽 (R 반전)");

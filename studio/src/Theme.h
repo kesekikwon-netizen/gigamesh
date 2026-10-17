@@ -88,6 +88,7 @@ QToolTip { background: %Surface%; color: %Ink%; border: 1px solid %Edge%; paddin
 #Tabs, #Ribbon, #Titlebar { background: %Surface%; border-bottom: 1px solid %Line%; }
 #Tabs QPushButton[tab="true"] { background: transparent; border: 0; padding: 0 14px; height: 34px; color: %Ink2%; }
 #Tabs QPushButton[tab="true"][on="true"] { color: %Ink%; font-weight: 700; border-bottom: 2px solid %Ink%; }
+#Tabs QPushButton[tab="true"][locked="true"] { color: %Faint%; }
 QPushButton#UndoBtn { height: 24px; padding: 0 8px; border: 1px solid %Edge%; border-radius: 6px; background: %Surface%; color: %Ink2%; font-size: 12px; }
 #Ribbon QWidget { background: %Surface%; }
 #Ribbon QLabel[gname="true"] { font-size: 11px; font-weight: 700; color: %Muted%; }

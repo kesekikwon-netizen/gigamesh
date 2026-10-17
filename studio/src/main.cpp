@@ -26,6 +26,8 @@ int main(int argc, char** argv) {
     //         예: DongArch3DStudio.exe --sample --base --shot shot_base.png (파일 경로 인자는 원래 확정 전으로 열림)
     //         --flip — R 키를 보내 도판 좌/우를 반전(D5: 단면 왼쪽 · 외면 오른쪽)한 뒤 찍는다
     //         예: DongArch3DStudio.exe --sample --flip --shot shot_flip.png
+    //         --cut — S 로 ② 막으로 자르기에 가서 → 를 12번(디자인 시안의 12°) 누른 뒤 찍는다
+    //         예: DongArch3DStudio.exe --sample --cut --shot shot_cut.png
     const int shotIdx = int(args.indexOf("--shot"));
     const bool baseStage = args.contains("--base");
     if (args.size() > 1 && !args[1].startsWith("--shot")) {
@@ -33,6 +35,15 @@ int main(int argc, char** argv) {
         else if (args[1] == "--blind") w.openArtecBlindSample(baseStage);
         else if (args[1] != "--home") w.openPath(args[1]);
     }
+    if (args.contains("--cut")) QTimer::singleShot(200, &w, [&w] {  // 실제 키 경로(합치기 → 300 ms 뒤 원본 확정)
+        QKeyEvent s(QEvent::KeyPress, Qt::Key_S, Qt::NoModifier);
+        QApplication::sendEvent(&w, &s);
+        for (int i = 0; i < 12; ++i) {
+            QKeyEvent down(QEvent::KeyPress, Qt::Key_Right, Qt::NoModifier), up(QEvent::KeyRelease, Qt::Key_Right, Qt::NoModifier);
+            QApplication::sendEvent(&w, &down);
+            QApplication::sendEvent(&w, &up);
+        }
+    });
     if (shotIdx > 0 && shotIdx + 1 < args.size()) {
         const QString out = args[shotIdx + 1];
         if (args.contains("--flip")) QTimer::singleShot(200, &w, [&w] {

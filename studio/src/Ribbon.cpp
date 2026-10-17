@@ -83,6 +83,9 @@ void Tile::drawIcon(QPainter& p, const QString& k, const QRectF& r, const QColor
         p.drawPath(a); p.drawLine(P(12, 2), P(12, 21));
     } else if (k == "check") {  // 확정 (이 자세로 확정)
         p.drawPolyline(QPolygonF{P(4, 13), P(10, 19), P(20, 6)});
+    } else if (k == "axX" || k == "axY" || k == "axZ") {  // ② 막 방향: 글자 아이콘 (축 색은 R2 승인 전 — 먹색)
+        p.setFont(theme::uiFont(16, true));
+        p.drawText(r, Qt::AlignCenter, k.right(1));
     }
     p.restore();
 }
@@ -91,13 +94,13 @@ void Tile::paintEvent(QPaintEvent*) {
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
     const QRectF sq((width() - 48) / 2.0, 0.5, 48, 48);
-    QColor bg = theme::Desk, border = Qt::transparent, fg = theme::Ink;
+    QColor bg = theme::Desk, border = Qt::transparent, fg = isEnabled() ? theme::Ink : theme::Faint;
     switch (state_) {
         case ToolState::On: bg = theme::Oat; border = theme::Ring; break;
         case ToolState::Hand: bg = theme::Hand; border = theme::Hand; fg = theme::Ground; break;
         case ToolState::Primary: bg = theme::Action; border = theme::Action; fg = Qt::white; break;
         default:
-            if (hover_) bg = theme::Wash, border = theme::Edge;
+            if (hover_ && isEnabled()) bg = theme::Wash, border = theme::Edge;
     }
     if (state_ == ToolState::Primary && hover_) bg = theme::ActionHover;
     if (isDown()) bg = state_ == ToolState::Idle ? theme::Press : bg.darker(108);
@@ -153,15 +156,17 @@ RibbonGroup::RibbonGroup(Ribbon* rb, const QString& name, QWidget* parent) : QWi
     auto* v = new QVBoxLayout(this);
     v->setContentsMargins(10, 0, 10, 0);
     v->setSpacing(2);
-    auto* g = new QLabel(name, this);
-    g->setProperty("gname", true);
-    g->setFixedHeight(16);
-    v->addWidget(g);
+    name_ = new QLabel(name, this);
+    name_->setProperty("gname", true);
+    name_->setFixedHeight(16);
+    v->addWidget(name_);
     row_ = new QHBoxLayout;
     row_->setSpacing(6);
     row_->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     v->addLayout(row_, 1);
 }
+
+void RibbonGroup::setTitle(const QString& t) { name_->setText(t); }
 
 Tile* RibbonGroup::tile(const QString& id, const QString& text, const QString& icon, const QString& tip) {
     auto* t = new Tile(id, text, icon, this);
@@ -172,18 +177,38 @@ Tile* RibbonGroup::tile(const QString& id, const QString& text, const QString& i
     return t;
 }
 
+SmallButton* RibbonGroup::button(const QString& id, const QString& text, const QString& kbd) {
+    auto* b = new SmallButton(text, kbd, this);
+    b->setObjectName(id);  // 타일처럼 id 로 찾을 수 있게 (툴팁 등)
+    rb_->registerWidget(id, b);
+    QObject::connect(b, &QPushButton::clicked, rb_, [this, id] { emit rb_->triggered(id); });
+    return b;
+}
+
 void RibbonGroup::column(const QList<QPair<QString, QPair<QString, QString>>>& items) {
     auto* col = new QWidget(this);
     auto* v = new QVBoxLayout(col);
     v->setContentsMargins(0, 0, 0, 0);
     v->setSpacing(4);
-    for (const auto& it : items) {
-        auto* b = new SmallButton(it.second.first, it.second.second, col);
-        b->setObjectName(it.first);  // 타일처럼 id 로 찾을 수 있게 (툴팁 등)
-        v->addWidget(b);
-        rb_->registerWidget(it.first, b);
-        const QString id = it.first;
-        QObject::connect(b, &QPushButton::clicked, rb_, [this, id] { emit rb_->triggered(id); });
+    for (const auto& it : items) v->addWidget(button(it.first, it.second.first, it.second.second));
+    v->addStretch();
+    row_->addWidget(col, 0, Qt::AlignTop);
+}
+
+void RibbonGroup::rows(const QList<QList<QWidget*>>& rows) {
+    auto* col = new QWidget(this);
+    auto* v = new QVBoxLayout(col);
+    v->setContentsMargins(0, 0, 0, 0);
+    v->setSpacing(4);
+    for (const auto& r : rows) {
+        auto* line = new QWidget(col);
+        line->setFixedHeight(23);  // SmallButton 높이 — 3줄 = 77 px = ① 3단 열 (리본 높이 불변)
+        auto* h = new QHBoxLayout(line);
+        h->setContentsMargins(0, 0, 0, 0);
+        h->setSpacing(4);
+        for (auto* w : r) h->addWidget(w, 0, Qt::AlignVCenter);
+        h->addStretch();
+        v->addWidget(line);
     }
     v->addStretch();
     row_->addWidget(col, 0, Qt::AlignTop);
@@ -304,6 +329,16 @@ void Ribbon::setCurrentPage(int i) {
         tabBtns_[k]->style()->unpolish(tabBtns_[k]);
         tabBtns_[k]->style()->polish(tabBtns_[k]);
     }
+    emit pageChanged(i);
+}
+
+void Ribbon::setPageLocked(int page, bool locked, const QString& tip) {
+    QPushButton* b = tabBtns_.value(page);
+    if (!b) return;
+    b->setProperty("locked", locked);
+    b->setToolTip(locked ? tip : QString());
+    b->style()->unpolish(b);
+    b->style()->polish(b);
 }
 
 void Ribbon::registerWidget(const QString& id, QWidget* w) {

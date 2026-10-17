@@ -1,5 +1,6 @@
 #include "View3D.h"
 
+#include "CutPageText.h"
 #include "Theme.h"
 
 #include <QHBoxLayout>
@@ -179,6 +180,7 @@ void View3DCanvas::paintEvent(QPaintEvent*) {
 
 void View3DCanvas::mousePressEvent(QMouseEvent* e) {
     drag_ = true;
+    cutDrag_ = cutTool_ && e->button() == Qt::LeftButton;
     last_ = e->pos();
     setCursor(Qt::ClosedHandCursor);
 }
@@ -187,7 +189,7 @@ void View3DCanvas::mouseMoveEvent(QMouseEvent* e) {
     if (!drag_) return;
     const QPoint d = e->pos() - last_;
     last_ = e->pos();
-    if (cutTool_) {
+    if (cutDrag_) {
         emit cutAngleDragged(d.x() * 0.5);
         return;
     }
@@ -198,7 +200,7 @@ void View3DCanvas::mouseMoveEvent(QMouseEvent* e) {
 }
 
 void View3DCanvas::mouseReleaseEvent(QMouseEvent*) {
-    const bool cutDrag = drag_ && cutTool_;
+    const bool cutDrag = drag_ && cutDrag_;
     drag_ = false;
     setCursor(Qt::OpenHandCursor);
     if (cutDrag) emit cutDragReleased();
@@ -219,7 +221,8 @@ View3DPane::View3DPane(QWidget* parent) : QWidget(parent) {
     auto* h = new QHBoxLayout(head);
     h->setContentsMargins(12, 0, 6, 0);
     h->setSpacing(4);
-    title_ = new QLabel(QStringLiteral("<b>3D 유물</b> <span style='color:%1'>절단면 · 중심축</span>").arg(theme::hex(theme::Muted)), head);
+    title_ = new QLabel(QStringLiteral("<b>3D 유물</b> <span style='color:%1'>막 · 중심축</span>").arg(theme::hex(theme::Muted)), head);
+    title_->setObjectName("View3DTitle");
     title_->setProperty("ph", true);
     h->addWidget(title_);
     h->addStretch();
@@ -259,12 +262,18 @@ View3DPane::View3DPane(QWidget* parent) : QWidget(parent) {
     connect(coll, &QPushButton::clicked, this, &View3DPane::collapseRequested);
 }
 
+void View3DPane::setCutPage(bool on) {
+    cutPage_ = on;
+    canvas_->setToolTip(on ? cutpage::k3dTip : QString());
+}
+
 void View3DPane::refresh(const ArtifactDoc& doc, int slot) {
     canvas_->setDoc(&doc, slot);
     const QString mu = theme::hex(theme::Muted);
     const bool base = doc.isLoaded() && !doc.poseConfirmed();
-    title_->setText(base ? QStringLiteral("<b>3D — 바닥판(실측판)에 올려놓기</b>")
-                         : QStringLiteral("<b>3D 유물</b> <span style='color:%1'>절단면 · 중심축</span>").arg(mu));
+    title_->setText(base       ? QStringLiteral("<b>3D — 바닥판(실측판)에 올려놓기</b>")
+                    : cutPage_ ? QStringLiteral("<b>%1</b>").arg(cutpage::k3dTitle)
+                               : QStringLiteral("<b>3D 유물</b> <span style='color:%1'>막 · 중심축</span>").arg(mu));
     info_->setText(QStringLiteral("<span style='color:%1; font-family:Malgun Gothic'>메시</span> <b>%2</b><span style='color:%1; font-family:Malgun Gothic'>면</span>")
                        .arg(mu, QLocale(QLocale::English).toString(qlonglong(doc.mesh().faces.size()))));
     info_->setToolTip(doc.scannerProfile());
