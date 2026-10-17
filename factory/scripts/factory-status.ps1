@@ -45,14 +45,14 @@ Get-ChildItem $jobsDir -Directory | Where-Object { $_.Name -match '^JOB-\d+$' } 
     }
     $rows += [pscustomobject]@{ id = $j.id; title = $j.title; status = $j.status; branch = $j.branch; updated = $j.updated; approvals = @($j.approvals).Count; waiting = $wait }
 }
-$active = @($rows | Where-Object { @('build', 'verify', 'review', 'rework') -contains $_.status })
+$active = @($rows | Where-Object { @('build', 'verify', 'rework') -contains $_.status })   # review/needs-human 은 사용자 대기 상태라 동시 진행 수에 넣지 않음
 if ($active.Count -gt 1) { $violations += "동시 진행 작업 $($active.Count)개 (허용 1): " + (($active | ForEach-Object { $_.id }) -join ', ') }
 
 if ($Json) { [pscustomobject]@{ jobs = $rows; active = $active.Count; violations = $violations } | ConvertTo-Json -Depth 4; }
 else {
     Write-Host "factory 작업 상태 ($(Get-Date -Format 'yyyy-MM-dd HH:mm'))  루트: $Root"
     if ($rows.Count -eq 0) { Write-Host "  (등록된 작업 없음)" } else { $rows | Format-Table id, status, title, approvals, waiting -AutoSize | Out-String | Write-Host }
-    Write-Host "진행 중(build/verify/review/rework): $($active.Count) / 허용 1"
+    Write-Host "진행 중(build/verify/rework): $($active.Count) / 허용 1  (review·needs-human = 사용자 대기, 별도)"
     if ($violations.Count) { Write-Host "규칙 위반:"; $violations | ForEach-Object { Write-Host "  ! $_" } } else { Write-Host "규칙 위반 없음" }
 }
 if ($violations.Count) { exit 3 } else { exit 0 }

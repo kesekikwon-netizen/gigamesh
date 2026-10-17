@@ -25,7 +25,7 @@ description: DongArch3D 작업 공장. /factory <개발 요청>, /factory status
 
 ## 운영 원칙
 
-1. 동시 `build` 작업은 **1개**. 다른 작업이 build/verify/review 중이면 `/factory next`는 대기 사유만 보고한다.
+1. 동시 `build` 작업은 **1개**. 다른 작업이 build/verify/rework 중이면 `/factory next`는 대기 사유만 보고한다(`review`·`needs-human`은 사용자 대기 상태라 새 작업을 막지 않는다).
 2. 구현은 `factory/JOB-NNN` 브랜치 + `.worktrees/JOB-NNN`에서만. 기준 브랜치(`main` 또는 `factory/setup`)·`feat/dongarch-studio`·메인 체크아웃 `D:\gigamesh`는 건드리지 않는다.
 3. 완료 증거는 `verify.md`의 **실제 명령·종료 코드·로그 경로·캡처**다. 마커 파일·"성공했다"는 문장은 증거가 아니다.
 4. push는 사용자가 명시적으로 지시한 경우에만, 별도 보고 후 수행한다.
