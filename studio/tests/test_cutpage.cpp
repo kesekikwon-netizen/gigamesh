@@ -17,6 +17,7 @@
 #include <QListWidget>
 #include <QMouseEvent>
 #include <QPushButton>
+#include <QRegularExpression>
 #include <QStackedWidget>
 #include <cstdio>
 #include <functional>
@@ -435,6 +436,7 @@ static void testWindow() {
     CHECK(ctxFix && ctxFix->isVisible(), "[J7-13] ctx 「지금 각도 고정」 보임");
     std::printf("[J7-13] window minimumSizeHint width=%d\n", w.minimumSizeHint().width());
     CHECK(w.minimumSizeHint().width() <= 1845, "[J7-13] 창 최소 폭 %d > 1845", w.minimumSizeHint().width());
+    CHECK(!ctxRight().contains(QStringLiteral("최대 편차")), "[J8-10] ② CtxRight '%s'", qUtf8Printable(ctxRight()));
 
     // [J7-14] 고정 · 풀림
     tap(w, Qt::Key_Return);
@@ -465,6 +467,13 @@ static void testWindow() {
     CHECK(text(w, "View3DTitle").contains(QStringLiteral("3D — 고정된 막")), "[J7-15] View3DTitle '%s'", qUtf8Printable(text(w, "View3DTitle")));
     eq(title(), QStringLiteral("A–A′ 정면 실측도"), "[J7-15] SheetTitle");
     CHECK(ctxRight().startsWith(QStringLiteral("점 ")), "[J7-15] CtxRight '%s'", qUtf8Printable(ctxRight()));
+    {  // [J8-10] ③ 상황 줄 오른쪽 꼬리 「· 최대 편차 d mm」(원문 1665), d ≤ 간격/2
+        const QRegularExpressionMatch mt =
+            QRegularExpression(QString::fromUtf8(R"(^점 [0-9,]+ → <b>[0-9]+개</b> \(0\.5 mm 간략화\) · 최대 편차 (0\.[0-9]{2}) mm$)"))
+                .match(ctxRight());
+        CHECK(mt.hasMatch() && mt.captured(1).toDouble() <= 0.25, "[J8-10] ③ CtxRight '%s'", qUtf8Printable(ctxRight()));
+        std::printf("[J8-10] CtxRight '%s'\n", qUtf8Printable(ctxRight()));
+    }
     CHECK(dupMove && !dupMove->isVisible() && ctxFix && !ctxFix->isVisible() && dupSide && dupSide->isVisible(),
           "[J7-15] ③ ctx: ← → · 지금 각도 고정 숨김, 좌/우 반전 보임");
     CHECK(canvas->toolTip().isEmpty(), "[J7-15] 3D 툴팁 비어야");

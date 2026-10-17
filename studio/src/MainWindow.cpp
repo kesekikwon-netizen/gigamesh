@@ -661,10 +661,11 @@ void MainWindow::updateCutInfo() {
         const size_t full = doc_.mesh().faces.size(), lod = doc_.lodMesh().faces.size();
         ctxRight_->setText(cutpage::ctxRight(a, lod ? lod : full, full, doc_.isPreviewing()));
     } else {
-        ctxRight_->setText(QStringLiteral("점 %1 → <b>%2개</b> (%3 mm 간략화)")
+        ctxRight_->setText(QStringLiteral("점 %1 → <b>%2개</b> (%3 mm 간략화) · 최대 편차 %4 mm")
                                .arg(QLocale(QLocale::English).toString(doc_.rawPointCount()))
                                .arg(doc_.pointCount())
-                               .arg(doc_.simplifyTol(), 0, 'f', 1));
+                               .arg(doc_.simplifyTol(), 0, 'f', 1)
+                               .arg(doc_.maxDeviationMm(), 0, 'f', 2));
     }
     cutAngle_->setText(cutpage::angleText(a));
     cutAxisGroup_->setTitle(cutpage::axisGroupName(a));

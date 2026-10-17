@@ -142,14 +142,20 @@ public:
   QString unitNote() const { return unitNote_; }
   int removedNoiseFaces() const { return removedNoiseFaces_; }
 
+  // 치수 계산용 K-Arch 실루엣(MaxRadius) — 그리지 않는다(그리는 외곽선은 orthoOutline)
   const KA::SilhouetteResult &silhouette() const { return sil_; }
   const KA::SectionResult &section() const { return sec_; }
   const KA::Dimensions &rawDims() const { return dims_; }
   const Dims5 &dims() const { return d5_; }
+  // 그리는 외곽선의 원 선 = 막과 수직인 실루엣의 외면 반쪽(x ≤ 0, 원본 mesh_, 평활 없음)
+  const std::vector<KA::Point2> &orthoOutline() const { return ortho_; }
+  // 지금 보이는 단면의 원 선(시험·판독용)
+  const SectionLines &sectionLines() const { return shown(); }
 
   // 화면/내보내기용 선 (간략화·곡선 옵션 적용, 도면 좌표 x=R, y=H). D5 기본
   // (Right): 외곽 왼쪽 x ≤ 0 · 단면 오른쪽 x ≥ 0, Left: x 부호만 반전(거울상).
   // 부호는 간략화·곡선 다듬기가 모두 끝난 뒤 마지막에 x 에 sectionSign() 을 곱한다.
+  // 곡선은 원 선에서 간격/2 안이고 원 선의 높이 범위·축 쪽을 넘지 않는 구간에만 — fitCurve.
   std::vector<std::vector<KA::Point2>> displaySection() const;
   // Artec 미스캔 보정 시 실제 스캔된 실선 구간(외벽·구연·상부내벽·바닥)
   std::vector<std::vector<KA::Point2>> displayScannedSolid() const;
@@ -173,6 +179,11 @@ public:
   bool smooth() const { return smooth_; }
   int pointCount() const; // 단면+외곽 점 수 (간략화 후)
   int rawPointCount() const;
+  // 그린 선(간략화·곡선)이 원 선에서 떨어진 가장 큰 거리 (mm). 원 선 = 단면은 막이
+  // 자른 선(미스캔 보정이면 실측 실선과 추정 내벽선 — 추정선도 포함), 외곽선은 막과
+  // 수직인 실루엣의 외면 반쪽(orthoOutline). 꼭짓점 기준 양방향: 그린 꼭짓점 → 원
+  // 꺾은선, 원 꼭짓점 → 그린 꺾은선. 미로드·확정 전 0.
+  double maxDeviationMm() const;
 
   std::vector<SectionSlot> &slotList() { return slotList_; }
   const std::vector<SectionSlot> &slotList() const { return slotList_; }
@@ -196,8 +207,12 @@ private:
   std::vector<std::vector<KA::Point2>> sectionNatural() const;
   std::vector<std::vector<KA::Point2>> scannedSolidNatural() const;
   std::vector<std::vector<KA::Point2>> estimatedInnerNatural() const;
+  // 원 선 → 그릴 선(자연 좌표): 간격/2 의 fitCurve — 표시·최대 편차 공용
+  std::vector<KA::Point2> fitSectionLine(const std::vector<KA::Point2> &raw,
+                                         bool closed) const; // 단면 sub 3
+  std::vector<KA::Point2> outlineNatural() const;            // 외곽선 sub 4
 
-  SectionLines lines_;        // 확정 각 Y=0 단면 (원본 메시)
+  SectionLines lines_;      // 확정 각 Y=0 단면 (원본 메시)
   SectionLines previewLines_; // 미리보기 각 Y=0 단면 (LOD)
   KA::MeshData previewLod_;   // 미리보기 각으로 돌린 LOD
   bool previewing_ = false;
@@ -217,6 +232,7 @@ private:
   int removedNoiseFaces_ = 0;
 
   KA::SilhouetteResult sil_;
+  std::vector<KA::Point2> ortho_; // 그리는 외곽선의 원 선 = 막과 수직인 실루엣의 외면 반쪽(x ≤ 0, 원본 mesh_, 평활 없음)
   KA::SectionResult sec_;
   KA::Dimensions dims_;
   Dims5 d5_;
@@ -249,10 +265,17 @@ private:
 SectionLines sliceSectionY0(const KA::MeshData &m, bool inferInner,
                             double wallSeedMm);
 
-// 선 다듬기 유틸 (Douglas–Peucker, Catmull–Rom)
+// 선 다듬기 유틸 (Douglas–Peucker, 편차 제한 Catmull–Rom). kept 가 있으면 남긴
+// 점의 pts 인덱스를 차례로 넣는다(닫힘의 되감기 점 제외).
 std::vector<KA::Point2> simplifyDP(const std::vector<KA::Point2> &pts,
-                                   double tol, bool closed);
-std::vector<KA::Point2> smoothCatmull(const std::vector<KA::Point2> &pts,
-                                      bool closed, int sub = 4);
+                                   double tol, bool closed,
+                                   std::vector<size_t> *kept = nullptr);
+// 원 선 raw → 그릴 선: DP(tol) 뒤, smooth 면 DP 구간마다 Catmull–Rom 점 sub−1 개를
+// 넣되 (가) 모두 raw 의 높이(y) 범위 안이고 raw 가 축 한쪽(모두 x ≥ 0 또는 모두
+// x ≤ 0)이면 그쪽에 있고 (나) 그 점들과 이 구간의 원 점이 서로 tol 안일 때만 —
+// 아니면 그 구간은 DP 직선(실측 점을 잇는 간략 꺾은선). 곡선 점은 기준선(높이
+// 범위)·중심선 너머로 나가지 않는다.
+std::vector<KA::Point2> fitCurve(const std::vector<KA::Point2> &raw, double tol,
+                                 bool closed, bool smooth, int sub);
 
 } // namespace studio

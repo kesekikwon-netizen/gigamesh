@@ -10,6 +10,7 @@
 #include <QFileInfo>
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <numbers>
 
 namespace studio {
@@ -145,6 +146,84 @@ void dpRec(const std::vector<KA::Point2> &p, size_t i0, size_t i1, double tol,
   }
 }
 
+// 점-선분 거리, 점-꺾은선 최단 거리(닫힘이면 끝→처음 변 포함, l 비면 0)
+double segDist(const KA::Point2 &p, const KA::Point2 &a, const KA::Point2 &b) {
+  const double dx = b.x - a.x, dy = b.y - a.y, L2 = dx * dx + dy * dy;
+  const double t =
+      L2 > 0 ? std::clamp(((p.x - a.x) * dx + (p.y - a.y) * dy) / L2, 0.0, 1.0)
+             : 0.0;
+  return std::hypot(p.x - (a.x + t * dx), p.y - (a.y + t * dy));
+}
+
+double lineDist(const KA::Point2 &p, const std::vector<KA::Point2> &l,
+                bool closed) {
+  if (l.empty())
+    return 0.0;
+  double d = std::hypot(p.x - l[0].x, p.y - l[0].y);
+  const size_t n = l.size();
+  for (size_t i = 0, s = closed ? n : n - 1; i < s && n > 1; ++i)
+    d = std::min(d, segDist(p, l[i], l[(i + 1) % n]));
+  return d;
+}
+
+double dev2(const std::vector<KA::Point2> &raw,
+            const std::vector<KA::Point2> &drawn, bool closed) {
+  double d = 0.0;
+  for (const auto &p : drawn)
+    d = std::max(d, lineDist(p, raw, closed));
+  for (const auto &p : raw)
+    d = std::max(d, lineDist(p, drawn, closed));
+  return d;
+}
+
+// 막과 수직인 실루엣의 외면 반쪽(디자인 v2 「도면 선 규약」 외곽선 = 외면 반쪽의 윤곽): 높이 칸
+// zk = z0 + (k + 0.5)·bin (k = 0, 1, …, zk <= z1 인 것 모두, z0·z1 = m.bboxMin.z·bboxMax.z) 마다 삼각형 ∩ 수평면
+// 교점 중 x <= 0 인 것의 최소 x. 맞는 점이 없는 칸은 비운다 — 복사·보간·평활 없음(실측 그대로). 면마다 그 면의
+// z 범위에 걸치는 칸만 돈다. 교점 규칙은 K-Arch addTriZHits(Silhouette.cpp:171-189)와 같다.
+std::vector<KA::Point2> halfOrthoSilhouette(const KA::MeshData &m, double bin) {
+  std::vector<KA::Point2> out;
+  if (m.vertices.empty() || m.faces.empty() || bin <= 0)
+    return out;
+  const double z0 = m.bboxMin.z, z1 = m.bboxMax.z;
+  long n = 0;
+  while (z0 + (double(n) + 0.5) * bin <= z1)
+    ++n;
+  constexpr double kInf = std::numeric_limits<double>::infinity();
+  std::vector<double> best(size_t(n), kInf);
+  for (const auto &f : m.faces) {
+    if (f[0] < 0 || f[1] < 0 || f[2] < 0)
+      continue;
+    const KA::Point3 p[3] = {m.vertices[size_t(f[0])], m.vertices[size_t(f[1])],
+                             m.vertices[size_t(f[2])]};
+    const double lo = std::min({p[0].z, p[1].z, p[2].z}),
+                 hi = std::max({p[0].z, p[1].z, p[2].z});
+    const long k0 = std::max(0L, long(std::floor((lo - z0) / bin - 0.5)) - 1);
+    const long k1 = std::min(n - 1, long(std::ceil((hi - z0) / bin - 0.5)) + 1);
+    for (long k = k0; k <= k1; ++k) {
+      const double zk = z0 + (double(k) + 0.5) * bin;
+      double &mn = best[size_t(k)];
+      for (int e = 0; e < 3; ++e) {
+        const auto &u = p[e], &v = p[(e + 1) % 3];
+        if (std::abs(u.z - zk) <= 1e-12 && u.x <= 0.0)
+          mn = std::min(mn, u.x);
+        const double dz = v.z - u.z;
+        if (std::abs(dz) < 1e-15)
+          continue;
+        const double t = (zk - u.z) / dz;
+        if (t > 0.0 && t <= 1.0) {
+          const double x = u.x + t * (v.x - u.x);
+          if (x <= 0.0)
+            mn = std::min(mn, x);
+        }
+      }
+    }
+  }
+  for (long k = 0; k < n; ++k)
+    if (best[size_t(k)] < kInf)
+      out.push_back({best[size_t(k)], z0 + (double(k) + 0.5) * bin});
+  return out;
+}
+
 // 합성 토기 정점에 자연스러운 Artec 컬러(소성 토기 색조 + 어깨 침선/타날 흔적)
 // 부여
 std::vector<QRgb> makeSyntheticArtecColors(const KA::MeshData &m) {
@@ -173,9 +252,16 @@ std::vector<QRgb> makeSyntheticArtecColors(const KA::MeshData &m) {
 } // namespace
 
 std::vector<KA::Point2> simplifyDP(const std::vector<KA::Point2> &pts,
-                                   double tol, bool closed) {
-  if (pts.size() < 3 || tol <= 0)
+                                   double tol, bool closed,
+                                   std::vector<size_t> *kept) {
+  if (kept)
+    kept->clear();
+  if (pts.size() < 3 || tol <= 0) {
+    if (kept)
+      for (size_t i = 0; i < pts.size(); ++i)
+        kept->push_back(i);
     return pts;
+  }
   std::vector<KA::Point2> p = pts;
   if (closed)
     p.push_back(pts.front());
@@ -197,38 +283,69 @@ std::vector<KA::Point2> simplifyDP(const std::vector<KA::Point2> &pts,
   }
   std::vector<KA::Point2> out;
   for (size_t i = 0; i < p.size(); ++i)
-    if (keep[i])
+    if (keep[i]) {
       out.push_back(p[i]);
-  if (closed && out.size() > 1)
+      if (kept)
+        kept->push_back(i);
+    }
+  if (closed && out.size() > 1) {
     out.pop_back();
+    if (kept)
+      kept->pop_back();
+  }
   return out;
 }
 
-std::vector<KA::Point2> smoothCatmull(const std::vector<KA::Point2> &pts,
-                                      bool closed, int sub) {
-  const size_t n = pts.size();
-  if (n < 3 || sub < 2)
-    return pts;
+std::vector<KA::Point2> fitCurve(const std::vector<KA::Point2> &raw, double tol,
+                                 bool closed, bool smooth, int sub) {
+  std::vector<size_t> kept;
+  const auto c = simplifyDP(raw, tol, closed, &kept);
+  const long m = long(c.size());
+  if (!smooth || m < 3 || sub < 2)
+    return c; // 곡선 끔 = DP 결과 그대로
+  // 곡선 점의 허용 범위: raw 의 높이 범위, raw 가 축 한쪽이면 그쪽(옆 방향 극값은 막지 않음)
+  constexpr double kInf = std::numeric_limits<double>::infinity();
+  double x0 = kInf, x1 = -kInf, y0 = kInf, y1 = -kInf;
+  for (const auto &p : raw) {
+    x0 = std::min(x0, p.x), x1 = std::max(x1, p.x);
+    y0 = std::min(y0, p.y), y1 = std::max(y1, p.y);
+  }
+  const double xLo = x0 >= 0 ? 0.0 : -kInf, xHi = x1 <= 0 ? 0.0 : kInf;
   auto at = [&](long i) -> const KA::Point2 & {
-    if (closed)
-      return pts[size_t((i % long(n) + long(n)) % long(n))];
-    return pts[size_t(std::clamp(i, 0L, long(n) - 1))];
+    return c[size_t(closed ? (i % m + m) % m : std::clamp(i, 0L, m - 1))];
   };
-  std::vector<KA::Point2> out;
-  const long segs = closed ? long(n) : long(n) - 1;
+  const size_t n = raw.size();
+  const long segs = closed ? m : m - 1;
+  std::vector<KA::Point2> out, chain, piece;
   for (long i = 0; i < segs; ++i) {
     const auto &p0 = at(i - 1), &p1 = at(i), &p2 = at(i + 1), &p3 = at(i + 2);
-    for (int k = 0; k < sub; ++k) {
+    // 이 구간의 원 점 (닫힘 마지막 구간은 처음 점으로 되감기)
+    const size_t e = i + 1 < m ? kept[size_t(i + 1)] : n;
+    chain.clear();
+    for (size_t k = kept[size_t(i)]; k <= e; ++k)
+      chain.push_back(raw[k % n]);
+    piece.assign(1, p1);
+    bool ok = true;
+    for (int k = 1; k < sub; ++k) {
       const double t = double(k) / sub, t2 = t * t, t3 = t2 * t;
-      auto f = [&](double a, double b, double c, double d) {
-        return 0.5 * (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t2 +
-                      (-a + 3 * b - 3 * c + d) * t3);
+      auto f = [&](double a, double b, double cc, double d) {
+        return 0.5 * (2 * b + (-a + cc) * t + (2 * a - 5 * b + 4 * cc - d) * t2 +
+                      (-a + 3 * b - 3 * cc + d) * t3);
       };
-      out.push_back({f(p0.x, p1.x, p2.x, p3.x), f(p0.y, p1.y, p2.y, p3.y)});
+      const KA::Point2 q{f(p0.x, p1.x, p2.x, p3.x), f(p0.y, p1.y, p2.y, p3.y)};
+      ok = ok && q.x >= xLo && q.x <= xHi && q.y >= y0 && q.y <= y1;
+      piece.push_back(q);
     }
+    piece.push_back(p2);
+    for (size_t k = 1; ok && k + 1 < piece.size(); ++k)
+      ok = lineDist(piece[k], chain, false) <= tol;
+    for (size_t k = 0; ok && k < chain.size(); ++k)
+      ok = lineDist(chain[k], piece, false) <= tol;
+    // p1, 곡선이 허용치 안이면 그 사이 점들도 (아니면 DP 직선)
+    out.insert(out.end(), piece.begin(), ok ? piece.end() - 1 : piece.begin() + 1);
   }
   if (!closed)
-    out.push_back(pts.back());
+    out.push_back(c.back());
   return out;
 }
 
@@ -652,6 +769,7 @@ void ArtifactDoc::recompute() {
     // 기벽은 계산하지 않는다. 바운딩 박스는 자세 조작마다 갱신되어 있고
     // 강체 변환은 평균 변 길이·경계 유무를 바꾸지 않는다.
     sil_ = {};
+    ortho_.clear();
     sec_ = {};
     dims_ = {};
     d5_ = {};
@@ -672,8 +790,12 @@ void ArtifactDoc::recompute() {
   KA::FillMeshStats(lodMesh_);
 
   const KA::MeshData &fastMesh = mesh_.faces.size() > 250000 ? lodMesh_ : mesh_;
-  sil_ = KA::ExtractSilhouette(fastMesh, KA::SilhouetteMode::MaxRadius, 0.25);
+  sil_ = KA::ExtractSilhouette(fastMesh, KA::SilhouetteMode::MaxRadius, 0.25); // 치수용(그리지 않음)
   dims_ = KA::AnalyzeDimensions(fastMesh, sil_);
+  // 그리는 외곽선 = 막과 수직인 실루엣의 외면 반쪽, 늘 원본에서(LOD 아님). MaxRadius(2·98 백분위 · 칸 버림 · 빈 칸
+  // 복사 · 평활)는 끝이 기준선에 못 미치고 급한 저부에서 선을 지어냈고, K-Arch TrueOrtho 는 x > 0 쪽까지 보고 평활해
+  // 기운 바닥·구연에서 중심선을 넘었다(JOB-008).
+  ortho_ = halfOrthoSilhouette(mesh_, 0.25);
 
   d5_ = {};
   d5_.ok = dims_.ok;
@@ -745,9 +867,7 @@ std::vector<std::vector<KA::Point2>> ArtifactDoc::sectionNatural() const {
   }
   std::vector<std::vector<KA::Point2>> out;
   for (const auto &poly : s.loops) {
-    auto p = simplifyDP(poly, simplifyTol_ * 0.5, true);
-    if (smooth_)
-      p = smoothCatmull(p, true, 3);
+    auto p = fitSectionLine(poly, true);
     if (p.size() >= 3)
       out.push_back(std::move(p));
   }
@@ -757,9 +877,7 @@ std::vector<std::vector<KA::Point2>> ArtifactDoc::sectionNatural() const {
 std::vector<std::vector<KA::Point2>> ArtifactDoc::scannedSolidNatural() const {
   std::vector<std::vector<KA::Point2>> out;
   for (const auto &line : shown().solids) {
-    auto p = simplifyDP(line, simplifyTol_ * 0.5, false);
-    if (smooth_ && p.size() >= 3)
-      p = smoothCatmull(p, false, 3);
+    auto p = fitSectionLine(line, false);
     if (p.size() >= 2)
       out.push_back(std::move(p));
   }
@@ -770,13 +888,21 @@ std::vector<std::vector<KA::Point2>>
 ArtifactDoc::estimatedInnerNatural() const {
   std::vector<std::vector<KA::Point2>> out;
   for (const auto &line : shown().estInner) {
-    auto p = simplifyDP(line, simplifyTol_ * 0.5, false);
-    if (smooth_ && p.size() >= 3)
-      p = smoothCatmull(p, false, 3);
+    auto p = fitSectionLine(line, false);
     if (p.size() >= 2)
       out.push_back(std::move(p));
   }
   return out;
+}
+
+std::vector<KA::Point2>
+ArtifactDoc::fitSectionLine(const std::vector<KA::Point2> &raw,
+                            bool closed) const {
+  return fitCurve(raw, simplifyTol_ * 0.5, closed, smooth_, 3);
+}
+
+std::vector<KA::Point2> ArtifactDoc::outlineNatural() const {
+  return fitCurve(ortho_, simplifyTol_ * 0.5, false, smooth_, 4);
 }
 
 std::vector<std::vector<KA::Point2>> ArtifactDoc::displaySection() const {
@@ -793,11 +919,8 @@ ArtifactDoc::displayEstimatedInner() const {
 }
 
 std::vector<KA::Point2> ArtifactDoc::displayOutline() const {
-  // 외곽(leftOutline, x < 0)도 단면과 같은 부호: Right 는 그대로 왼쪽, Left 는 오른쪽
-  auto p = simplifyDP(sil_.leftOutline, simplifyTol_, false);
-  if (smooth_)
-    p = smoothCatmull(p, false, 4);
-  return signedX(std::move(p), sectionSign());
+  // 외곽(반쪽 정사 실루엣, x ≤ 0)도 단면과 같은 부호: Right 는 그대로 왼쪽, Left 는 오른쪽
+  return signedX(outlineNatural(), sectionSign());
 }
 
 std::vector<std::pair<KA::Point2, KA::Point2>>
@@ -1080,6 +1203,22 @@ double ArtifactDoc::measureWallBySlice(double z) const {
   return -1.0;
 }
 
+double ArtifactDoc::maxDeviationMm() const {
+  const SectionLines &s = shown();
+  double d = dev2(ortho_, outlineNatural(), false);
+  if (!s.solids.empty() && !s.estInner.empty()) { // 미스캔 보정: 실측 실선 + 추정 내벽선
+    for (const auto *lines : {&s.solids, &s.estInner})
+      for (const auto &l : *lines)
+        if (const auto q = fitSectionLine(l, false); q.size() >= 2)
+          d = std::max(d, dev2(l, q, false));
+  } else {
+    for (const auto &l : s.loops) // 3점 미만으로 줄어 그리지 않는 고리는 뺀다
+      if (const auto q = fitSectionLine(l, true); q.size() >= 3)
+        d = std::max(d, dev2(l, q, true));
+  }
+  return d;
+}
+
 int ArtifactDoc::pointCount() const {
   int n = int(displayOutline().size());
   for (const auto &p : displaySection())
@@ -1088,7 +1227,7 @@ int ArtifactDoc::pointCount() const {
 }
 
 int ArtifactDoc::rawPointCount() const {
-  int n = int(sil_.leftOutline.size());
+  int n = int(ortho_.size());
   for (const auto &p : shown().loops)
     n += int(p.size());
   return n;
