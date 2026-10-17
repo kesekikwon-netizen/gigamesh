@@ -18,6 +18,7 @@ public:
 
 signals:
     void cutAngleDragged(double deltaDeg);
+    void cutDragReleased();  // 단면 도구로 끌다가 놓음 → 원본으로 확정
 
 protected:
     void paintEvent(QPaintEvent*) override;

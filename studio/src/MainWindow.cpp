@@ -28,6 +28,7 @@
 #include <QStackedWidget>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <algorithm>
 #include <cmath>
 
 namespace studio {
@@ -48,6 +49,17 @@ const char* kShadeNames[] = {"음영: 실사", "음영: 깊이 음영", "음영:
 // 리본 「단면 위치」 단추 글자 (D5 기본 / R 반전)
 QString sideText(SectionSide s) {
     return s == SectionSide::Right ? QStringLiteral("외면 왼쪽·단면 오른쪽") : QStringLiteral("단면 왼쪽·외면 오른쪽 (반전)");
+}
+// ② 막 각도 키: , [ ← = −1, . ] → = +1, 그 밖 0
+int cutKeySign(int key) {
+    switch (key) {
+        case Qt::Key_Comma: case Qt::Key_BracketLeft: case Qt::Key_Left: return -1;
+        case Qt::Key_Period: case Qt::Key_BracketRight: case Qt::Key_Right: return 1;
+        default: return 0;
+    }
+}
+bool isModifierKey(int key) {
+    return key == Qt::Key_Shift || key == Qt::Key_Control || key == Qt::Key_Alt || key == Qt::Key_Meta;
 }
 }  // namespace
 
@@ -103,7 +115,21 @@ MainWindow::MainWindow() {
     sheet_->canvas()->setDoc(&doc_);
     connect(sheet_, &SheetPane::maximizeToggled, this, &MainWindow::toggleMaximize);
     connect(view3d_, &View3DPane::collapseRequested, this, &MainWindow::toggleMaximize);
-    connect(view3d_->canvas(), &View3DCanvas::cutAngleDragged, this, [this](double d) { setFrontAngle(doc_.frontAngle() + d); });
+    cutTimer_ = new QTimer(this);
+    cutTimer_->setSingleShot(true);
+    cutTimer_->setTimerType(Qt::PreciseTimer);
+    connect(cutTimer_, &QTimer::timeout, this, &MainWindow::onCutTimer);
+    cutClock_.start();
+    connect(view3d_->canvas(), &View3DCanvas::cutAngleDragged, this, [this](double d) {
+        if (!doc_.isLoaded() || !doc_.poseConfirmed()) return;
+        beginCutInput();
+        cut_.drag(doc_.frontAngle(), d, cutClock_.elapsed());
+        scheduleCut();
+    });
+    connect(view3d_->canvas(), &View3DCanvas::cutDragReleased, this, [this] {
+        cut_.release(cutClock_.elapsed());
+        onCutTimer();
+    });
     connect(sheet_->canvas(), &SheetCanvas::cursorMm, this, [this](double r, double h, double wall, bool inside) {
         if (!inside || !doc_.poseConfirmed()) {  // 확정 전에는 도판 좌표가 없다
             stCursor_->clear();
@@ -225,11 +251,13 @@ void MainWindow::buildRibbon() {
     connect(ribbon_, &Ribbon::triggered, this, &MainWindow::onAction);
     connect(ribbon_, &Ribbon::chipChosen, this, &MainWindow::onChip);
     connect(ribbon_, &Ribbon::undoRequested, this, [this] {
+        flushCut();
         if (!requirePose() || undo_.isEmpty()) return;
         redo_.push_back({doc_.frontAngle(), doc_.heightRef(), doc_.simplifyTol(), doc_.smooth()});
         restore(undo_.takeLast());
     });
     connect(ribbon_, &Ribbon::redoRequested, this, [this] {
+        flushCut();
         if (!requirePose() || redo_.isEmpty()) return;
         undo_.push_back({doc_.frontAngle(), doc_.heightRef(), doc_.simplifyTol(), doc_.smooth()});
         restore(redo_.takeLast());
@@ -254,6 +282,7 @@ QWidget* MainWindow::buildCtxBar() {
     h->addWidget(ctxHint_);
     h->addWidget(vsep(w));
     ctxCutKeys_ = {kbdLabel("[ ]", w), new QLabel(QStringLiteral("절단면 1° 이동"), w),
+                   kbdLabel("← →", w), new QLabel(QStringLiteral("막 1° · Shift 15°"), w),
                    kbdLabel("W", w),   new QLabel(QStringLiteral("미스캔 내벽 파선보정"), w),
                    kbdLabel("- +", w), new QLabel(QStringLiteral("추정 두께 ±0.5mm"), w),
                    kbdLabel("1~5", w), new QLabel(QStringLiteral("슬롯 저장"), w),
@@ -424,11 +453,16 @@ void MainWindow::checkWatchFolder() {
 }
 
 bool MainWindow::openPath(const QString& path) {
+    cancelCut();  // 문서가 바뀌므로 막 각도는 계산하지 않는다
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QString err;
     const bool ok = doc_.loadFile(path, &err);  // 들어온 자세 그대로 (확정 전)
     QApplication::restoreOverrideCursor();
     if (!ok) {
+        if (doc_.isPreviewing()) {  // 열지 못해 문서가 그대로면 움직이던 막을 놓은 것으로
+            doc_.commitPreview();
+            refreshAll(true);
+        }
         QMessageBox::warning(this, QStringLiteral("유물을 열 수 없습니다"), err);
         return false;
     }
@@ -457,6 +491,7 @@ void MainWindow::recordRecent() {
 }
 
 void MainWindow::openSample(bool poseStage) {
+    cancelCut();
     QApplication::setOverrideCursor(Qt::WaitCursor);
     doc_.loadSample(!poseStage);
     QApplication::restoreOverrideCursor();
@@ -471,6 +506,7 @@ void MainWindow::openSample(bool poseStage) {
 }
 
 void MainWindow::openArtecBlindSample(bool poseStage) {
+    cancelCut();
     QApplication::setOverrideCursor(Qt::WaitCursor);
     doc_.loadArtecBlindSample(!poseStage);
     QApplication::restoreOverrideCursor();
@@ -529,8 +565,12 @@ void MainWindow::refreshAll(bool geometryChanged) {
     else if (dirtyExport_)
         setHint(QStringLiteral("실측선이 완성되었습니다 — 다음: <span style='font-family:Consolas'>Ctrl+P</span> 「도면」으로 보고서 도판을 만들거나 「SVG 일러스트」로 내보내세요."));
     else setHint(QStringLiteral("저장했습니다. 다른 슬롯을 고르거나 [단면 추가] 로 횡단면을 더하세요."));
+    updateCutInfo();
+}
+
+void MainWindow::updateCutInfo() {
     ctxRight_->setText(QStringLiteral("절단 각도 <b>%1°</b> (정면 중심축) · 점 %2 → <b>%3개</b> (%4 mm 간략화)")
-                           .arg(doc_.frontAngle(), 0, 'f', 1)
+                           .arg(doc_.previewAngle(), 0, 'f', 1)
                            .arg(QLocale(QLocale::English).toString(doc_.rawPointCount()))
                            .arg(doc_.pointCount())
                            .arg(doc_.simplifyTol(), 0, 'f', 1));
@@ -570,6 +610,7 @@ void MainWindow::refreshSlots() {
 }
 
 void MainWindow::selectSlot(int i) {
+    flushCut();
     if (i < 0 || i >= int(doc_.slotList().size())) return;
     slot_ = i;
     const auto& s = doc_.slotList()[size_t(i)];
@@ -654,10 +695,49 @@ void MainWindow::restore(const ViewState& s) {
     refreshAll(true);
 }
 
-void MainWindow::setFrontAngle(double deg) {
-    if (!doc_.isLoaded() || !doc_.poseConfirmed()) return;
-    doc_.setFrontAngle(deg);
-    refreshAll(true);
+// ---- ② 막 각도 입력 합치기 ----------------------------------------------------
+void MainWindow::scheduleCut() {
+    const long long due = cut_.nextDueMs();
+    if (due < 0) {
+        cutTimer_->stop();
+        return;
+    }
+    cutTimer_->start(int(std::max<long long>(0, due - cutClock_.elapsed())));
+}
+
+void MainWindow::onCutTimer() {
+    for (auto due = cut_.poll(cutClock_.elapsed()); due != CutGesture::Due::None; due = cut_.poll(cutClock_.elapsed())) {
+        if (due == CutGesture::Due::Preview) {
+            doc_.previewFrontAngle(cut_.target());  // LOD 단면 1장 (치수·두께·외곽은 놓은 뒤)
+            refreshPreview();
+        } else {
+            doc_.setFrontAngle(cut_.target());  // 원본으로 단면·외곽·치수·두께 다시 계산
+            refreshAll(true);
+        }
+    }
+    scheduleCut();
+}
+
+void MainWindow::refreshPreview() {
+    sheet_->refresh(doc_, slot_);
+    sheet_->canvas()->update();
+    view3d_->refresh(doc_, slot_);
+    updateCutInfo();
+}
+
+void MainWindow::beginCutInput() {
+    if (!cut_.active()) pushUndo();
+}
+
+void MainWindow::flushCut() {
+    if (!cut_.active()) return;
+    cut_.release(cutClock_.elapsed());
+    onCutTimer();
+}
+
+void MainWindow::cancelCut() {
+    cut_.cancel();
+    cutTimer_->stop();
 }
 
 void MainWindow::saveSlotAngle(int k) {
@@ -692,6 +772,7 @@ void MainWindow::openExport(ExportFormat f) {
 }
 
 void MainWindow::onAction(const QString& id) {
+    if (id != "rotate" && id != "cutMove") flushCut();  // 다른 동작(내보내기 포함) 전에 막 각도를 먼저 확정
     if (id == "open") return openFileDialog();
     if (id == "watch") return toggleWatchFolder();
     if (id == "sample") return openSample();
@@ -748,14 +829,12 @@ void MainWindow::onAction(const QString& id) {
         doc_.setHeightRef(id == "refBase" ? HeightRef::Base : HeightRef::Rim);
         refreshAll(false);
         sheet_->canvas()->update();
-    } else if (id == "rotate") {
-        pushUndo();
-        setFrontAngle(doc_.frontAngle() + 1.0);
+    } else if (id == "rotate" || id == "cutMove") {
+        beginCutInput();  // 단추: 마지막 누름 300 ms 뒤 원본으로 확정
+        cut_.click(doc_.frontAngle(), 1.0, cutClock_.elapsed());
+        scheduleCut();
     } else if (id == "cut" || id == "outline") {
         setHandTool(hand_ == id ? QString() : id);
-    } else if (id == "cutMove") {
-        pushUndo();
-        setFrontAngle(doc_.frontAngle() + 1.0);
     } else if (id == "combined") {
         // D5 좌/우 반전 (R): 같은 단면의 거울상. 다시 계산하지 않고, 되돌리기에 쌓지 않는다.
         doc_.toggleSectionSide();
@@ -793,6 +872,7 @@ void MainWindow::onAction(const QString& id) {
 }
 
 void MainWindow::onChip(const QString& group, int idx) {
+    flushCut();
     if (!doc_.isLoaded()) return;
     pushUndo();
     if (group == "simplify") {
@@ -825,6 +905,8 @@ bool MainWindow::eventFilter(QObject* o, QEvent* e) {
 
 void MainWindow::keyPressEvent(QKeyEvent* e) {
     const auto mod = e->modifiers();
+    const int cutSign = (mod & Qt::ControlModifier) ? 0 : cutKeySign(e->key());
+    if (cutSign == 0 && !isModifierKey(e->key())) flushCut();  // 각도 키가 아닌 동작 전에 먼저 확정
     if (mod & Qt::ControlModifier) {
         switch (e->key()) {
             case Qt::Key_O: return openFileDialog();
@@ -842,12 +924,22 @@ void MainWindow::keyPressEvent(QKeyEvent* e) {
             case Qt::Key_Escape: return;  // 바닥 정하기 ctx 유지
             case Qt::Key_S: case Qt::Key_O: case Qt::Key_B: case Qt::Key_T: case Qt::Key_N: case Qt::Key_R:
             case Qt::Key_Comma: case Qt::Key_Period: case Qt::Key_BracketLeft: case Qt::Key_BracketRight:
+            case Qt::Key_Left: case Qt::Key_Right:
             case Qt::Key_1: case Qt::Key_2: case Qt::Key_3: case Qt::Key_4: case Qt::Key_5:
             case Qt::Key_W: case Qt::Key_Minus: case Qt::Key_Underscore: case Qt::Key_Equal: case Qt::Key_Plus:
                 requirePose();
                 return;
             default: break;  // I · L · V 표시 토글 등은 그대로
         }
+    }
+    if (cutSign != 0) {
+        // ② 막 1° (← → 만 Shift 15°): 누르는 동안 LOD 미리보기, 뗀 뒤 300 ms 에 원본 확정 (자동 반복 포함)
+        const bool arrow = e->key() == Qt::Key_Left || e->key() == Qt::Key_Right;
+        const double step = arrow && (mod & Qt::ShiftModifier) ? 15.0 : 1.0;
+        beginCutInput();
+        cut_.keyDown(doc_.frontAngle(), cutSign * step, cutClock_.elapsed());
+        scheduleCut();
+        return;
     }
     switch (e->key()) {
         case Qt::Key_Escape: setHandTool(QString()); break;
@@ -879,16 +971,21 @@ void MainWindow::keyPressEvent(QKeyEvent* e) {
             refreshAll(true);
             setHint(QStringLiteral("미스캔 추정 기벽 두께: %1 mm").arg(doc_.estimatedWallMm(), 0, 'f', 1));
             break;
-        case Qt::Key_Comma: pushUndo(); setFrontAngle(doc_.frontAngle() - 1.0); break;
-        case Qt::Key_Period: pushUndo(); setFrontAngle(doc_.frontAngle() + 1.0); break;
-        case Qt::Key_BracketLeft: pushUndo(); setFrontAngle(doc_.frontAngle() - 1.0); break;
-        case Qt::Key_BracketRight: pushUndo(); setFrontAngle(doc_.frontAngle() + 1.0); break;
         case Qt::Key_R: onAction("combined"); break;  // D5 좌/우 반전
         case Qt::Key_1: case Qt::Key_2: case Qt::Key_3: case Qt::Key_4: case Qt::Key_5:
             saveSlotAngle(e->key() - Qt::Key_0);
             break;
         default: QMainWindow::keyPressEvent(e);
     }
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent* e) {
+    if (!e->isAutoRepeat() && cutKeySign(e->key()) != 0) {  // 자동 반복이 아닌 뗌만 → 300 ms 뒤 확정
+        cut_.keyUp(cutClock_.elapsed());
+        scheduleCut();
+        return;
+    }
+    QMainWindow::keyReleaseEvent(e);
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent* e) {

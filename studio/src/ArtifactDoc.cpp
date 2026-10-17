@@ -605,11 +605,46 @@ void ArtifactDoc::autoAlign() {
 }
 
 void ArtifactDoc::setFrontAngle(double deg) {
+  if (!isLoaded() || !poseConfirmed_)
+    return; // 확정 전에는 막을 돌리지 않는다
   frontAngle_ = std::remainder(deg, 360.0);
   recompute();
 }
 
+void ArtifactDoc::alignCut(CutAxis a) {
+  setFrontAngle(a == CutAxis::Y ? 0.0 : 90.0);
+}
+
+void ArtifactDoc::previewFrontAngle(double deg) {
+  if (!isLoaded() || !poseConfirmed_)
+    return;
+  previewAngle_ = std::remainder(deg, 360.0);
+  // 확정 자세 LOD 에서 매번 절대각으로(누적 오차 없음), setFrontAngle 과 같은
+  // 함수·부호·0 판정. 강체 변환이라 FillMeshStats 대신 바운딩 박스만 다시 잰다.
+  previewLod_ = lodBase_;
+  if (std::fabs(previewAngle_) > 1e-9)
+    rotateZ(previewLod_, previewAngle_);
+  updateBbox(previewLod_);
+  // 씨앗은 지금 확정된 추정 기벽 두께, 결과의 wallMm 은 버린다(확정값 그대로)
+  previewLines_ =
+      sliceSectionY0(previewLod_, inferInnerWall_, estimatedWallMm_);
+  previewing_ = true;
+}
+
+void ArtifactDoc::commitPreview() {
+  if (previewing_)
+    setFrontAngle(previewAngle_);
+}
+
+void ArtifactDoc::clearPreview() {
+  previewing_ = false;
+  previewAngle_ = 0.0;
+  previewLines_ = {};
+  previewLod_ = {};
+}
+
 void ArtifactDoc::recompute() {
+  clearPreview();
   mesh_ = base_;
   lodMesh_ = lodBase_;
   if (!poseConfirmed_) {
@@ -623,19 +658,15 @@ void ArtifactDoc::recompute() {
     wallProfile_.clear();
     wallZ0_ = 0.0;
     wallStep_ = 1.0;
-    sectionLoops_.clear();
-    scannedSolidLines_.clear();
-    estimatedInnerLines_.clear();
-    estZMin_ = -1.0;
-    estZMax_ = -1.0;
+    lines_ = {};
     aligned_ = false;
     alignNote_ = QStringLiteral("바닥 미정");
     axisRmse_ = -1.0;
     return;
   }
-  if (std::fabs(frontAngle_) > 1e-9) {
-    rotateZ(mesh_, -frontAngle_);
-    rotateZ(lodMesh_, -frontAngle_);
+  if (std::fabs(frontAngle_) > 1e-9) { // +Z 오른손 법칙 (위에서 보아 반시계)
+    rotateZ(mesh_, frontAngle_);
+    rotateZ(lodMesh_, frontAngle_);
   }
   KA::FillMeshStats(mesh_);
   KA::FillMeshStats(lodMesh_);
@@ -700,7 +731,8 @@ void ArtifactDoc::resetSlots() {
 
 // ---- 화면용 선: 자연 좌표에서 간략화·곡선 → 마지막에 좌/우 부호 (D5) ----------
 std::vector<std::vector<KA::Point2>> ArtifactDoc::sectionNatural() const {
-  if (!scannedSolidLines_.empty() && !estimatedInnerLines_.empty()) {
+  const SectionLines &s = shown();
+  if (!s.solids.empty() && !s.estInner.empty()) {
     const auto solids = scannedSolidNatural();
     const auto dashed = estimatedInnerNatural();
     if (!solids.empty() && !dashed.empty()) {
@@ -712,7 +744,7 @@ std::vector<std::vector<KA::Point2>> ArtifactDoc::sectionNatural() const {
     }
   }
   std::vector<std::vector<KA::Point2>> out;
-  for (const auto &poly : sectionLoops_) {
+  for (const auto &poly : s.loops) {
     auto p = simplifyDP(poly, simplifyTol_ * 0.5, true);
     if (smooth_)
       p = smoothCatmull(p, true, 3);
@@ -724,7 +756,7 @@ std::vector<std::vector<KA::Point2>> ArtifactDoc::sectionNatural() const {
 
 std::vector<std::vector<KA::Point2>> ArtifactDoc::scannedSolidNatural() const {
   std::vector<std::vector<KA::Point2>> out;
-  for (const auto &line : scannedSolidLines_) {
+  for (const auto &line : shown().solids) {
     auto p = simplifyDP(line, simplifyTol_ * 0.5, false);
     if (smooth_ && p.size() >= 3)
       p = smoothCatmull(p, false, 3);
@@ -737,7 +769,7 @@ std::vector<std::vector<KA::Point2>> ArtifactDoc::scannedSolidNatural() const {
 std::vector<std::vector<KA::Point2>>
 ArtifactDoc::estimatedInnerNatural() const {
   std::vector<std::vector<KA::Point2>> out;
-  for (const auto &line : estimatedInnerLines_) {
+  for (const auto &line : shown().estInner) {
     auto p = simplifyDP(line, simplifyTol_ * 0.5, false);
     if (smooth_ && p.size() >= 3)
       p = smoothCatmull(p, false, 3);
@@ -809,16 +841,19 @@ ArtifactDoc::displayHatch() const {
 }
 
 void ArtifactDoc::buildSectionLoops() {
-  sectionLoops_.clear();
-  scannedSolidLines_.clear();
-  estimatedInnerLines_.clear();
-  estZMin_ = -1.0;
-  estZMax_ = -1.0;
+  clearPreview();
+  lines_ = sliceSectionY0(mesh_, inferInnerWall_, estimatedWallMm_);
+  if (lines_.wallMm > 0)
+    estimatedWallMm_ = lines_.wallMm; // 미스캔 보정 경로가 잰 실측 기벽
+}
 
+SectionLines sliceSectionY0(const KA::MeshData &m, bool inferInner,
+                            double wallSeedMm) {
+  SectionLines s;
   std::vector<std::vector<KA::Point2>>
       openBranches; // 각 가지: 위(zHi) → 아래(zLo) 순서
 
-  for (const auto &pl : KA::Slice(mesh_, KA::Plane{{0, 1, 0}, 0.0})) {
+  for (const auto &pl : KA::Slice(m, KA::Plane{{0, 1, 0}, 0.0})) {
     if (pl.pts.size() < 3)
       continue;
     std::vector<KA::Point2> in;
@@ -861,7 +896,7 @@ void ArtifactDoc::buildSectionLoops() {
         area += a.x * b.y - b.x * a.y;
       }
       if (std::fabs(area) * 0.5 >= 0.5)
-        sectionLoops_.push_back(std::move(clip));
+        s.loops.push_back(std::move(clip));
       continue;
     }
 
@@ -896,8 +931,8 @@ void ArtifactDoc::buildSectionLoops() {
     }
   }
 
-  if (!inferInnerWall_ || !sectionLoops_.empty() || openBranches.empty())
-    return;
+  if (!inferInner || !s.loops.empty() || openBranches.empty())
+    return s;
 
   // 가장 바닥(minY)까지 내려가고 평균 반경이 바깥쪽인 가지를 외벽(outer)으로,
   // 나머지를 스캔된 상부 내벽(innerScanned)으로 결합
@@ -926,7 +961,7 @@ void ArtifactDoc::buildSectionLoops() {
   }
 
   double zScanEnd = outer.front().y;
-  double realWall = std::max(2.0, estimatedWallMm_);
+  double realWall = std::max(2.0, wallSeedMm);
   if (innerScanned.size() >= 2) {
     zScanEnd = innerScanned.back().y;
     for (size_t i = 1; i < outer.size(); ++i) {
@@ -943,7 +978,7 @@ void ArtifactDoc::buildSectionLoops() {
       }
     }
   }
-  estimatedWallMm_ = realWall;
+  s.wallMm = realWall;
 
   std::vector<KA::Point2> estInner;
   if (!innerScanned.empty())
@@ -969,10 +1004,10 @@ void ArtifactDoc::buildSectionLoops() {
   }
   if (estInner.size() >= 2) {
     for (const auto &q : estInner) {
-      estZMin_ = (estZMin_ < 0) ? q.y : std::min(estZMin_, q.y);
-      estZMax_ = std::max(estZMax_, q.y);
+      s.estZMin = (s.estZMin < 0) ? q.y : std::min(s.estZMin, q.y);
+      s.estZMax = std::max(s.estZMax, q.y);
     }
-    estimatedInnerLines_.push_back(estInner);
+    s.estInner.push_back(estInner);
 
     std::vector<KA::Point2> solidLine;
     if (!innerScanned.empty()) {
@@ -982,7 +1017,7 @@ void ArtifactDoc::buildSectionLoops() {
     for (const auto &p : outer)
       solidLine.push_back(p);
     solidLine.push_back(estInner.back());
-    scannedSolidLines_.push_back(std::move(solidLine));
+    s.solids.push_back(std::move(solidLine));
   }
 
   std::vector<KA::Point2> closedPoly = outer;
@@ -993,16 +1028,17 @@ void ArtifactDoc::buildSectionLoops() {
       closedPoly.push_back(innerScanned[i]);
   }
   if (closedPoly.size() >= 3)
-    sectionLoops_.push_back(std::move(closedPoly));
+    s.loops.push_back(std::move(closedPoly));
+  return s;
 }
 
 std::vector<KA::Polyline3> ArtifactDoc::horizontalSlice(double z) const {
   return KA::Slice(mesh_, KA::Plane{{0, 0, 1}, -z});
 }
 
-bool ArtifactDoc::isWallEstimatedAt(double z) const {
-  return !estimatedInnerLines_.empty() && z >= estZMin_ - 1.0 &&
-         z <= estZMax_ + 1.0;
+bool ArtifactDoc::isWallEstimatedAt(double z) const { // 확정 각 (놓은 뒤 갱신)
+  return !lines_.estInner.empty() && z >= lines_.estZMin - 1.0 &&
+         z <= lines_.estZMax + 1.0;
 }
 
 double ArtifactDoc::wallThicknessAt(double z) const {
@@ -1053,7 +1089,7 @@ int ArtifactDoc::pointCount() const {
 
 int ArtifactDoc::rawPointCount() const {
   int n = int(sil_.leftOutline.size());
-  for (const auto &p : sectionLoops_)
+  for (const auto &p : shown().loops)
     n += int(p.size());
   return n;
 }

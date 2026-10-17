@@ -43,6 +43,19 @@ enum class PoseAxis { X, Y, Z };
 // 뒤에서 본 모양). 계산값은 바꾸지 않는다.
 enum class SectionSide { Right, Left };
 
+// ② 막으로 자르기 — 막은 보는 사람 앞 Y=0 면에 고정, 유물이 +Z 회전판처럼 돈다.
+// Y 막 = 정면에서 본 종단면(0°), X 막 = 옆에서(90°). Z 막은 뒤 작업.
+enum class CutAxis { Y, X };
+
+// Y=0 단면 한 벌 (자연 좌표: x ≥ 0 = 단면 쪽, K-Arch 좌표 x=R, y=H)
+struct SectionLines {
+  std::vector<std::vector<KA::Point2>> loops;    // 실제 Y=0 절단 고리
+  std::vector<std::vector<KA::Point2>> solids;   // 미스캔 보정 시 실선 구간
+  std::vector<std::vector<KA::Point2>> estInner; // 미스캔/홀필 추정 내벽선
+  double estZMin = -1.0, estZMax = -1.0;
+  double wallMm = -1.0; // 미스캔 보정 경로가 정한 기벽 두께, 그 경로가 아니면 −1
+};
+
 class ArtifactDoc {
 public:
   // 들어온 자세 그대로 보관한다(확정 전 — 단면·치수·도판을 계산하지 않음).
@@ -78,7 +91,17 @@ public:
   // 접지 상태 문구 (ctx 줄·3D 정보 줄 공용): "바닥판에서 45.0 mm 위" 등
   QString groundNote() const;
 
-  void setFrontAngle(double deg); // 정면 회전 (, .)
+  // 정면각 θ (deg, [−180, 180]): 확정 자세를 +Z 오른손 법칙으로 θ 돌린(위에서
+  // 보아 반시계 — 정면(−Y)의 면이 화면 오른쪽 +X 로 가는) 메시의 Y=0 면 x ≥ 0
+  // 반쪽이 단면. 0° = 확정 자세. 확정 전·미로드는 무시. 원본 전체 다시 계산.
+  void setFrontAngle(double deg);
+  void alignCut(CutAxis a); // 막 맞춤: Y → 0°, X → 90°
+  // 실시간 미리보기: 확정 전·미로드 무시. LOD 만 돌려 Y=0 단면 1장 → 미리보기
+  // 버퍼. 외곽·치수·두께·estimatedWallMm·슬롯·원본 메시·frontAngle 은 그대로.
+  void previewFrontAngle(double deg);
+  void commitPreview(); // 미리보기 중이면 setFrontAngle(previewAngle()), 아니면 무시
+  bool isPreviewing() const { return previewing_; }
+  double previewAngle() const { return previewing_ ? previewAngle_ : frontAngle_; }
   void setHeightRef(HeightRef r) { heightRef_ = r; }
   void setSimplifyTol(double mm) { simplifyTol_ = mm; }
   void setSmooth(bool on) { smooth_ = on; }
@@ -99,7 +122,7 @@ public:
   bool inferInnerWall() const { return inferInnerWall_; }
   void setEstimatedWallMm(double mm);
   double estimatedWallMm() const { return estimatedWallMm_; }
-  bool hasEstimatedInner() const { return !estimatedInnerLines_.empty(); }
+  bool hasEstimatedInner() const { return !shown().estInner.empty(); } // 미리보기 따름
 
   // 수동 단위 배율 보정 (예: 10.0 = cm→mm, 0.1 = mm→cm)
   void rescaleUnits(double factor);
@@ -108,8 +131,8 @@ public:
     return mesh_;
   } // 원본 정밀 메시 (단면·D-Tak 용)
   const KA::MeshData &lodMesh() const {
-    return lodMesh_;
-  } // 3D 보조창 고속 회전용 경량 LOD 메시
+    return previewing_ ? previewLod_ : lodMesh_;
+  } // 3D 보조창 고속 회전용 경량 LOD 메시 (미리보기 중이면 미리보기 각)
   const std::vector<QRgb> &vertexColors() const { return baseColors_; }
   const std::vector<QRgb> &lodVertexColors() const { return lodColors_; }
   bool hasColor() const {
@@ -163,19 +186,22 @@ private:
   // 원본·LOD 를 같은 거리만큼 평행이동 (바운딩 박스 갱신)
   void shiftBoth(double dx, double dy, double dz);
   double measureWallBySlice(double z) const;
-  void buildSectionLoops();
+  void buildSectionLoops(); // 확정 각 단면 (미리보기 지움)
+  void clearPreview();
+  // 화면에 보이는 단면: 미리보기 중이면 미리보기, 아니면 확정 각
+  const SectionLines &shown() const {
+    return previewing_ ? previewLines_ : lines_;
+  }
   // 자연 좌표(K-Arch: 단면 x ≥ 0, 외곽 x < 0)의 화면용 선 — 좌/우 부호 적용 전
   std::vector<std::vector<KA::Point2>> sectionNatural() const;
   std::vector<std::vector<KA::Point2>> scannedSolidNatural() const;
   std::vector<std::vector<KA::Point2>> estimatedInnerNatural() const;
 
-  std::vector<std::vector<KA::Point2>>
-      sectionLoops_; // 실제 Y=0 절단 고리 (x ≥ 0, K-Arch 좌표)
-  std::vector<std::vector<KA::Point2>>
-      scannedSolidLines_; // 미스캔 보정 시 실선으로 그릴 외벽·상부내벽 구간
-  std::vector<std::vector<KA::Point2>>
-      estimatedInnerLines_; // 미스캔/홀필 추정 내벽선 (x ≥ 0)
-  double estZMin_ = -1.0, estZMax_ = -1.0;
+  SectionLines lines_;        // 확정 각 Y=0 단면 (원본 메시)
+  SectionLines previewLines_; // 미리보기 각 Y=0 단면 (LOD)
+  KA::MeshData previewLod_;   // 미리보기 각으로 돌린 LOD
+  bool previewing_ = false;
+  double previewAngle_ = 0.0;
 
   std::vector<double> wallProfile_;
   double wallZ0_ = 0.0, wallStep_ = 1.0;
@@ -217,6 +243,11 @@ private:
   QString pendingNote_;
   double pendingRmse_ = 0.0;
 };
+
+// 메시 m 의 Y=0 단면 x ≥ 0 반쪽 (+ inferInner 면 Artec 미스캔 내벽 추정, 씨앗 두께
+// wallSeedMm). 멤버를 읽지도 쓰지도 않는 순수 함수 — 확정·미리보기 공용.
+SectionLines sliceSectionY0(const KA::MeshData &m, bool inferInner,
+                            double wallSeedMm);
 
 // 선 다듬기 유틸 (Douglas–Peucker, Catmull–Rom)
 std::vector<KA::Point2> simplifyDP(const std::vector<KA::Point2> &pts,
