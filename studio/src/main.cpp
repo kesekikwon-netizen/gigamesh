@@ -16,11 +16,14 @@ int main(int argc, char** argv) {
     app.setStyleSheet(theme::styleSheet());
 
     studio::MainWindow w;
+    const QStringList args = app.arguments();
     const QByteArray geo = QSettings().value("window/geometry").toByteArray();
     if (!geo.isEmpty()) w.restoreGeometry(geo);
+    // 검수 캡처는 창을 1845×920(JOB-004·005 캡처 크기)으로 고정 — 창 최소 폭은 가장 넓은 리본 페이지를 따라
+    // 단추 하나만 빼도 바뀌므로, 고정해야 시작 화면·작업 화면을 이전 캡처와 바이트·화소로 비교할 수 있다 (최소 폭이 더 크면 그 폭)
+    if (args.contains("--shot")) w.resize(1845, 920);
     w.show();
 
-    const QStringList args = app.arguments();
     // 검수용: --shot <png> [--max] [--export] [--flip] — 창을 그려 저장하고 끝낸다
     //         --sample|--blind [--base] — 예제를 연다. --base 면 확정 전(들어온 자세) ① 바닥 정하기 페이지
     //         예: DongArch3DStudio.exe --sample --base --shot shot_base.png (파일 경로 인자는 원래 확정 전으로 열림)
@@ -62,6 +65,8 @@ int main(int argc, char** argv) {
             QWidget* top = QApplication::activeModalWidget();
             QWidget* target = top ? top : QApplication::activeWindow();
             if (!target) target = QApplication::topLevelWidgets().value(0);
+            // 원본 계산(UI 스레드 ≈ 1.4 s) 중에 이 타이머가 밀리면 계산 직후 글자만 바뀌고 다시 배치는 아직이다 → 먼저 배치
+            QApplication::sendPostedEvents(nullptr, QEvent::LayoutRequest);
             if (target) target->grab().save(out);
             QApplication::exit(0);
         });
