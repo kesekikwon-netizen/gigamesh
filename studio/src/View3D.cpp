@@ -198,8 +198,10 @@ void View3DCanvas::mouseMoveEvent(QMouseEvent* e) {
 }
 
 void View3DCanvas::mouseReleaseEvent(QMouseEvent*) {
+    const bool cutDrag = drag_ && cutTool_;
     drag_ = false;
     setCursor(Qt::OpenHandCursor);
+    if (cutDrag) emit cutDragReleased();
 }
 
 // ---- View3DPane -----------------------------------------------------------

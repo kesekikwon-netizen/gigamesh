@@ -38,6 +38,16 @@ bool isHorizontal(const ArtifactDoc &doc, int slot) {
 
 QString num(double v, int prec = 1) { return QString::number(v, 'f', prec); }
 
+// 막을 움직이는 중(LOD 미리보기 단면 · 치수·두께는 옛 각)에는 파일을 만들기 전에 거부한다
+bool refusePreview(const ArtifactDoc &doc, QString *err) {
+  if (!doc.isPreviewing())
+    return false;
+  if (err)
+    *err = QStringLiteral(
+        "막을 움직이는 중입니다 — 놓은 뒤(원본 단면 계산 뒤) 내보내세요.");
+  return true;
+}
+
 QPolygonF mapPoly(const std::vector<KA::Point2> &pts, const QTransform &t) {
   QPolygonF poly;
   poly.reserve(qsizetype(pts.size()));
@@ -482,6 +492,8 @@ void paintSheet(QPainter &p, const ArtifactDoc &doc, const ExportRequest &r,
 }
 
 bool exportPdf(const ArtifactDoc &doc, const ExportRequest &r, QString *err) {
+  if (refusePreview(doc, err))
+    return false;
   QPdfWriter w(r.path);
   const QSizeF ps = paperSize(r.paper);
   w.setPageSize(QPageSize(ps, QPageSize::Millimeter));
@@ -501,6 +513,8 @@ bool exportPdf(const ArtifactDoc &doc, const ExportRequest &r, QString *err) {
 
 bool exportPng(const ArtifactDoc &doc, const ExportRequest &r, int dpi,
                QString *err) {
+  if (refusePreview(doc, err))
+    return false;
   const double ppm = dpi / 25.4;
   const QSizeF ps = paperSize(r.paper);
   QImage img(int(ps.width() * ppm), int(ps.height() * ppm),
@@ -521,6 +535,8 @@ bool exportPng(const ArtifactDoc &doc, const ExportRequest &r, int dpi,
 // ---- 레이어 분리 SVG (일러스트레이터 1:1 mm) --------------------------------
 bool exportSvgLayered(const ArtifactDoc &doc, const ExportRequest &r,
                       QString *err) {
+  if (refusePreview(doc, err))
+    return false;
   QFile f(r.path);
   if (!f.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
     if (err)
@@ -723,6 +739,8 @@ bool exportSvgLayered(const ArtifactDoc &doc, const ExportRequest &r,
 // ---- DXF R12 (K-Arch 11 레이어, 1:1 mm, 화면과 같은 배치(D5 기본 외면 왼쪽·단면
 // 오른쪽, R 반전 따름)) ----------------------------------------------------------
 bool exportDxf(const ArtifactDoc &doc, const ExportRequest &r, QString *err) {
+  if (refusePreview(doc, err))
+    return false;
   KA::DxfWriter w;
   if (!w.Open(r.path.toLocal8Bit().toStdString())) {
     if (err)

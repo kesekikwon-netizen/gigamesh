@@ -54,6 +54,7 @@ target_include_directories(karch PUBLIC ${KARCH_DIR})
 # ---- 도판 엔진 (문서·래스터·도판·내보내기, 헤드리스 테스트 공용) -------------
 add_library(studio_core STATIC
   src/ArtifactDoc.cpp src/ArtifactDoc.h
+  src/CutGesture.h
   src/MeshIO.cpp src/MeshIO.h
   src/MeshRaster.cpp src/MeshRaster.h
   src/Plate.cpp src/Plate.h
@@ -94,6 +95,11 @@ add_test(NAME studio_pose COMMAND test_studio_pose ${CMAKE_CURRENT_BINARY_DIR})
 add_executable(test_studio_side tests/test_side.cpp)
 target_link_libraries(test_studio_side PRIVATE studio_core)
 add_test(NAME studio_side COMMAND test_studio_side ${CMAKE_CURRENT_BINARY_DIR})
+add_executable(test_studio_cut tests/test_cut.cpp)
+target_link_libraries(test_studio_cut PRIVATE studio_core)
+add_test(NAME studio_cut COMMAND test_studio_cut ${CMAKE_CURRENT_BINARY_DIR})
+# 시간 측정(미리보기 16 ms)이 다른 시험과 겹치지 않게 (CI 는 ctest --parallel 4)
+set_tests_properties(studio_cut PROPERTIES RUN_SERIAL TRUE)
 
 if(STUDIO_BUILD_KARCH_TESTS)
   set(KARCH_TESTS

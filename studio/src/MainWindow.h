@@ -1,8 +1,10 @@
 // DongArch3D Studio — 메인 창 (UI_RULES R1 고정 구조 + Artec Studio 실시간 연동).
 #pragma once
 #include "ArtifactDoc.h"
+#include "CutGesture.h"
 #include "Plate.h"
 
+#include <QElapsedTimer>
 #include <QMainWindow>
 #include <QVector>
 
@@ -33,6 +35,7 @@ public:
 
 protected:
     void keyPressEvent(QKeyEvent*) override;
+    void keyReleaseEvent(QKeyEvent*) override;
     bool eventFilter(QObject*, QEvent*) override;
     void dragEnterEvent(QDragEnterEvent*) override;
     void dropEvent(QDropEvent*) override;
@@ -59,7 +62,14 @@ private:
     void applyOptions();
     void pushUndo();
     void restore(const ViewState& s);
-    void setFrontAngle(double deg);
+    // ② 막 각도 입력 합치기: 끄는 동안 LOD 미리보기(16 ms), 놓으면·키 300 ms 뒤 원본 확정
+    void scheduleCut();    // 다음 마감에 맞춰 단발 타이머
+    void onCutTimer();     // 마감이 지난 미리보기·확정 처리
+    void refreshPreview(); // 도판 단면·3D 만 다시 그림 (음영·치수·슬롯 그대로)
+    void updateCutInfo();  // ctx 오른쪽 각도·점 수
+    void beginCutInput();  // 제스처 하나 = 되돌리기 한 칸
+    void flushCut();       // 다른 동작 전에 먼저 확정
+    void cancelCut();      // 문서가 바뀜 → 계산하지 않고 버림
     void saveSlotAngle(int k);
     void openExport(ExportFormat f);
     void openFileDialog();
@@ -79,6 +89,9 @@ private:
     bool dirtyExport_ = false;
     double lastHoverH_ = -1;
     QVector<ViewState> undo_, redo_;
+    CutGesture cut_;
+    QTimer* cutTimer_ = nullptr;
+    QElapsedTimer cutClock_;
 
     // Artec Studio 실시간 감시 폴더
     QFileSystemWatcher* watcher_ = nullptr;
