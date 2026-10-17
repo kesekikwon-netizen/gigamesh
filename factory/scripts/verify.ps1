@@ -9,6 +9,7 @@ param(
     [ValidateSet('studio', 'gigamesh')] [string]$Target = 'studio',
     [string]$Job = '',
     [string]$Root = '',
+    [string]$RecordRoot = '',   # -Job 산출물을 복사할 저장소 루트(기본 = Root). 검증 대상 worktree 를 읽기 전용으로 두려면 기준 worktree 경로를 지정
     [string]$BuildRoot = 'D:\_dongarch_build\verify',
     [string]$Qt6Dir = '',
     [string]$Qt5Dir = '',
@@ -78,7 +79,8 @@ $summary -join "`n" | Set-Content -Path $summaryPath -Encoding utf8
 Write-Host ($summary -join "`n")
 
 if ($Job) {
-    $art = Join-Path $Root "factory\jobs\$Job\artifacts"
+    $rec = if ($RecordRoot) { $RecordRoot } else { $Root }
+    $art = Join-Path $rec "factory\jobs\$Job\artifacts"
     New-Item -ItemType Directory -Force -Path $art | Out-Null
     Copy-Item (Join-Path $log '*') $art -Force
     Copy-Item $summaryPath (Join-Path $art "verify-summary-$Target.md") -Force

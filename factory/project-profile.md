@@ -30,7 +30,7 @@ Artec 등 3D 스캐너의 유물 메시(mm) → 정위치(바닥 수평·회전 
 | D2 | 저장소 전체 GPL-3.0-or-later, 대상 저장소 LICENSE 교체 | 기본값 적용(사용자 확인 대기) |
 | D3 | 새 이력으로 시작(Qt SDK·문서 사본·독점 자료 제외), 옛 이력은 `younga1234/git11`·로컬 `master`에 보존 | 기본값 적용(사용자 확인 대기) |
 | D4 | 옛 `.claude` 15-Task 설정은 `docs/legacy/`에 보관, factory로 대체 | 기본값 적용(사용자 확인 대기) |
-| D5 | 토기 도판 좌/우 배치(Studio: 좌 단면·우 외곽 vs K-Arch 주석·Phase D 목업: 좌 외형·우 단면) | **보류** — 별도 조사 스레드의 보고서 표준 결과 대기. 배치 코드 변경 금지 |
+| D5 | 토기 도판 좌/우 배치(Studio: 좌 단면·우 외곽 vs K-Arch 주석·Phase D 목업: 좌 외형·우 단면) | **보류 확정(2026-10-17 조사 결과)** — 한국은 법령·국가유산청 고시·기관 일러두기 어디에도 좌/우 규정이 없어 '미확인'. 일본은 우 단면·좌 외면, 영국 CIfA 2017 좌 단면, 미국 우 단면 다수. 목업의 "(토기 표준)" 라벨은 공개 근거 없음. 설계 권고: 프리셋 `sectionSide` 기본값을 비우고 첫 실행에서 기관 보고서를 보고 선택, R 키 반전, 일본 프리셋은 우 고정, 라벨은 "기관 프리셋 ○○"로. 사용자가 좌/우 한마디나 기관 보고서 도판 1장을 주면 KR 기본값 확정. **배치 코드 변경은 그때까지 금지** |
 | 배포 모델 | 무료 공개 / 기관 내부 / 판매 | 미정 — triangle 비상업 조항 영향이 갈림 |
 
 ## 기준 SHA
@@ -46,6 +46,11 @@ Artec 등 3D 스캐너의 유물 메시(mm) → 정위치(바닥 수평·회전 
 6. Illustrator 실제 가져오기 미검증(Inkscape 레이어 네임스페이스, base64 PNG 음영).
 7. 오프스크린 캡처에서 한글 폰트 미탐색(□).
 8. `triangle` 비상업 라이선스(GigaMesh 기반 실행파일), Google Analytics 전송 코드(`QGMMainWindow.cpp:574-612`).
+
+## 조사 문서 (2026-10-17, 별도 조사 스레드)
+- 공유 폴더 `/mnt/project-files/gigamesh-docs/`: `plan-설계초안.md`, `research-실측표준.md`, `research-자동화범위.md`, `research-도구비교.md`. 저장소 `research/`·`plan/`로 반입하는 작업은 백로그 후보(코드 무변경, push 는 사용자 문장 필요).
+- 요지: 허용오차의 공식 기준은 없음 → 검증 기준은 "제안 후 사용자 확인" 절차 유지. 단위 정책은 "추정 후 사용자 확정, 확정 전 잠금". 1차 MVP 는 완형 토기만(완료 게이트: 사용자 Artec 완형 스캔 1점 통과). Illustrator 가 mm SVG/PDF 를 1:1 로 여는지 사용자 PC 에서 100 mm 보정 사각형으로 실측.
+- 라이선스: 조사 문서는 Studio+K-Arch 분리 저장소·독자 라이선스(②)를 권했으나 사용자는 저장소 전체 GPL-3.0-or-later(①)를 택했고 그대로 push 됨. ②로 바꾸려면 main 병합 전인 지금이 비용이 가장 적다(결정 기록용 메모, 변경 지시 아님).
 
 ## 외부 자료 위치 (읽기 전용, 커밋 금지)
 - Artec Studio 20 매뉴얼: `C:\Program Files\Artec\Artec Studio 20 Trial\Documentation\Artec_Studio_Manual_EN.pdf`. SDK 헤더: `C:\Program Files\Artec\Artec 3D Scanning SDK\include`.
